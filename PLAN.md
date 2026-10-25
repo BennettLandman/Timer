@@ -68,3 +68,6 @@ The owner rejected vector character art in favor of compelling high-quality pain
 
 ## Approved painted implementation
 The owner approved the master paintings and then all four remaining character still sheets before their animation. All 25 painted species are integrated through transparent raster atlases and articulated meshes. The old vector character renderer has been removed. The analog renderer now uses textured frosted glass and painted countdown hands. Digital segments are projected solids that traverse the socket depth before falling. No artwork approval is pending.
+
+## Anatomy and completion revision
+At the owner's request, all mesh warping has been replaced by 24-pose painted animation sequences. Separate cat actions provide anatomical forepaw/claw scratching, tail painting, gait and peeking. The final-minute strokes leave visible scratch marks during contact, and the final stroke reaches the glass-break deadline. The digital housing remains at its running geometry while the red-capped cat rises behind it. Frame registration is prepared in advance rather than computed during playback.

@@ -22,10 +22,12 @@ The proofs establish style and materials; the functioning clocks are rendered se
 
 ![Zebra, lion, penguin, owl, frog, hedgehog](docs/painted-cast/sheet-4.png)
 
-## Production treatment
+## Updated animation treatment
 
-Transparent raster atlases retain the approved pigment and edges. A deformable mesh articulates limbs, body, tail, wings, and fish movement continuously while preserving the painting's identity. This avoids independently redrawing the character in every frame. Each species has been sampled through a 64-pose movement cycle in browser checks.
+The owner requested more realistic anatomy and rejected image warping. The renderer now uses 24 actual painted poses per gait or action, with separate cat painting, claw-scratching, walking, and peeking sequences. Complete character poses are played directly; no mesh deformation remains. The style and character identities follow the approved stills.
 
-The analog clock has painted countdown hands, a small exact time readout, raster glass grain, depth-dependent blur, and contact-driven tail movement. The digital clock has recessed sockets and physical segment extrusion; incoming blocks move from behind the face, and outgoing blocks travel toward the viewer before falling. The runtime palette follows the approved artwork and the timer's phase colors.
+The final-minute claw stroke is synchronized to a new set of three glass scratches each second. The cat steps between strokes after retracting its paw. The last stroke continues until the glass-break deadline. Before the last minute, the cat uses its forepaw to erase and its coordinated body/tail sequence to paint.
 
-[Production prompts](docs/painted-cast/PROMPTS.md) and [initial proof prompts](docs/art-review-v2/PROMPTS.md) document built-in image-generation usage.
+The digital housing retains its running position, dimensions and socket layout at completion. The red-capped cat emerges above the unchanged top edge with actual panel occlusion. The completion caption is placed below the housing to leave the head visible.
+
+[Animation prompts](docs/ANIMATION_PROMPTS.md), [initial still prompts](docs/painted-cast/PROMPTS.md), and [proof prompts](docs/art-review-v2/PROMPTS.md) record built-in image-generation usage.

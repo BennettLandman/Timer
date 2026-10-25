@@ -2,7 +2,7 @@ import {Timer,formatTime,validDuration} from './clock.js';
 import {Scene} from './scenes.js';
 import {themes} from './art.js';
 import {Sound} from './audio.js';
-import {loadPaintAssets} from './paint.js';
+import {loadPaintAssets,loadVisitorAssets} from './paint.js';
 const $=id=>document.getElementById(id);
 $('start').disabled=true;$('preview-caption').textContent='Opening the studio…';
 const clock=new Timer(),scene=new Scene(),preview=new Scene(),sound=new Sound();
@@ -22,13 +22,13 @@ for(const b of document.querySelectorAll('[data-min]'))b.addEventListener('click
 for(const id of ['minutes','seconds'])$(id).addEventListener('input',updatePresets);
 for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));preview.reset();$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';});
 $('settings-open').addEventListener('click',()=>{$('settings').showModal();});
-function begin(seconds){clock.start(seconds);scene.reset();animationTime=0;lastPhase='';lastText='';sound.stop();$('setup').hidden=true;$('setup-footer').hidden=true;$('timer').hidden=false;document.body.classList.add('active');$('pause').textContent='Pause';$('pause').disabled=false;$('completion').hidden=true;$('pause').focus();announce(`${formatTime(seconds)} timer started.`);}
+function begin(seconds){clock.start(seconds);scene.reset();animationTime=0;lastPhase='';lastText='';sound.stop();$('setup').hidden=true;$('setup-footer').hidden=true;$('timer').hidden=false;document.body.classList.add('active');$('pause').textContent='Pause';$('pause').disabled=false;$('completion').hidden=true;$('timer').classList.remove('digital-complete');$('pause').focus();announce(`${formatTime(seconds)} timer started.`);}
 $('start').addEventListener('click',async()=>{const seconds=validDuration($('minutes').value,$('seconds').value);if(seconds===null){$('input-error').textContent='Choose a time from 1 second to 999 minutes, 59 seconds.';return;}begin(seconds);await sound.unlock();sound.configure(settings);});
 function togglePause(){if(clock.state==='running'){clock.pause();sound.stop();$('pause').textContent='Resume';announce('Timer paused.');}else if(clock.state==='paused'){clock.resume();sound.unlock();$('pause').textContent='Pause';announce('Timer resumed.');}}
 $('pause').addEventListener('click',togglePause);
 $('restart').addEventListener('click',async()=>{begin(clock.initial);await sound.unlock();sound.configure(settings);});
 $('cancel').addEventListener('click',()=>{clock.state='idle';sound.stop();scene.reset();document.body.classList.remove('active');document.documentElement.style.removeProperty('--wash');$('timer').hidden=true;$('setup').hidden=false;$('setup-footer').hidden=false;if(document.fullscreenElement)document.exitFullscreen().catch(()=>{});$('start').focus();announce('Timer finished. Choose a new time.');});
-function add(seconds){const previous=clock.remaining();const wasCompleted=clock.state==='completed';clock.add(seconds);if(wasCompleted){scene.reset();$('completion').hidden=true;$('pause').disabled=false;$('pause').textContent='Pause';}announce(`${formatTime(Math.max(0,clock.remaining()-previous))} added. ${formatTime(clock.remaining())} remaining.`);}
+function add(seconds){const previous=clock.remaining();const wasCompleted=clock.state==='completed';clock.add(seconds);if(wasCompleted){scene.reset();$('completion').hidden=true;$('timer').classList.remove('digital-complete');$('pause').disabled=false;$('pause').textContent='Pause';}announce(`${formatTime(Math.max(0,clock.remaining()-previous))} added. ${formatTime(clock.remaining())} remaining.`);}
 $('add3').addEventListener('click',()=>add(180));$('add5').addEventListener('click',()=>add(300));
 $('add-custom').addEventListener('click',()=>{$('add-error').textContent='';$('add-dialog').showModal();});$('add-close').addEventListener('click',()=>$('add-dialog').close());
 $('add-form').addEventListener('submit',event=>{event.preventDefault();const value=validDuration($('extra-minutes').value,$('extra-seconds').value);if(value===null){$('add-error').textContent='Enter a positive time, with seconds from 0 to 59.';return;}add(value);$('add-dialog').close();});
@@ -40,7 +40,7 @@ function frame(now){const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastF
  if(clock.state==='idle'){if(!document.hidden){previewTime+=dt;preview.draw($('preview'),{mode,remaining:300,time:previewTime,reduced,preview:true});}}
  else{
   if(clock.state==='running'&&!document.hidden)animationTime+=dt;
-  if(clock.update()){sound.stop();sound.ending();$('completion').hidden=false;$('pause').disabled=true;$('end-caption').textContent=mode==='analog'?'Even artists need a break.':'All in a little day’s work.';announce('Time is up.');}
+  if(clock.update()){sound.stop();sound.ending();$('completion').hidden=false;$('timer').classList.toggle('digital-complete',mode==='digital');$('pause').disabled=true;$('end-caption').textContent=mode==='analog'?'Even artists need a break.':'All in a little day’s work.';announce('Time is up.');}
   if(clock.state==='completed'&&!document.hidden)animationTime+=dt;
   const remaining=clock.remaining(),phase=clock.phase(),str=formatTime(remaining);
   if(str!==lastText){$('readout').textContent=`${str} remaining`;lastText=str;}
@@ -50,4 +50,4 @@ function frame(now){const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastF
  }
  requestAnimationFrame(frame);
 }
-loadPaintAssets().then(()=>{$('start').disabled=false;$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';lastFrame=performance.now();requestAnimationFrame(frame);}).catch(()=>{$('input-error').textContent='The studio could not load. Please reload the page.';});
+loadPaintAssets().then(()=>{lastFrame=performance.now();requestAnimationFrame(frame);return loadVisitorAssets();}).then(()=>{$('start').disabled=false;$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';}).catch(()=>{$('input-error').textContent='The studio could not load. Please reload the page.';});

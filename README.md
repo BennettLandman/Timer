@@ -6,10 +6,10 @@ The painted character style, clock treatments, and all 25 species have been appr
 
 Two scenes share original artwork inspired by the simple contours, flat color, and cat-and-red-fish palette requested in the discussion:
 
-- **The painter:** a cat shadow paints and erases minutes behind tinted frosted glass. The final minute adds claw scratches; at zero, the glass breaks to reveal the guilty artist in a beret.
-- **The builders:** block segments slide into the digital clock, fall away, and break into debris. A randomized cast of 25 animals occasionally pushes the pieces away.
+- **The painter:** an upright painted cat erases with its forepaw and paints minute changes with its tail behind frosted glass. In the final minute, each visible claw-contact stroke leaves three scratch marks; the last stroke continues into the glass break.
+- **The builders:** block segments slide through recessed sockets, fall away, and break into debris. A randomized cast of 25 animals clears them. At zero, the clock housing stays in its exact running position while the red-capped cat rises behind the top edge and peeks out.
 
-All 25 characters use approved painted raster artwork with transparent edges. A deformable raster mesh animates limbs, body, tail, wings, and fish movement continuously at the display refresh rate, preserving the original brushwork. Browser checks sampled 64 distinct poses for each species. Reduced motion is supported.
+All 25 characters use 24-frame painted pose sequences with transparent edges. Separate cat sequences handle tail painting, claw scratching, and peeking. The renderer plays complete poses without mesh warping. Walking gait phase follows traversal distance; frames are prepared and ground-registered before playback. Reduced motion is supported.
 
 ![Timer setup](docs/setup.png)
 
@@ -17,7 +17,7 @@ All 25 characters use approved painted raster artwork with transparent edges. A 
 
 ## Run locally
 
-No package installation is needed. The first load includes about 19 MB of painted image assets; subsequent visits can use the browser cache. Serve this directory with any static web server. For example:
+No package installation is needed. The first load includes about 45 MB of losslessly encoded painted animation assets; subsequent visits can use the browser cache. Serve this directory with any static web server. For example:
 
 ```sh
 python3 -m http.server 8080 --bind 127.0.0.1
@@ -58,6 +58,7 @@ node tests/browser.mjs
 node tests/sequences.mjs
 node tests/performance.mjs
 node tests/production.mjs
+node tests/anatomy.mjs
 ```
 
 Install Playwright separately or set `PLAYWRIGHT_PATH` to its existing package location. Set `CHROME_PATH` for a custom browser executable; macOS defaults to the installed Google Chrome, other platforms use Playwright's Chromium. Screenshots and measured results are written to the ignored `test-results/` folder. See [QA.md](QA.md) for the verified scope and remaining device checks.
@@ -66,7 +67,8 @@ Install Playwright separately or set `PLAYWRIGHT_PATH` to its existing package l
 
 - `src/clock.js`: deadline-based countdown and phase rules.
 - `src/art.js`: shared palette, phase themes, and cast registry.
-- `src/paint.js`: transparent raster loading, normalization, and articulated character meshes.
+- `src/paint.js`: prepacked pose loading, fixed-frame playback, and uniform placement.
+- `src/cat-actions.js`: claw-contact timing and painting choreography.
 - `src/depth.js`: perspective-projected sockets and solid segment geometry.
 - `src/scenes.js`: frosted-glass painting, scratches, blocks, debris, visitors, and endings.
 - `src/audio.js`: original Web Audio synthesis.
