@@ -1,10 +1,10 @@
-# Painted 3D character proof — awaiting approval
+# Painted 3D character proof — motion review
 
-This is stage 1 of the agreed replacement animation strategy. It is one static pose rendered from actual Three.js geometry, with skinned tubular limb/tail meshes and named joint controls. The main timer still uses its existing renderer. No replacement animation clips have been created or integrated.
+The owner approved the first appearance still. Stage 2 is now available at `motion.html`: a six-second cat reach/contact/scratch/retract/weight-shift and a continuous fox walk, including a small-size view. It is one static pose rendered from actual Three.js geometry, with skinned tubular limb/tail meshes and named joint controls. The main timer still uses its existing renderer. Continuous joint animation is implemented in the demonstration. Production timer integration and expansion of the cast await motion review.
 
 Serve the repository, then open `/docs/rig-proof/`. `approval-still.png` is a browser capture of the same local proof, not an image-generated promise of a future model. The right-hand panel composites the actual model render with a fixed blur and the existing granular glass asset; it is a glass appearance study, not physical glass transmission. Clock hands and contact choreography are deferred to the motion demonstration.
 
-The model is a first procedural sculpture. The face, proportions, painted finish, and glass strength need owner approval before animation work. Bone controls are present; limb deformation, inverse kinematics, planted-foot behavior, natural gait, pause responsiveness, animation performance, and target-device behavior have not yet been validated. A successful still render is not evidence of smooth animation.
+The motion study uses fixed-length limb constraints, an independently jointed wrist/claw contact, planted cat ankles, four phased fox legs, and matched foot velocity at lift-off/landing. The scratching removes one demonstration tick and leaves three lines at the claw path. This is one action example, not the complete final-minute clock choreography. The frosted layer in the motion study is a lightweight transparent texture overlay; production depth-dependent glass blur remains to be integrated. Tail painting and digital peeking remain subsequent actions. Artistic motion quality and target-device behavior require review.
 
 ## Files
 
@@ -22,7 +22,13 @@ Built-in image-generation tool, 2026-10-25. Reference: `../art-review-v2/cat-cut
 
 ## Next approval gates
 
-1. Approve or revise this still's character and material treatment.
-2. Demonstrate a cat reach/contact/scratch/retract/weight-shift and a fox walk at the actual small display size. Approve motion before expanding the cast.
+1. Appearance approved.
+2. Motion demonstration implemented; owner review pending before production integration and cast expansion.
 3. Integrate contact-driven clock marks and timeline-responsive controls. Verify frame pacing, input response, loop continuity and visible contact on intended devices.
 4. Expand through suitable reusable body types once the first motions pass review.
+
+## Motion checks
+
+Run `npm run test:rig` with Playwright and installed Chrome. Evidence is recorded in `motion-checks.json`. The browser checks claw contact over the scratch, fixed cat ankle locations through body sway, fox stance foot placement, loop closure, order-independent seeking, pause freezing time, and mobile overflow. All pass. Local hardware-accelerated Chrome (Apple M4 Pro, ANGLE Metal) sampled approximately 60 renders per second. This is a local two-character demonstration measurement, not a guarantee for tablets or the full timer. No JavaScript errors were reported.
+
+`rig.js` evaluates a pose from absolute time, avoiding accumulated frame-step errors. `fox.js` builds the procedural fox and computes its gait. `materials.js` shares the approved cat's paint treatment with the fox. `motion.js` handles the glass demonstration and controls. The small fox is copied from the same rendered pose, without a second model or WebGL renderer. No new AI pose sheets were generated.

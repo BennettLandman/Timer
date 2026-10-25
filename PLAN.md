@@ -75,3 +75,5 @@ At the owner's request, all mesh warping has been replaced by 24-pose painted an
 ## Replacement animation strategy — 3D painted characters
 
 Owner selected option 2 on October 25, 2026. The first actual model and still are in `docs/rig-proof/`; appearance approval is pending. This proof does not replace the production timer. Subsequent work follows the approval gates in `docs/rig-proof/README.md`: cat/fox motion demonstration, timeline/contact integration, device and motion review, then cast expansion. No smoothness or production-readiness claim is made from the static model.
+
+The first 3D appearance was approved. The cat/fox motion study is now at `/docs/rig-proof/motion.html`, with pause, speed, restart, and seek controls. Mechanical contact, foot planting, timeline, and local frame-pacing checks pass. Owner motion review is pending before timer integration/cast expansion.

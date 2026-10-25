@@ -29,3 +29,5 @@ The owner supplied an Amsterdam clock screenshot as a conceptual reference. That
 ## Experimental 3D proof (outside the production build)
 
 `docs/rig-proof/` contains an original procedural cat model and one generated pigment texture derived from the approved cat reference. It uses locally vendored Three.js 0.180.0 under the included MIT license. See its README for provenance, rendering method, and outstanding approval/animation work. Its still depicts actual rendered geometry; the frosted panel is a compositor study. No new pose sequence is included.
+
+The approved 3D study now also contains an original procedural fox (`fox.js`) and continuous joint motion (`rig.js`), sharing the same painted material code. No further generated character frames or third-party model assets were added.

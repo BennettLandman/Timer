@@ -9,6 +9,7 @@
     "build": "node scripts/build.js",
     "serve": "python3 -m http.server 8080 --bind 127.0.0.1",
     "test:browser": "node tests/browser.mjs && node tests/sequences.mjs && node tests/anatomy.mjs && node tests/motion.mjs",
+    "test:rig": "node tests/rig-motion.mjs",
     "test:performance": "node tests/performance.mjs"
   }
 }

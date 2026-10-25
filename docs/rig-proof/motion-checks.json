@@ -1,0 +1,14 @@
+{
+  "contactError": 2.277830749034896e-9,
+  "footError": 0.00048762495263916463,
+  "foxFootError": 6.206335383118183e-16,
+  "loopError": 6.52447177660502e-8,
+  "seekError": 0,
+  "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+  "frames": {
+    "samples": 125,
+    "median": 16.699999999999818,
+    "p95": 16.799999999999955
+  },
+  "errors": []
+}
