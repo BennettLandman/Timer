@@ -62,3 +62,6 @@ Implemented lightweight static application: native JavaScript modules, HTML/CSS,
 
 ## Artwork approval gate
 The owner requires approval of a single still frame of each artwork before producing further animation frames. Existing artwork and motion studies are drafts. See ART_REVIEW.md. Further animation production is paused pending approval.
+
+## Revised visual direction (October 25, 2026)
+The owner rejected vector character art in favor of compelling high-quality paintings. Use consistent painted raster characters; preserve the existing timer behavior. Digital segments require substantial three-dimensional depth, recessed sockets, and insertion/ejection along the depth axis. The supplied Amsterdam clock reference clarifies painted analog hands on textured, translucent frosted glass with the cat working behind it. See ART_REVIEW.md for revised single-frame proofs. Obtain style approval, then approval of each remaining character still, before generating animation sequences.

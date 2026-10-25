@@ -2,7 +2,7 @@
 
 **Time to keep track of time.** A quiet, illustrated JavaScript timer for the classroom.
 
-**Artwork approval is pending.** Review [one still of each character and the two clock designs](ART_REVIEW.md). Further animation production is paused until the owner approves the artwork. Existing motion studies remain drafts.
+**Artwork approval is pending.** Review [the revised painted character style, frosted glass, and dimensional digital clock stills](ART_REVIEW.md). The previous vector character direction is superseded; the running app remains a functional draft until approved painted assets are integrated. Further animation production is paused until the owner approves the artwork. Existing motion studies remain drafts.
 
 Two scenes share original artwork inspired by the simple contours, flat color, and cat-and-red-fish palette requested in the discussion:
 

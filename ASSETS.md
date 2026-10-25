@@ -13,3 +13,7 @@ All shipped visuals and sounds are original to this project. No external media, 
 Cast: cat, dog, panda, turtle, pig, bear, cow, fish, eagle, turkey, raven, rabbit, fox, deer, horse, sheep, goat, elephant, giraffe, zebra, lion, penguin, owl, frog, hedgehog.
 
 The project is private. No public reuse license is granted by this ledger.
+
+## Revised painted proofs (not integrated into the application)
+
+The owner superseded the vector character direction. `docs/art-review-v2/` contains built-in image_gen single-frame proofs for a painted beret cat with red fish, frosted-glass clock, and deep digital block sockets. These generated painting proofs are pending approval. They are not production sprite sheets or layered runtime assets. Their exact prompts are recorded in `docs/art-review-v2/PROMPTS.md`. Existing running-app assets in the table above remain functional drafts.
