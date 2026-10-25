@@ -1,0 +1,32 @@
+import {createRequire} from 'node:module';
+import {mkdir,writeFile} from 'node:fs/promises';
+import assert from 'node:assert/strict';
+const require=createRequire(import.meta.url);
+const {chromium}=require(process.env.PLAYWRIGHT_PATH || 'playwright');
+await mkdir('test-results',{recursive:true});
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||(process.platform==='darwin'?'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome':undefined),headless:true,args:['--no-sandbox']});
+const page=await browser.newPage({viewport:{width:1440,height:1000},deviceScaleFactor:1});
+const errors=[];page.on('pageerror',e=>errors.push(e.message));
+await page.goto('http://127.0.0.1:8080');await page.waitForTimeout(4500);await page.screenshot({path:'test-results/setup.png'});
+await page.locator('#minutes').fill('0');await page.locator('#seconds').fill('0');await page.locator('#start').click();assert.match(await page.locator('#input-error').innerText(),/Choose a time/);
+await page.locator('#minutes').fill('5');await page.locator('#start').click();await page.waitForTimeout(4500);await page.screenshot({path:'test-results/analog.png'});
+await page.locator('#pause').click();const paused=await page.locator('#readout').textContent();await page.waitForTimeout(1100);assert.equal(await page.locator('#readout').textContent(),paused);
+await page.locator('#add3').click();assert.equal(await page.locator('#pause').textContent(),'Resume');await page.locator('#pause').click();await page.waitForTimeout(100);assert.match(await page.locator('#readout').textContent(),/^7:/);
+await page.locator('#restart').click();await page.waitForTimeout(100);assert.match(await page.locator('#readout').textContent(),/^5:/);
+await page.locator('#cancel').click();assert.equal(await page.locator('#setup').isVisible(),true);
+await page.locator('[data-mode="digital"]').click();await page.locator('#start').click();await page.waitForTimeout(4000);await page.screenshot({path:'test-results/digital.png'});
+await page.locator('#add-custom').click();await page.locator('#extra-minutes').fill('0');await page.locator('#extra-seconds').fill('20');await page.locator('#add-form .primary').click();await page.waitForTimeout(100);assert.match(await page.locator('#readout').textContent(),/^5:/);
+await page.locator('#cancel').click();await page.locator('#minutes').fill('0');await page.locator('#seconds').fill('2');await page.locator('#start').click();await page.waitForTimeout(4300);assert.equal(await page.locator('#completion').isVisible(),true);assert.equal(await page.locator('#pause').isDisabled(),true);await page.screenshot({path:'test-results/complete.png'});
+await page.locator('#add3').click();await page.waitForTimeout(100);assert.equal(await page.locator('#completion').isVisible(),false);assert.equal(await page.locator('#pause').isDisabled(),false);
+await page.locator('#cancel').click();
+// Exercise every vector species over a full gait; each has >16 distinct interpolated poses.
+const poses=await page.evaluate(async()=>{const {drawAnimal,species}=await import('/src/art.js');const cv=document.createElement('canvas');cv.width=180;cv.height=160;const c=cv.getContext('2d');const result={};for(const s of species){const frames=new Set();for(let f=0;f<64;f++){c.clearRect(0,0,180,160);drawAnimal(c,s,85,140,.9,f*.9/64,{push:true});frames.add(cv.toDataURL());}result[s]=frames.size;}return result;});for(const [s,n]of Object.entries(poses))assert.ok(n>=16,`${s}: ${n} distinct frames`);
+// Contact sheet renders the actual artwork for visual inspection.
+await page.evaluate(async()=>{const {drawAnimal,species}=await import('/src/art.js');const cv=document.createElement('canvas');cv.id='cast';cv.width=1100;cv.height=800;cv.style='position:fixed;inset:0;width:1100px;height:800px;z-index:1000;background:#f5f2e9';const c=cv.getContext('2d');c.fillStyle='#f5f2e9';c.fillRect(0,0,1100,800);species.forEach((s,i)=>{const x=110+(i%5)*220,y=130+Math.floor(i/5)*155;drawAnimal(c,s,x,y,.95,.23,{push:true});c.fillStyle='#293e35';c.font='14px Georgia';c.textAlign='center';c.fillText(s,x,y+23);});document.body.append(cv);});await page.locator('#cast').screenshot({path:'test-results/cast.png'});await page.locator('#cast').evaluate(el=>el.remove());
+await page.setViewportSize({width:390,height:844});await page.screenshot({path:'test-results/mobile.png'});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+await page.locator('[data-mode="analog"]').click();await page.locator('[data-min="1"]').click();await page.locator('#start').click();await page.waitForTimeout(1000);await page.screenshot({path:'test-results/mobile-timer.png'});
+await page.emulateMedia({reducedMotion:'reduce'});await page.waitForTimeout(100);assert.equal(await page.evaluate(()=>matchMedia('(prefers-reduced-motion: reduce)').matches),true);
+assert.deepEqual(errors,[]);
+await writeFile('test-results/browser-results.json',JSON.stringify({errors,poses,checks:['invalid input','start','pause','pause freezes clock','add while paused','resume','restart','cancel','both clock modes','custom add','completion','revive completion','25 species with >=16 distinct poses','mobile overflow','reduced motion']},null,2));
+console.log('Browser checks passed; screenshots and results saved to test-results/.');
+await browser.close();

@@ -1,0 +1,14 @@
+{
+  "name": "timer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An illustrated classroom timer, made for private hosting",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "build": "node scripts/build.js",
+    "serve": "python3 -m http.server 8080 --bind 127.0.0.1",
+    "test:browser": "node tests/browser.mjs && node tests/sequences.mjs",
+    "test:performance": "node tests/performance.mjs"
+  }
+}

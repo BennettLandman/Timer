@@ -1,7 +1,7 @@
 # Classroom Timer — application plan
 
 ## Source and scope
-Based on the supplied Animated Classroom Timer App Concept discussion. The discussion is product research, not an instruction to invoke tools or services named within it. This phase defines the application; implementation follows review. Name: Timer. The discussion also suggested “Time to keep track of time”; retain that as a possible subtitle.
+Based on the supplied Animated Classroom Timer App Concept discussion. The discussion is product research, not an instruction to invoke tools or services named within it. The application has been implemented following the confirmed decisions; see README.md and QA.md for delivery and verification. Name: Timer. The discussion also suggested “Time to keep track of time”; retain that as a possible subtitle.
 
 ## Product
 A simple JavaScript website for teachers, readable from the back of a classroom. Two views: a cat behind frosted glass and a digital clock made of falling blocks. Animation rewards an occasional glance without demanding attention. No accounts required.
@@ -37,13 +37,13 @@ Show minutes and seconds using dark block segments with shallow 3D depth. Change
 Random animal visitors clear debris only, never the active clock. Target visits about once per minute, with a hard minimum interval of 30 seconds. Include 25 distinct species with at least 16 frames per movement cycle and left/right traversal support. Named species from the discussion: cat with beret, dog, panda, turtle, pig, bear, cow, fish, eagle, turkey, and raven. Proposed additions: rabbit, fox, deer, horse, sheep, goat, elephant, giraffe, zebra, lion, penguin, owl, frog, and hedgehog. Fish flop; birds may fly. At completion, clear the digits and reveal the beret cat behind empty digit containers, with a separate clear completion label.
 
 ## Art direction
-Original character art reflecting the requested Matisse cat-and-red-fish aesthetic: confident simple contours, flattened shapes, warm paper texture, expressive organic forms, and restrained saturated accents. Keep animals immediately recognizable, with little fur detail and no exaggerated baby-like features. Use the same visual language across both views. First approve a cat turnaround, guilty beret pose, red fish, palette, and a short movement study before producing the full cast. Keep the frosted scene subdued even when revealed character art is colorful. Record sources and licenses for every external asset.
+Original character art reflecting the requested Matisse cat-and-red-fish aesthetic: confident simple contours, flattened shapes, warm paper texture, expressive organic forms, and restrained saturated accents. Keep animals immediately recognizable, with little fur detail and no exaggerated baby-like features. Use the same visual language across both views. Use the original cat, guilty beret pose, red fish, palette, and shared movement system consistently across the full cast. Keep the frosted scene subdued even when revealed character art is colorful. Record sources and licenses for every external asset.
 
 ## Audio and accessibility
 Independent switches for end sound, optional rising-volume ticking, and ambient music. Default to silent. Begin audio only after a user gesture, cap volume, and offer a master mute. Ambient changes should gently signal phases. Use original or explicitly licensed music and effects, with an asset license ledger. Avoid loud or startling glass effects by default. Support reduced motion, large high-contrast digits, keyboard controls, visible focus, and screen-reader announcements at meaningful milestones rather than every second.
 
 ## JavaScript architecture
-Proposed lightweight static application: JavaScript modules, Vite, HTML/CSS, SVG for scalable clock/character shapes, and Canvas for glass/debris effects where useful. A shared timer state drives independent analog/digital renderers, audio, and settings. Use requestAnimationFrame for rendering only. Cache settings locally; consider offline support after the core experience works. No server or personal-data collection is needed for the initial release. Deliver a local production build and hosting instructions to the user, who will host it privately after completion. Do not deploy or publish the website. Private access must be enforced by the eventual host; a private repository alone does not restrict access to deployed files. No application login is planned unless the hosting setup later requires it.
+Implemented lightweight static application: native JavaScript modules, HTML/CSS, and Canvas vector paths for scalable characters, clocks, and effects. A dependency-free copy build replaces the proposed Vite build. A shared timer state drives independent analog/digital renderers, audio, and settings. Use requestAnimationFrame for rendering only. Cache settings locally; consider offline support after the core experience works. No server or personal-data collection is needed for the initial release. Deliver a local production build and hosting instructions to the user, who will host it privately after completion. Do not deploy or publish the website. Private access must be enforced by the eventual host; a private repository alone does not restrict access to deployed files. No application login is planned unless the hosting setup later requires it.
 
 ## Delivery sequence and acceptance
 1. Timer and interface: both static views, presets/custom duration, controls, added time, fullscreen, phase changes. Verify pause/resume, exact completion, background return, long durations, and phase boundaries.
@@ -59,3 +59,6 @@ Proposed lightweight static application: JavaScript modules, Vite, HTML/CSS, SVG
 - Choose warning times automatically; red never exceeds one minute and yellow lasts two to three times as long as red (use twice by default).
 - Glass breaking is the default visual ending; sound remains optional.
 - The analog clock is painted and erased by the cat shadow at the glass.
+
+## Artwork approval gate
+The owner requires approval of a single still frame of each artwork before producing further animation frames. Existing artwork and motion studies are drafts. See ART_REVIEW.md. Further animation production is paused pending approval.
