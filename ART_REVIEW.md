@@ -1,41 +1,31 @@
-# Painted artwork approval — revised proofs pending
+# Approved painted artwork
 
-The owner requested high-quality painted raster character art, deeper three-dimensional digital blocks, and genuinely textured frosted glass. The previous vector character designs are superseded as an art direction. Existing app motion studies remain drafts.
+On October 25, 2026, the owner approved the painted cat/fish style and both clock material proofs, then approved the four sheets below before animation integration. The previous vector character direction is superseded.
 
-Approval of still artwork is required before producing animation sequences. This revision establishes the style with the principal cat and fish and one still of each clock. After style approval, prepare one painted still for each remaining species for approval before animation.
+The application now uses transparent painted raster artwork for all 25 species, a separate frosted-glass texture, perspective-projected solid blocks and sockets, and articulated raster motion. The approvals are recorded in the conversation. No further artwork approval is pending for this cast.
 
-## 1. Painted character style
+## Master style and clock treatments
 
-![Painted beret cat and red fish](docs/art-review-v2/painted-cat-and-fish.png)
+- [Cat and red fish painting](docs/art-review-v2/painted-cat-and-fish.png)
+- [Frosted-glass reference proof](docs/art-review-v2/frosted-glass-clock.png)
+- [Digital depth reference proof](docs/art-review-v2/depth-clock.png)
 
-Rich oil/gouache brushwork, visible pigment and canvas, graceful recognizable short-haired feline anatomy, expressive small eyes, vermilion beret, forest green and ochre palette. This is the proposed master reference for all 25 animals. Background foliage is part of the painting proof, not a requirement for the running clock.
+The proofs establish style and materials; the functioning clocks are rendered separately so hands, segment depth, text, and timing can change accurately.
 
-## 2. Frosted-glass analog scene
+## Approved remaining character stills
 
-![Frosted glass and cat painter](docs/art-review-v2/frosted-glass-clock.png)
+![Dog, panda, turtle, pig, bear, cow](docs/painted-cast/sheet-1.png)
 
-The supplied Amsterdam clock screenshot clarifies that the painter works against a translucent clock face with painted hands. Replace the central large-number treatment with bold brush-painted countdown hands and perimeter marks. Keep a small exact countdown readout for practical classroom use.
+![Fish, eagle, turkey, raven, rabbit, fox](docs/painted-cast/sheet-2.png)
 
-The intended production scene has a granular sandblasted surface, cloudy transmission, soft shadows farther behind the glass, and a sharper tail tip/paw at contact. The cat paints with its tail and erases with its claws. The revised proof removes the held paintbrush. Precise tail anatomy and contact motion require production refinement after visual approval. The decorative border and background foliage are not required; favor quiet surroundings so the clock remains the focus.
+![Deer, horse, sheep, goat, elephant, giraffe](docs/painted-cast/sheet-3.png)
 
-## 3. Digital clock depth
+![Zebra, lion, penguin, owl, frog, hedgehog](docs/painted-cast/sheet-4.png)
 
-![Deep block sockets and projecting segments](docs/art-review-v2/depth-clock.png)
+## Production treatment
 
-Each segment is a substantial block in a recessed socket, with visible extrusion, sidewalls, bevels, shadows, and dark interior depth. Outgoing segments travel toward the viewer before falling; incoming segments move from behind through the socket. This still establishes material and depth, not final animation geometry or exact timer typography.
+Transparent raster atlases retain the approved pigment and edges. A deformable mesh articulates limbs, body, tail, wings, and fish movement continuously while preserving the painting's identity. This avoids independently redrawing the character in every frame. Each species has been sampled through a 64-pose movement cycle in browser checks.
 
-## Implementation after approval
+The analog clock has painted countdown hands, a small exact time readout, raster glass grain, depth-dependent blur, and contact-driven tail movement. The digital clock has recessed sockets and physical segment extrusion; incoming blocks move from behind the face, and outgoing blocks travel toward the viewer before falling. The runtime palette follows the approved artwork and the timer's phase colors.
 
-- Preserve the working timer engine, controls, audio, and accessibility behavior.
-- Produce separate layered raster character assets from the approved painting style; do not animate a full rectangular painting as a single sliding card.
-- Prepare and obtain approval of the remaining 24 character stills. The red fish is also shown in the style proof; its independent traversal asset still needs approval.
-- Establish a consistent character reference and palette across every frame. Verify silhouettes, anatomy, scale, texture stability, and identity before generating complete sequences.
-- Use perspective projection and actual segment depth for clock geometry. Raster painted textures can be mapped onto the blocks while projection controls insertion and ejection along the depth axis.
-- Composite a static glass texture with depth-dependent cat blur and contact marks. Keep the countdown hands and exact time readable. Retain green/yellow/red phase tinting, final-minute scratches, default break, and the guilty-cat reveal.
-- Validate smooth transitions at the display refresh rate, paused-frame stability, and readability. Do not treat a texture replacement as a verified animation improvement.
-
-## Provenance and status
-
-These stills were made with the built-in image-generation tool. [Exact prompts](docs/art-review-v2/PROMPTS.md) are saved with the proofs. The owner supplied the Amsterdam clock screenshot as a reference; its captions were treated as image content rather than instructions. No existing artist's painting or screenshot is shipped as an application asset.
-
-The three revised proofs are pending approval and have not been substituted into the running application. No new animation sequences have been generated.
+[Production prompts](docs/painted-cast/PROMPTS.md) and [initial proof prompts](docs/art-review-v2/PROMPTS.md) document built-in image-generation usage.

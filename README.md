@@ -2,14 +2,14 @@
 
 **Time to keep track of time.** A quiet, illustrated JavaScript timer for the classroom.
 
-**Artwork approval is pending.** Review [the revised painted character style, frosted glass, and dimensional digital clock stills](ART_REVIEW.md). The previous vector character direction is superseded; the running app remains a functional draft until approved painted assets are integrated. Further animation production is paused until the owner approves the artwork. Existing motion studies remain drafts.
+The painted character style, clock treatments, and all 25 species have been approved and integrated. See [the artwork record](ART_REVIEW.md).
 
 Two scenes share original artwork inspired by the simple contours, flat color, and cat-and-red-fish palette requested in the discussion:
 
 - **The painter:** a cat shadow paints and erases minutes behind tinted frosted glass. The final minute adds claw scratches; at zero, the glass breaks to reveal the guilty artist in a beret.
 - **The builders:** block segments slide into the digital clock, fall away, and break into debris. A randomized cast of 25 animals occasionally pushes the pieces away.
 
-All character motion uses continuous vector interpolation, rendered with `requestAnimationFrame`, rather than low-frame-count sprite playback. The cast shares one palette, line weight, and illustration system. Reduced motion is supported.
+All 25 characters use approved painted raster artwork with transparent edges. A deformable raster mesh animates limbs, body, tail, wings, and fish movement continuously at the display refresh rate, preserving the original brushwork. Browser checks sampled 64 distinct poses for each species. Reduced motion is supported.
 
 ![Timer setup](docs/setup.png)
 
@@ -17,7 +17,7 @@ All character motion uses continuous vector interpolation, rendered with `reques
 
 ## Run locally
 
-No package installation is needed. Serve this directory with any static web server. For example:
+No package installation is needed. The first load includes about 19 MB of painted image assets; subsequent visits can use the browser cache. Serve this directory with any static web server. For example:
 
 ```sh
 python3 -m http.server 8080 --bind 127.0.0.1
@@ -43,7 +43,7 @@ Sound starts off. End sound, rising ticking, and original ambient tones can be e
 
 Red lasts `min(60, original duration / 6)` seconds. Yellow lasts twice that length and precedes red. Thus a 5-minute timer turns yellow at 2:30 and red at 0:50; a 10-minute timer turns yellow at 3:00 and red at 1:00. Added time preserves the original thresholds. Restart restores the original selected duration. Custom timers and added durations are capped at 999:59.
 
-The analog dial shows up to 60 painted minute marks, with an exact remaining-time readout for longer timers. The large minute numeral is painted at minute changes. Short timers begin with their remaining minute already visible. Scratches reflect the current remaining time and retreat if time is added.
+The analog dial uses brushed countdown hands and 60 perimeter marks over a textured frosted-glass face. The long hand represents remaining minutes within the hour, and the short hand represents hours; a large exact readout below the dial removes ambiguity for short or long durations. The cat erases and repaints the long hand at minute changes. Scratches reflect the current remaining time and retreat if time is added.
 
 ## Verification
 
@@ -65,7 +65,9 @@ Install Playwright separately or set `PLAYWRIGHT_PATH` to its existing package l
 ## Source map
 
 - `src/clock.js`: deadline-based countdown and phase rules.
-- `src/art.js`: original 25-species vector art and continuous joint motion.
+- `src/art.js`: shared palette, phase themes, and cast registry.
+- `src/paint.js`: transparent raster loading, normalization, and articulated character meshes.
+- `src/depth.js`: perspective-projected sockets and solid segment geometry.
 - `src/scenes.js`: frosted-glass painting, scratches, blocks, debris, visitors, and endings.
 - `src/audio.js`: original Web Audio synthesis.
 - `src/app.js`: interface, settings, keyboard controls, and render loop.

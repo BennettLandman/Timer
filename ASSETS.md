@@ -1,19 +1,20 @@
 # Asset provenance
 
-All shipped visuals and sounds are original to this project. No external media, commercial fonts, copied artwork, recordings, sprite packs, or stock audio are included.
+All shipped character art and material images were generated for this project using the built-in image_gen tool, following the owner's approved painted style. No third-party sprite packs, stock recordings, font files, or existing paintings are shipped. No public reuse license is granted by this ledger; this is a private project.
 
-| Asset | Implementation | Provenance |
+| Asset | Runtime file | Provenance and treatment |
 | --- | --- | --- |
-| Cat with beret, red fish, fishbowl, 24 additional species | `src/art.js` | Original vector paths using a shared color palette and line treatment. Inspired by the requested Matisse aesthetic; no existing painting is reproduced. |
-| Frosted glass, minute painting, scratches, glass shards | `src/scenes.js` | Original procedural drawing and animation. The cat's painting/erasing concept follows the supplied discussion of the Amsterdam airport clock. |
-| Clock blocks, falling pieces, debris | `src/scenes.js` | Original vector shapes and procedural motion. |
-| Ticking, end shimmer, ambient chords | `src/audio.js` | Original oscillator synthesis using the browser's Web Audio API. No audio files or recordings. |
-| Typography | CSS system font stacks | Installed Georgia/Times New Roman and Arial/Helvetica/sans-serif; no font files distributed. |
+| Beret cat | `src/assets/cat.png` | Transparent raster adaptation of the approved cat painting. Alpha preserved; articulated by a raster mesh. |
+| Dog, panda, turtle, pig, bear, cow | `src/assets/cast-1.png` | Six approved painted single-pose characters, extracted to a transparent 3 × 2 atlas. |
+| Fish, eagle, turkey, raven, rabbit, fox | `src/assets/cast-2.png` | Six approved painted single-pose characters, extracted to a transparent 3 × 2 atlas. |
+| Deer, horse, sheep, goat, elephant, giraffe | `src/assets/cast-3.png` | Six approved painted single-pose characters, extracted to a transparent 3 × 2 atlas. |
+| Zebra, lion, penguin, owl, frog, hedgehog | `src/assets/cast-4.png` | Six approved painted single-pose characters, extracted to a transparent 3 × 2 atlas. |
+| Frosted glass | `src/assets/glass.png` | Generated physical glass texture; composited with tint, blur and painted marks. |
+| Painted surface material | `src/assets/paint.png` | Approved digital clock proof; its blank impasto background region supplies surface texture on projected geometry. No characters from this image are used as moving rectangular cards. |
+| Clock geometry, hands, scratches, fragments | `src/scenes.js`, `src/depth.js` | Original runtime geometry, perspective projection, and procedural motion. |
+| Ticking, end shimmer, ambient chords | `src/audio.js` | Original oscillator synthesis using Web Audio. No recordings. |
+| Typography | CSS system font stacks | Installed Georgia/Times New Roman and Arial/Helvetica/sans-serif. No font files distributed. |
 
-Cast: cat, dog, panda, turtle, pig, bear, cow, fish, eagle, turkey, raven, rabbit, fox, deer, horse, sheep, goat, elephant, giraffe, zebra, lion, penguin, owl, frog, hedgehog.
+The owner supplied the Amsterdam clock screenshot as a conceptual reference for the frosted face and painter action. The screenshot and its captions are not runtime assets. No existing Matisse painting is reproduced.
 
-The project is private. No public reuse license is granted by this ledger.
-
-## Revised painted proofs (not integrated into the application)
-
-The owner superseded the vector character direction. `docs/art-review-v2/` contains built-in image_gen single-frame proofs for a painted beret cat with red fish, frosted-glass clock, and deep digital block sockets. These generated painting proofs are pending approval. They are not production sprite sheets or layered runtime assets. Their exact prompts are recorded in `docs/art-review-v2/PROMPTS.md`. Existing running-app assets in the table above remain functional drafts.
+The approved stills are in `docs/painted-cast/` and `docs/art-review-v2/`. Exact prompts are recorded in each folder's `PROMPTS.md`. Raster extraction preserves transparency. The runtime trims transparent margins when drawing each character; it does not substitute the earlier vector artwork.

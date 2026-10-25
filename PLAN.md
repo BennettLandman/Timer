@@ -65,3 +65,6 @@ The owner requires approval of a single still frame of each artwork before produ
 
 ## Revised visual direction (October 25, 2026)
 The owner rejected vector character art in favor of compelling high-quality paintings. Use consistent painted raster characters; preserve the existing timer behavior. Digital segments require substantial three-dimensional depth, recessed sockets, and insertion/ejection along the depth axis. The supplied Amsterdam clock reference clarifies painted analog hands on textured, translucent frosted glass with the cat working behind it. See ART_REVIEW.md for revised single-frame proofs. Obtain style approval, then approval of each remaining character still, before generating animation sequences.
+
+## Approved painted implementation
+The owner approved the master paintings and then all four remaining character still sheets before their animation. All 25 painted species are integrated through transparent raster atlases and articulated meshes. The old vector character renderer has been removed. The analog renderer now uses textured frosted glass and painted countdown hands. Digital segments are projected solids that traverse the socket depth before falling. No artwork approval is pending.

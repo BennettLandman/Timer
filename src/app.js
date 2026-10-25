@@ -2,7 +2,9 @@ import {Timer,formatTime,validDuration} from './clock.js';
 import {Scene} from './scenes.js';
 import {themes} from './art.js';
 import {Sound} from './audio.js';
+import {loadPaintAssets} from './paint.js';
 const $=id=>document.getElementById(id);
+$('start').disabled=true;$('preview-caption').textContent='Opening the studio…';
 const clock=new Timer(),scene=new Scene(),preview=new Scene(),sound=new Sound();
 const reducedQuery=matchMedia('(prefers-reduced-motion: reduce)');
 let mode='analog',animationTime=0,lastFrame=performance.now(),lastPhase='',lastText='',previewTime=0;
@@ -48,4 +50,4 @@ function frame(now){const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastF
  }
  requestAnimationFrame(frame);
 }
-requestAnimationFrame(frame);
+loadPaintAssets().then(()=>{$('start').disabled=false;$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';lastFrame=performance.now();requestAnimationFrame(frame);}).catch(()=>{$('input-error').textContent='The studio could not load. Please reload the page.';});
