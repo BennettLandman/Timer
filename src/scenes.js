@@ -56,25 +56,25 @@ export class Scene {
   if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;}
   else if(changing)drawPainterAction(sc,target,r,age,{erase,reduced});
   else drawAnimation(sc,'cat-paint',-r*.10,r*.80,r*.74,0,{loop:false});
-  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:.15+proximity*.35;c.filter=`blur(${final?1.2:7-proximity*5}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
+  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.58:.15+proximity*.35;c.filter=`blur(${final?1.2:changing?1.3:7-proximity*5}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
   // A glazing pass sits in front of the animal, so the painted cat is behind a real surface.
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.14;c.globalCompositeOperation='screen';c.drawImage(painted.glass,-r,-r,r*2,r*2);c.restore();
-  for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);}
+  for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;const tick=final?scratchTiming(remaining,initial):null;const removed=tick&&(i<tick.completed?1:i===tick.index?tick.progress:0);c.save();c.globalAlpha=1-(removed||0);stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);c.restore();}
   for(let i=1;i<=12;i++){const a=i/12*TAU-Math.PI/2;text(c,String(i===12?60:i*5),Math.cos(a)*(r-44),Math.sin(a)*(r-44),`${preview?9:14}px Georgia`,theme.ink+'a8');}
   // The hands are brushed marks, rebuilt once per minute by the tail's contact stroke.
   paintStroke(c,hourAngle,r*.43,preview?5:8,theme.ink,.98);
   if(erase){paintStroke(c,oldAngle,r*.78,preview?6:10,theme.ink,amount);paintStroke(c,angle,r*.78,preview?6:10,theme.ink,.05);}
   else paintStroke(c,angle,r*.78,preview?6:10,theme.ink,amount);
+  if(changing){circle(c,target.x,target.y,preview?2:3.5);c.fillStyle=theme.ink;c.fill();}
   circle(c,0,0,preview?5:8);c.fillStyle=theme.ink;c.fill();
   if(final){
    const timing=scratchTiming(remaining,initial);
    for(let i=0;i<Math.min(60,Math.ceil(initial));i++){
     const path=scratchPath(i,r),done=i<timing.completed,progress=done?1:i===timing.index?timing.progress:0;
-    if(!done&&progress<1){c.save();c.globalAlpha=.16*(1-progress);stroke(c,[[path.start.x,path.start.y-3],[path.start.x,path.start.y+5]],theme.ink,.9);c.restore();}
     if(progress>0)for(let finger=0;finger<3;finger++){
-     const dx=(finger-1)*2.6,ex=path.start.x+(path.end.x-path.start.x)*progress,ey=path.start.y+(path.end.y-path.start.y)*progress;
-     stroke(c,[[path.start.x+dx,path.start.y],[ex+dx-1,ey]],theme.ink+'86',1.05);
-     stroke(c,[[path.start.x+dx+.9,path.start.y],[ex+dx,ey]],'#fff9ea95',.55);
+     const dx=-Math.sin(path.angle)*(finger-1)*2.6,dy=Math.cos(path.angle)*(finger-1)*2.6,ex=path.start.x+(path.end.x-path.start.x)*progress,ey=path.start.y+(path.end.y-path.start.y)*progress;
+     stroke(c,[[path.start.x+dx,path.start.y+dy],[ex+dx,ey+dy]],theme.ink+'86',1.05);
+     stroke(c,[[path.start.x+dx+.9,path.start.y+dy],[ex+dx+.9,ey+dy]],'#fff9ea95',.55);
     }
    }
    if(claw?.contact&&!reduced&&claw.paw){for(let finger=0;finger<3;finger++){const dx=(finger-1)*2.5;stroke(c,[[claw.paw.x+dx,claw.paw.y-4],[claw.paw.x+dx-2,claw.paw.y+3]],'#fff8e6',1.3);}}

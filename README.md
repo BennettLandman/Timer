@@ -6,10 +6,10 @@ The painted character style, clock treatments, and all 25 species have been appr
 
 Two scenes share original artwork inspired by the simple contours, flat color, and cat-and-red-fish palette requested in the discussion:
 
-- **The painter:** an upright painted cat erases with its forepaw and paints minute changes with its tail behind frosted glass. In the final minute, each visible claw-contact stroke leaves three scratch marks; the last stroke continues into the glass break.
+- **The painter:** a painted cat erases with its forepaw and paints minute changes with its tail behind frosted glass. In the final minute, each visible claw-contact stroke removes its own perimeter tick and leaves three scratch marks; the last stroke continues into the glass break.
 - **The builders:** block segments slide through recessed sockets, fall away, and break into debris. A randomized cast of 25 animals clears them. At zero, the clock housing stays in its exact running position while the red-capped cat rises behind the top edge and peeks out.
 
-All 25 characters use 24-frame painted pose sequences with transparent edges. Separate cat sequences handle tail painting, claw scratching, and peeking. The renderer plays complete poses without mesh warping. Walking gait phase follows traversal distance; frames are prepared and ground-registered before playback. Reduced motion is supported.
+All 25 characters use 24-frame painted pose sequences with transparent edges. Separate cat sequences handle tail painting, claw scratching, and peeking. The renderer plays complete poses without mesh warping. Walking gait phase follows traversal distance; frames are prepared and ground-registered before playback, with continuous transitions. Fox and turkey poses are also body-aligned and reordered for smoother small-size motion. Reduced motion is supported.
 
 ![Timer setup](docs/setup.png)
 

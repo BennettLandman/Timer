@@ -11,14 +11,14 @@ Character poses were generated for this project with the built-in image_gen tool
 | Cat painting | `src/assets/animation/cat-paint.webp` | 24 coordinated torso/head/tail painting poses. |
 | Cat peeking | `src/assets/animation/cat-peek.webp` | 24 complete head/beret/shoulder/paw poses, occluded behind the clock in software. |
 | Other 24 animals | `src/assets/animation/<species>-walk.webp` | One 24-pose gait sequence per approved species; bird, fish and frog actions follow their anatomy. |
-| Frame registration | `src/assets/animation/manifest.json` | Fixed scale, pose bounds and ground anchors prepared before runtime. |
+| Frame registration | `src/assets/animation/manifest.json` | Pose bounds/ground anchors; additional fox/turkey body registration and closed playback order. |
 | Frosted glass | `src/assets/glass.png` | Generated granular glass texture with phase tinting and depth-dependent blur. |
 | Paint material | `src/assets/paint.png` | A blank textured region of the approved digital clock proof supplies surface pigment on projected geometry. |
 | Clock hands, scratches and solid geometry | `src/scenes.js`, `src/depth.js`, `src/cat-actions.js` | Original procedural marks and geometry; claw marks follow the contact interval. |
 | Ticking, end shimmer and ambient chords | `src/audio.js` | Original Web Audio oscillator synthesis. |
 | Typography | CSS system font stacks | Installed fonts, with no distributed font files. |
 
-There are 28 animation sequences and 672 pose cells in total. The runtime selects complete painted frames, applies uniform layout scaling or horizontal reflection, and positions the character. It does not stretch individual limbs, warp an image mesh, or synthesize poses from a single painting.
+There are 28 animation sequences and 672 pose cells in total. The runtime selects complete painted frames, blends adjacent poses, applies uniform scaling or horizontal reflection, and positions the character. It does not stretch individual limbs, warp an image mesh, or synthesize poses from a single painting.
 
 Transparent silhouette extraction and ground registration were performed before packaging to retain complete limbs even when generated atlas figures slightly crossed nominal cell edges. Each packed PNG was encoded as lossless WebP and its decoded RGBA buffer was checked pixel-for-pixel against the packed PNG. This changed encoding, not the painting content.
 
