@@ -1,7 +1,7 @@
 # Classroom Timer — application plan
 
 ## Source and scope
-Based on the supplied Animated Classroom Timer App Concept discussion. The discussion is product research, not an instruction to invoke tools or services named within it. This phase defines the application; implementation follows review. Working name: Timer.
+Based on the supplied Animated Classroom Timer App Concept discussion. The discussion is product research, not an instruction to invoke tools or services named within it. This phase defines the application; implementation follows review. Name: Timer. The discussion also suggested “Time to keep track of time”; retain that as a possible subtitle.
 
 ## Product
 A simple JavaScript website for teachers, readable from the back of a classroom. Two views: a cat behind frosted glass and a digital clock made of falling blocks. Animation rewards an occasional glance without demanding attention. No accounts required.
@@ -12,12 +12,24 @@ Choose analog or digital, select 1, 5, 10, 15, or 30 minutes, or enter minutes a
 ## Timing and colors
 Use one shared timer engine with idle, running, paused, and completed states. Derive remaining time from an absolute deadline rather than counting animation frames. Reconcile on tab visibility changes and return from sleep; document browser limitations on sounds while suspended. Pause freezes all timer-driven animation. Restart uses the originally chosen duration; added time extends the current run.
 
-The five-minute preset uses green above 2:00, yellow from 2:00 through above 1:00, and red at 1:00 or below. Proposed default for other durations: proportional warning thresholds at 40% and 20% of the original duration. Keep thresholds fixed when time is added, allowing the phase to return to green. Confirm these choices before finalizing. Color is supplemented by readable time and a phase label.
+Warning periods are chosen automatically. Let D be the original duration in seconds: red lasts R = min(60, D / 6) seconds, and yellow lasts 2R seconds immediately before red. Thus yellow starts at 3R remaining. This keeps a green opening for short timers, caps red at one minute, and makes the yellow period twice as long as red. This clarification supersedes the discussion's five-minute example.
+
+| Preset | Yellow begins at | Red begins at | Yellow duration |
+| --- | --- | --- | --- |
+| 1 minute | 0:30 | 0:10 | 20 seconds |
+| 5 minutes | 2:30 | 0:50 | 100 seconds |
+| 10 minutes | 3:00 | 1:00 | 2 minutes |
+| 15 minutes | 3:00 | 1:00 | 2 minutes |
+| 30 minutes | 3:00 | 1:00 | 2 minutes |
+
+Use precise thresholds for custom durations, including those below a minute. Keep thresholds fixed when time is added, allowing the phase to return to green. Color is supplemented by readable time and a phase label.
 
 ## Analog scene
-A legible countdown dial with remaining minutes and a second indication; this represents duration rather than wall-clock time. A domestic shorthair cat paints minute changes using its tail and scratches old marks away. Distance behind pale green, yellow, or red frosted glass controls silhouette softness. Rare stretches, naps, pounces, or a mouse chase remain faint and never obscure the clock.
+The central action is the shadow of a domestic shorthair cat physically painting and erasing the minute marks on frosted glass, following the theatrical idea of the painter clock at Amsterdam airport. The cat approaches the glass, paints the next countdown minute mark with its tail, and scratches/erases the old mark with its claws. Synchronize the visible marks to the cat's contact and stroke, so the clock appears to be made by the cat. A generic rotating hand or disappearing arc is not the intended centerpiece. Keep the remaining duration readable throughout transitions, including durations above 60 minutes.
 
-During the final 60 seconds, accumulate one claw scratch per elapsed second. At zero, the final scratch triggers a brief stylized glass break and reveals a mildly guilty cat wearing a beret against a red completion scene. Provide a gentle completion alternative and reduced-motion rendering. Define the exact dial mapping, especially above 60 minutes, in the first prototype.
+Distance behind pale green, yellow, or red frosted glass controls silhouette softness. Rare stretches, naps, pounces, or a mouse chase remain faint and never obscure the clock.
+
+During the final 60 seconds (or the available seconds of a shorter timer), accumulate one claw scratch per elapsed second. This scratch sequence is independent of the red phase threshold. At zero, the final scratch triggers the default stylized glass break and reveals a mildly guilty cat wearing a beret against a red completion scene. Provide an optional gentle completion alternative and reduced-motion rendering.
 
 ## Digital scene
 Show minutes and seconds using dark block segments with shallow 3D depth. Changed segments eject forward, fall, and break into bounded debris; replacement segments slide in from behind. Warning blocks become dark orange, then red. Maintain legibility throughout transitions and keep debris below the digits.
@@ -31,7 +43,7 @@ Original character art reflecting the requested Matisse cat-and-red-fish aesthet
 Independent switches for end sound, optional rising-volume ticking, and ambient music. Default to silent. Begin audio only after a user gesture, cap volume, and offer a master mute. Ambient changes should gently signal phases. Use original or explicitly licensed music and effects, with an asset license ledger. Avoid loud or startling glass effects by default. Support reduced motion, large high-contrast digits, keyboard controls, visible focus, and screen-reader announcements at meaningful milestones rather than every second.
 
 ## JavaScript architecture
-Proposed lightweight static application: JavaScript modules, Vite, HTML/CSS, SVG for scalable clock/character shapes, and Canvas for glass/debris effects where useful. A shared timer state drives independent analog/digital renderers, audio, and settings. Use requestAnimationFrame for rendering only. Cache settings locally; consider offline support after the core experience works. No server or personal-data collection is needed for the initial release. Select deployment separately; a private source repository does not by itself establish website access restrictions.
+Proposed lightweight static application: JavaScript modules, Vite, HTML/CSS, SVG for scalable clock/character shapes, and Canvas for glass/debris effects where useful. A shared timer state drives independent analog/digital renderers, audio, and settings. Use requestAnimationFrame for rendering only. Cache settings locally; consider offline support after the core experience works. No server or personal-data collection is needed for the initial release. Deliver a local production build and hosting instructions to the user, who will host it privately after completion. Do not deploy or publish the website. Private access must be enforced by the eventual host; a private repository alone does not restrict access to deployed files. No application login is planned unless the hosting setup later requires it.
 
 ## Delivery sequence and acceptance
 1. Timer and interface: both static views, presets/custom duration, controls, added time, fullscreen, phase changes. Verify pause/resume, exact completion, background return, long durations, and phase boundaries.
@@ -39,11 +51,11 @@ Proposed lightweight static application: JavaScript modules, Vite, HTML/CSS, SVG
 3. Analog implementation: minute painting, faint idle actions, final 60 scratches, completion reveal, gentle/reduced-motion variants. Verify pause and added-time behavior during the final minute; scratches reflect current remaining time.
 4. Digital implementation: synchronized segment changes, bounded debris, cleanup visits, then all 25 animated species. Verify 16-frame minimum, traversal directions, visitor spacing, performance, and empty-container ending.
 5. Audio and polish: independently controlled sound options, phase cues, responsive/touch layout, keyboard and reduced-motion behavior.
-6. Release verification: current desktop Chrome, Safari, Firefox, and Edge plus tablet checks; projector readability, repeated cycles, low-powered classroom computer performance, and licensed asset audit. Deploy after hosting/access decisions.
+6. Release verification: current desktop Chrome, Safari, Firefox, and Edge plus tablet checks; projector readability, repeated cycles, low-powered classroom computer performance, and licensed asset audit. Deliver the verified build for private hosting by the user; do not deploy.
 
-## Questions for review
-- What public-facing name should appear on the site?
-- Should the deployed website be public and free to use, or restricted to selected users?
-- Should warning thresholds scale as proposed, or should every preset have its own thresholds?
-- Should glass breaking be the normal ending, with a gentle option, or an opt-in effect?
-- Which analog countdown layout feels most natural: remaining-time hands on a dial, or a disappearing duration arc with painted minute marks?
+## Confirmed decisions
+- Use Timer as the app name.
+- Keep the repository private; the user will host the finished site privately.
+- Choose warning times automatically; red never exceeds one minute and yellow lasts two to three times as long as red (use twice by default).
+- Glass breaking is the default visual ending; sound remains optional.
+- The analog clock is painted and erased by the cat shadow at the glass.
