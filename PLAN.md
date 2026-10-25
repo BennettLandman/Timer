@@ -71,3 +71,7 @@ The owner approved the master paintings and then all four remaining character st
 
 ## Anatomy and completion revision
 At the owner's request, all mesh warping has been replaced by 24-pose painted animation sequences. Separate cat actions provide anatomical forepaw/claw scratching, tail painting, gait and peeking. The final-minute strokes leave visible scratch marks during contact, and the final stroke reaches the glass-break deadline. The digital housing remains at its running geometry while the red-capped cat rises behind it. Frame registration is prepared in advance rather than computed during playback.
+
+## Replacement animation strategy — 3D painted characters
+
+Owner selected option 2 on October 25, 2026. The first actual model and still are in `docs/rig-proof/`; appearance approval is pending. This proof does not replace the production timer. Subsequent work follows the approval gates in `docs/rig-proof/README.md`: cat/fox motion demonstration, timeline/contact integration, device and motion review, then cast expansion. No smoothness or production-readiness claim is made from the static model.

@@ -25,3 +25,7 @@ Transparent silhouette extraction and ground registration were performed before 
 [Exact animation prompts](docs/ANIMATION_PROMPTS.md) document built-in generation. The approved master cat reference is [the cutout](docs/art-review-v2/cat-cutout-reference.png); other approved stills remain under `docs/painted-cast/`. Prior single-pose runtime atlases are superseded and remain recoverable in Git history.
 
 The owner supplied an Amsterdam clock screenshot as a conceptual reference. That screenshot and its captions are not runtime assets. No existing Matisse painting is reproduced.
+
+## Experimental 3D proof (outside the production build)
+
+`docs/rig-proof/` contains an original procedural cat model and one generated pigment texture derived from the approved cat reference. It uses locally vendored Three.js 0.180.0 under the included MIT license. See its README for provenance, rendering method, and outstanding approval/animation work. Its still depicts actual rendered geometry; the frosted panel is a compositor study. No new pose sequence is included.
