@@ -12,7 +12,7 @@ for(const type of ['cat','fox']){
    const segments=s.path.slice(1).map((b,i)=>{const a=s.path[i],v=b.map((n,j)=>n-a[j]);return {a,v,l:v.reduce((sum,n)=>sum+n*n,0),i};});
    const radius=t=>{const f=t*(s.radii.length-1),i=Math.min(s.radii.length-2,Math.floor(f));return s.radii[i]+(s.radii[i+1]-s.radii[i])*(f-i);};
    const closest=(x,y,z)=>{let best=Infinity,along=0;for(const seg of segments){const [ax,ay,az]=seg.a,[vx,vy,vz]=seg.v,t=clamp(((x-ax)*vx+(y-ay)*vy+(z-az)*vz)/seg.l),u=(seg.i+t)/segments.length,d=Math.hypot(x-ax-vx*t,y-ay-vy*t,z-az-vz*t)-radius(u);if(d<best){best=d;along=u;}}return [best,along];};
-   s.distance=(x,y,z)=>closest(x,y,z)[0];s.influence=(x,y,z)=>{if(s.bones.length===1)return [[s.bones[0],1]];const t=closest(x,y,z)[1],fractions=s.boneFractions||s.bones.map((_,i)=>i/(s.bones.length-1));let i=0;while(i<fractions.length-2&&t>fractions[i+1])i++;const f=clamp((t-fractions[i])/(fractions[i+1]-fractions[i]));return [[s.bones[i],1-f],[s.bones[i+1],f]];};
+   s.distance=(x,y,z)=>closest(x,y,z)[0];s.influence=(x,y,z)=>{if(s.bones.length===1)return [[s.bones[0],1]];const t=closest(x,y,z)[1];if(type==='cat'&&(spec.bones[s.bones[0]].startsWith('reach-')||spec.bones[s.bones[0]].startsWith('rest-'))){const fore=spec.bones[s.bones[0]].startsWith('reach-')?2:1,blend=(a,b,v)=>{v=clamp((v-a)/(b-a));return v*v*(3-2*v);},elbow=blend(.43,.57,t),wrist=blend(.90,1,t);return [[s.bones[0],1-elbow],[s.bones[fore],elbow*(1-wrist)],[s.bones[3],elbow*wrist]];}const fractions=s.boneFractions||s.bones.map((_,i)=>i/(s.bones.length-1));let i=0;while(i<fractions.length-2&&t>fractions[i+1])i++;const f=clamp((t-fractions[i])/(fractions[i+1]-fractions[i]));return [[s.bones[i],1-f],[s.bones[i+1],f]];};
   }return s;
  });
  const groupOf=name=>{
@@ -40,6 +40,18 @@ for(const type of ['cat','fox']){
  for(let z=0;z<nz-1;z++)for(let y=0;y<ny-1;y++)for(let x=0;x<nx-1;x++){
   const cube=[id(x,y,z),id(x+1,y,z),id(x+1,y+1,z),id(x,y+1,z),id(x,y,z+1),id(x+1,y,z+1),id(x+1,y+1,z+1),id(x,y+1,z+1)];if(cube.every(i=>grid[i]>=0)||cube.every(i=>grid[i]<0))continue;
   for(const tet of tets){const inside=tet.map(i=>cube[i]).filter(i=>grid[i]<0),outside=tet.map(i=>cube[i]).filter(i=>grid[i]>=0);if(!inside.length||!outside.length)continue;if(inside.length===1||outside.length===1){const lone=inside.length===1?inside[0]:outside[0],other=inside.length===1?outside:inside;triangle(...other.map(i=>vertex(lone,i)));}else{const a=vertex(inside[0],outside[0]),b=vertex(inside[0],outside[1]),c=vertex(inside[1],outside[0]),d=vertex(inside[1],outside[1]);triangle(a,b,c);triangle(b,d,c);}}
+ }
+ // Smooth weights on the connected surface, not through nearby body parts.
+ // This removes abrupt influence boundaries that stretch single triangles.
+ if(type==='cat'){
+  const n=position.length/3,B=spec.bones.length,neighbors=Array.from({length:n},()=>new Set());
+  for(let i=0;i<index.length;i+=3)for(const [a,b]of [[index[i],index[i+1]],[index[i+1],index[i+2]],[index[i+2],index[i]]]){neighbors[a].add(b);neighbors[b].add(a);}
+  let current=new Float32Array(n*B);for(let i=0;i<n;i++)for(let k=0;k<4;k++)current[i*B+skin[i*4+k]]+=weights[i*4+k];
+  for(let pass=0;pass<24;pass++){const next=current.slice();for(let i=0;i<n;i++){
+   const [x,y,z]=position.slice(i*3,i*3+3);if(y<1.25||y>2.25||Math.abs(x)<.17)continue;
+   const list=[...neighbors[i]],count=list.length;for(let b=0;b<B;b++){let sum=0;for(const j of list)sum+=current[j*B+b];next[i*B+b]=.5*current[i*B+b]+.5*sum/count;}
+  }current=next;}
+  for(let i=0;i<n;i++){const sorted=spec.bones.map((_,b)=>[b,current[i*B+b]]).sort((a,b)=>b[1]-a[1]).slice(0,4),sum=sorted.reduce((s,v)=>s+v[1],0);for(let k=0;k<4;k++){skin[i*4+k]=sorted[k][0];weights[i*4+k]=sorted[k][1]/sum;}}
  }
  const arrays=[new Uint32Array([0x534b494e,1,position.length/3,index.length]),new Float32Array(position),new Float32Array(normal),new Float32Array(uv),new Float32Array(weights),new Float32Array(coat),new Uint16Array(skin),new Uint32Array(index)];const binary=Buffer.concat(arrays.map(a=>Buffer.from(a.buffer)));await writeFile(new URL(`../docs/rig-proof/assets/${type}-smooth.skin`,import.meta.url),binary);
  console.log(type,{vertices:position.length/3,triangles:index.length/3,bytes:binary.length});

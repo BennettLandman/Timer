@@ -81,3 +81,5 @@ The first 3D appearance was approved. The cat/fox motion study is now at `/docs/
 October 26: the motion study now uses closed, continuous skinned cat/fox bodies instead of overlapping shoulder/hip pieces. Mesh connectivity and weights are checked, motion/contact regressions pass, and front/three-quarter views are available. Production integration remains pending motion review.
 
 October 26 acting revision: replaced the cat's flexible arm chain with one-elbow anatomy and authored acting beats; rebuilt the neutral bind pose and masked skin influences to prevent hands from deforming the torso. Added fox rear stifle/hock controls and a slower grounded walk. Mechanical checks pass; normal-speed motion review remains pending.
+
+Elbow follow-up: inspected close-ups through reach and return; removed independent forearm roll, lowered the elbow path, and smoothed surface-neighbor joint weights. Added an elbow close-up viewing control and an influence-continuity regression. Motion review remains pending.

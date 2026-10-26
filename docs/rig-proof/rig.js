@@ -25,10 +25,16 @@ export function twoBone(shoulder,wrist,pole,upper,lower){
  return {elbow:shoulder.clone().addScaledVector(axis,along).addScaledVector(outward,height),wrist:target};
 }
 function applyArm(mesh,points,handRotation){
- const {rest,bones}=mesh.userData;let parent=new T.Quaternion();
- for(let i=0;i<3;i++){const world=new T.Quaternion().setFromUnitVectors(rest[i+1].clone().sub(rest[i]).normalize(),points[i+1].clone().sub(points[i]).normalize());bones[i].quaternion.copy(parent.clone().invert().multiply(world));parent=world;}
+ const {rest,bones}=mesh.userData,elbow=bones[0].name.startsWith('reach')?2:1;
+ const restNormal=new T.Vector3().crossVectors(rest[elbow].clone().sub(rest[0]),rest[3].clone().sub(rest[elbow])).normalize(),normal=new T.Vector3().crossVectors(points[elbow].clone().sub(points[0]),points[3].clone().sub(points[elbow])).normalize();
+ const frame=(axis,n)=>{axis=axis.clone().normalize();const up=n.clone().addScaledVector(axis,-n.dot(axis)).normalize();return new T.Matrix4().makeBasis(axis,up,new T.Vector3().crossVectors(axis,up));};
+ let parent=new T.Quaternion();for(let i=0;i<3;i++){
+  const bind=frame(rest[i+1].clone().sub(rest[i]),restNormal),posed=frame(points[i+1].clone().sub(points[i]),normal),world=new T.Quaternion().setFromRotationMatrix(posed.multiply(bind.invert()));
+  bones[i].quaternion.copy(parent.clone().invert().multiply(world));parent=world;
+ }
  bones[3].quaternion.copy(parent.clone().invert().multiply(handRotation));mesh.updateMatrixWorld(true);
 }
+
 function actingArm(mesh,tip,pole){
  const {rest}=mesh.userData,S=rest[0],upper=rest[1].distanceTo(rest[0])+rest[2].distanceTo(rest[1]),lower=rest[3].distanceTo(rest[2]),offset=rest[4].clone().sub(rest[3]),palm=offset.length(),bend=8*Math.PI/180;
  // Solve the elbow against the forearm plus a gently flexed palm as one
@@ -49,7 +55,7 @@ export function catPose(cat,time){
  if(t>=1.75)tip.copy(touch).lerp(end,scratch);
  if(t>=2.55){tip.copy(end).lerp(rest,release);tip.x+=.16*Math.sin(Math.PI*release);tip.z+=.24*Math.sin(Math.PI*release);}
  joints.head.rotation.set(-.03-.10*look,.03+.20*look,.04-.19*look);
- const anatomy=actingArm(limbs.reach,tip.clone().sub(root.position),new T.Vector3(1.35,1.65,.85));
+ const anatomy=actingArm(limbs.reach,tip.clone().sub(root.position),new T.Vector3(1.10,1.25,-.55));
  const free=limbs.rest.userData,elbowLength=free.rest[1].distanceTo(free.rest[0]),foreLength=free.rest[2].distanceTo(free.rest[1])+free.rest[3].distanceTo(free.rest[2]),freeWrist=new T.Vector3(-.55,1.02,.20).sub(root.position),freePose=twoBone(free.rest[0],freeWrist,new T.Vector3(-1.1,1.5,.60),elbowLength,foreLength);
  applyArm(limbs.rest,[free.rest[0],freePose.elbow,freePose.elbow.clone().lerp(freePose.wrist,free.rest[1].distanceTo(free.rest[2])/foreLength),freePose.wrist],new T.Quaternion().setFromUnitVectors(free.rest[3].clone().sub(free.rest[1]).normalize(),freePose.wrist.clone().sub(freePose.elbow).normalize()));
  for(const [name,x,y,z]of [['hind-left',-.32,.105,.28],['hind-right',.39,.105,.30]])solveLimb(limbs[name],new T.Vector3(x,y,z).sub(root.position));

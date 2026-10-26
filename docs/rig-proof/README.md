@@ -58,3 +58,11 @@ The fox retains a quadrupedal walk. It now has separate rear stifle and hock con
 The browser test measures the driven world-space elbow and wrist angles, verifies that the upper arm cannot develop a second bend, and checks claw contact, fixed cat ankles, fox support-foot placement, seeking, pause, graphics errors, and mobile fit. Sixteen unit/source checks pass. Local frame pacing remains approximately 60 fps. These are mechanical checks, not a certification of anatomical realism or artistic appeal; the owner must judge the normal-speed performance in the preview before integration.
 
 Rigging reference: [Blender's IK constraint documentation](https://docs.blender.org/manual/en/latest/animation/constraints/tracking/ik_solver.html), specifically the elbow/pole-target relationship. The preview uses its own analytic solver rather than a Blender runtime.
+
+## Elbow correction — October 26, 2026
+
+Close-up review exposed a pointed web at the inside of the elbow/armpit and unwanted forearm roll. The upper arm and forearm now share a consistent bend-plane frame rather than independently taking shortest-arc rotations. The reach uses a lower/rearward elbow pole so the elbow stays lower during the early lift.
+
+Arm weights now treat the upper arm and forearm as rigid sections, with narrower elbow and wrist transition bands. A build-time, surface-neighbor smoothing pass removes abrupt influence boundaries without transferring weights through spatially nearby parts. Waist/hip isolation is retained. A new regression limits influence jumps between adjacent elbow vertices. Seventeen unit/source checks and the motion browser checks pass, including front, three-quarter, and elbow-close-up view controls.
+
+Choose **View → Elbow close-up** to examine the full action. `elbow-review.png` and `elbow-review-front.png` contain annotated joint close-ups at eight moments, inspected alongside the complete movement. These are engineering review captures, not final artwork. The skin fold is reduced and the bend plane is stable; artistic acceptance remains pending owner review.

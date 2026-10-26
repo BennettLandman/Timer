@@ -27,7 +27,8 @@ try{
   document.getElementById('phase').textContent=state.phase;document.getElementById('position').textContent=(timeline%6).toFixed(1)+' s';if(document.activeElement!==document.getElementById('seek'))document.getElementById('seek').value=timeline%6;
   window.motion.state=state;
  }
- function setView(value){const quarter=value==='quarter';catStage.camera.position.set(quarter?2.2:0,1.65,8);catStage.camera.lookAt(0,1.5,0);foxStage.camera.position.set(quarter?2.8:0,1.6,8);foxStage.camera.lookAt(0,.95,0);}
+ function setView(value){const quarter=value!=='front',close=value==='elbow',cam=catStage.camera;cam.left=cam.bottom=close?-.80:-1.86;cam.right=cam.top=close?.80:1.86;cam.position.set(close?2.8:quarter?2.2:0,close?2.15:1.65,8);cam.lookAt(close?.55:0,close?2.05:1.5,close?.1:0);cam.updateProjectionMatrix();foxStage.camera.position.set(quarter?2.8:0,1.6,8);foxStage.camera.lookAt(0,.95,0);}
+
  setView('quarter');document.getElementById('view').onchange=e=>{setView(e.target.value);draw();};
  window.motion={ready:true,cat,fox,stages:scenes,draw,seek(t){timeline=t;draw();},pause(){playing=false;document.getElementById('play').textContent='Play';},play(){playing=true;last=null;document.getElementById('play').textContent='Pause';},get time(){return timeline;},get frames(){return frames;}};
  document.getElementById('play').onclick=()=>playing?motion.pause():motion.play();document.getElementById('restart').onclick=()=>{timeline=0;draw();};document.getElementById('speed').onchange=e=>{speed=Number(e.target.value);};document.getElementById('seek').oninput=e=>{motion.pause();timeline=Number(e.target.value);draw();};

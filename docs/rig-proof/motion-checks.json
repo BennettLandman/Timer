@@ -1,18 +1,18 @@
 {
-  "contactError": 1.1270951119217139e-15,
+  "contactError": 9.50197851991224e-16,
   "footError": 2.9728800768279507e-8,
   "foxFootError": 5.812540412712249e-16,
-  "loopError": 1.1102230246251565e-16,
+  "loopError": 0,
   "seekError": 0,
   "maxWristBend": 8.000000000000163,
-  "minElbow": 30.875083080377465,
-  "maxElbow": 119.64956180430283,
+  "minElbow": 30.87508308037738,
+  "maxElbow": 119.64956180430288,
   "upperArmKink": 2.1073424255447017e-8,
   "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
   "frames": {
-    "samples": 124,
-    "median": 16.699999999999818,
-    "p95": 16.700000000000273
+    "samples": 125,
+    "median": 16.699999999999932,
+    "p95": 16.799999999999955
   },
   "errors": []
 }
