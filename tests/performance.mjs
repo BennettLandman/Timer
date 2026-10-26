@@ -14,4 +14,10 @@ const digital=await page.evaluate(async()=>{
  return await new Promise(resolve=>{const frames=[];let start,last;function tick(now){start??=now;if(last!==undefined)frames.push(now-last);last=now;const time=45+(now-start)/1000;scene.draw(cv,{remaining:300-(now-start)/1000,initial:300,mode:'digital',time});if(frames.length<120)requestAnimationFrame(tick);else{frames.sort((a,b)=>a-b);resolve({samples:frames.length,medianFrameMs:frames[60],p95FrameMs:frames[114],mode:'painted digital with visitor and 100 debris fragments'});}}requestAnimationFrame(tick);});
 });
 if(errors.length)throw new Error(errors.join('; '));
-await writeFile('test-results/performance.json',JSON.stringify({analog:result,digital},null,2));console.log({analog:result,digital});await browser.close();
+const diversion=await page.evaluate(async()=>{
+ const {Scene}=await import('/src/scenes.js'),{diversionPlan}=await import('/src/boredom.js');let seed=0,plan;for(;seed<1000;seed++){plan=diversionPlan({seed,minute:5});if(plan.type==='ukulele')break;}
+ const cv=document.querySelector('canvas'),scene=new Scene();scene.boredSeed=seed;scene.draw(cv,{remaining:300,initial:300,time:0});
+ return await new Promise(resolve=>{const frames=[];let start,last;function tick(now){start??=now;if(last!==undefined)frames.push(now-last);last=now;const time=plan.start+2+(now-start)/1000;scene.draw(cv,{remaining:300-time,initial:300,mode:'analog',time});if(frames.length<120)requestAnimationFrame(tick);else{frames.sort((a,b)=>a-b);resolve({samples:frames.length,medianFrameMs:frames[60],p95FrameMs:frames[114],mode:'painted analog with ukulele and continuous strumming'});}}requestAnimationFrame(tick);});
+});
+if(errors.length)throw new Error(errors.join('; '));
+await writeFile('test-results/performance.json',JSON.stringify({analog:result,digital,diversion},null,2));console.log({analog:result,digital,diversion});await browser.close();

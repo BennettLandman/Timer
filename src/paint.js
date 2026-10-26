@@ -6,7 +6,7 @@ import {createFox,foxPose} from './characters/fox.js';
 import {createAnimal,animalPose,animalAspect} from './characters/cast.js';
 import {catPose,catWalkPose,catWorkPose,catIdlePose,catBoredPose} from './characters/rig.js';
 import {species} from './art.js';
-import {addBoredProps,hideBoredProps} from './characters/props.js';
+import {addBoredProps,hideBoredProps,poseBoredProps} from './characters/props.js';
 export const painted={};
 const models=new Map();let coreLoading,visitorLoading,renderer,stage,camera,current;
 const image=async path=>{const img=new Image();img.src=new URL(`assets/${path}`,import.meta.url).href;await img.decode();return img;};
@@ -60,11 +60,11 @@ export function drawAnimation(c,name,x,y,width,progress){
 export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1,moment=null}={}){
  const cat=models.get('cat');if(!cat)return null;
  const unit=r*.66,base=r*.99,home=-r*.1,work=target.x*.48-unit*.31,x=rest?home:home+(work-home)*engagement;
- cat.position.z=-.40;
+ cat.position.z=-.40;cat.rotation.y=0;
  const modelTarget=new T.Vector3((target.x-x)/unit,(base-target.y)/unit,.64);
  const idle=rest?(moment?catBoredPose(cat,time,moment):(catIdlePose(cat,time),null)):null;
  const state=rest?null:catWorkPose(cat,modelTarget,time,engagement);
- const props=cat.userData.boredProps;if(props){props.watch.visible=true;props.snack.visible=!!(moment?.type==='snack'&&idle?.weight>.08);}
+ poseBoredProps(cat,moment,idle?.weight||0);
  let tool=cat.userData.brush;
  if(!tool){
   tool=new T.Group();const handle=new T.Mesh(new T.CylinderGeometry(.015,.015,.34,10),new T.MeshStandardMaterial({color:'#82603c',roughness:1}));handle.position.y=-.14;tool.add(handle);

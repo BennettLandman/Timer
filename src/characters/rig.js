@@ -132,11 +132,57 @@ export function catBoredPose(cat,time,moment){
   for(const eye of cat.userData.eyes||[])eye.mesh.scale.y*=1-.66*weight;
  }else if(type==='snack'){
   hand.set(.25,2.04,.57);head.set(.075+.018*Math.sin(t*7.0),-.08,.05);
+ }else if(type==='yawn'){
+  hand.set(.18,2.17,.58);head.set(-.09,.03,-.06);root.position.y=.012*weight;
+  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y*=1-.8*weight;
+ }else if(type==='nap'){
+  hand.set(.29,2.20,.59);free.set(-.10,2.12,.55);head.set(.10+.018*Math.sin(t*1.5),-.08,.23);root.position.y=-.035*weight;
+  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y*=1-.94*weight;
+ }else if(type==='sneeze'){
+  const sniff=smooth((t-2.1)/.5)*(1-smooth((t-3.1)/.7)),achoo=smooth((t-4.5)/.18)*(1-smooth((t-4.8)/.8));
+  hand.set(.14,2.16,.60);head.set(-.10*sniff+.23*achoo,-.05,.04);root.position.y=-.025*achoo*weight;
+ }else if(type==='earScratch'){
+  hand.set(.47,2.53+.028*Math.sin(t*7),.48);head.set(.03,-.12,-.12);
+ }else if(type==='noseItch'){
+  hand.set(.10+.025*Math.sin(t*5),2.20,.59);head.set(.08,.03,.055);
+ }else if(type==='beret'){
+  hand.set(.43,2.70,.45);free.set(-.33,2.60,.39);head.set(-.04,.03,.055*Math.sin(t*2));
+ }else if(type==='whiskers'){
+  hand.set(.38+.025*Math.sin(t*3),2.20,.61);free.set(-.28,2.15,.56);head.set(-.025,.10*Math.sin(t*.8),.02);
+ }else if(type==='manicure'){
+  hand.set(.55,1.95,.63);free.set(-.12,1.50,.55);head.set(.12,.16,.11*Math.sin(t*.8));
+ }else if(type==='fingerCount'){
+  hand.set(-.08+.055*Math.sin(t*3),1.62,.69);free.set(-.18,1.53,.56);head.set(.19,-.11,.12*Math.sin(t*.7));
+ }else if(type==='shrug'){
+  hand.set(1.02,1.80,.55);free.set(-.98,1.72,.49);head.set(-.03,-.12,.16);root.position.y=.018*weight;
+ }else if(type==='conductor'){
+  hand.set(.56+.18*Math.sin(t*2.6),1.90+.16*Math.cos(t*2.6),.62);free.set(-.63,1.32,.40);head.set(.02,.07,.04*Math.sin(t*2.6));
+ }else if(type==='mime'){
+  hand.set(.61+.05*Math.sin(t),1.96,.64);free.set(-.55,1.78+.06*Math.cos(t),.60);head.set(.04,-.15,.07);root.position.y=-.02*weight;
+ }else if(type==='lookout'){
+  hand.set(.40,2.49,.59);head.set(-.04,.24*Math.sin(t*.8),-.08);root.position.x=.06*Math.sin(t*.8)*weight;
+ }else if(type==='salute'){
+  hand.set(.35,2.45,.58);head.set(-.05,.15,.0);
+ }else if(type==='detective'){
+  hand.set(.32+.035*Math.sin(t*.9),2.15,.64);head.set(.03,.10*Math.sin(t*.9),-.07);
+ }else if(type==='tea'){
+  const sip=smooth((t-2)/1.1)*(1-smooth((t-5.8)/1));
+  hand.set(.25,1.77+.31*sip,.59);free.set(-.20,1.40,.52);head.set(-.08*sip,.04,-.04);
+ }else if(type==='book'){
+  const turn=smooth((t-4)/.6)*(1-smooth((t-5)/.7));
+  hand.set(.30-.22*turn,1.44+.09*turn,.73);free.set(-.34,1.36,.61);head.set(.18,-.10+.08*Math.sin(t*.9),.035);
+ }else if(type==='feather'){
+  hand.set(.42+.025*Math.sin(t*1.7),1.87,.61);head.set(.06,-.11,.06+.035*Math.sin(t*1.7));
+ }else if(type==='bow'){
+  hand.set(-.02,1.28,.60);free.set(-.76,1.58,.50);head.set(.32,.03,-.03);root.position.y=-.13*weight;
+ }else if(type==='ukulele'){
+  hand.set(.20,1.35+.055*Math.sin(t*6),.73);free.set(-.50,1.65,.66);head.set(.08,.04,.06*Math.sin(t*3));
  }
+
  const reach=idle.hand.clone().lerp(hand,weight).sub(root.position),left=new T.Vector3(-.55,1.02,.20).lerp(free,weight).sub(root.position);
  // Hands arc forward on the way overhead, avoiding an over-folded elbow
  // while the wrists pass shoulder height.
- if(type==='stretch'){const arc=.13*Math.sin(Math.PI*weight);reach.z+=arc;left.z+=arc;}
+ const arc=.16*Math.sin(Math.PI*weight);if(hand.y>2.35)reach.z+=arc;if(free.y>2.3)left.z+=arc;
  const anatomy=actingArm(limbs.reach,reach,new T.Vector3(1.1,1.25,-.55));freeArmPose(cat,left);
  joints.head.rotation.set(mix(idle.head.x,head.x,weight),mix(idle.head.y,head.y,weight),mix(idle.head.z,head.z,weight));
  for(const [name,x]of [['hind-left',-.32],['hind-right',.39]]){

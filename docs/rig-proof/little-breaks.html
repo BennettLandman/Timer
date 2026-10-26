@@ -1,19 +1,24 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Timer · A few little breaks</title>
 <style>
-:root{font-family:Arial,sans-serif;color:#293e35;background:#f5f2e9}body{margin:0 auto;padding:30px 18px;max-width:950px}h1{font:36px Georgia,serif;margin:12px 0}p{font:17px/1.5 Georgia,serif;color:#61705d}a{color:inherit}nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}button{font:14px Georgia,serif;border:1px solid #cbd3c0;border-radius:8px;padding:11px 17px;background:#f5f2e9;color:#293e35;cursor:pointer}button[aria-pressed=true]{background:#293e35;color:#f5f2e9}button:focus-visible{outline:3px solid #bd6244;outline-offset:3px}canvas{display:block;width:100%;aspect-ratio:5/3;background:#e0e9d7;border-radius:18px}.playback{display:flex;gap:8px;align-items:center;margin-top:16px}.note{font:13px Arial,sans-serif;margin-left:auto}#error{color:#9b332b}
-</style></head><body><a href="../../?v=2.1.0">← Back to the timer</a><h1>A few little breaks.</h1><p>A watch check, a stretch, a serious attempt at yoga, and a tiny snack.<br>In the timer these are occasional, silent moments between brushstrokes.</p>
-<nav aria-label="Choose a little break"><button data-action="watch" aria-pressed="true">The wristwatch</button><button data-action="stretch" aria-pressed="false">A long stretch</button><button data-action="yoga" aria-pressed="false">Very serious yoga</button><button data-action="snack" aria-pressed="false">A tiny snack</button></nav>
+:root{font-family:Arial,sans-serif;color:#293e35;background:#f5f2e9}body{margin:0 auto;padding:30px 18px;max-width:950px}h1{font:36px Georgia,serif;margin:12px 0}p{font:17px/1.5 Georgia,serif;color:#61705d}a{color:inherit}nav{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0}button{font:14px Georgia,serif;border:1px solid #cbd3c0;border-radius:8px;padding:11px 17px;background:#f5f2e9;color:#293e35;cursor:pointer}button[aria-pressed=true]{background:#293e35;color:#f5f2e9}select{font:15px Georgia,serif;color:#293e35;background:#f5f2e9;padding:10px;border:1px solid #cbd3c0;border-radius:8px;max-width:100%;display:block;margin-top:7px}nav{align-items:end}button:focus-visible{outline:3px solid #bd6244;outline-offset:3px}canvas{display:block;width:100%;aspect-ratio:5/3;background:#e0e9d7;border-radius:18px}.playback{display:flex;gap:8px;align-items:center;margin-top:16px}.note{font:13px Arial,sans-serif;margin-left:auto}#error{color:#9b332b}
+</style></head><body><a href="../../?v=2.2.0">← Back to the timer</a><h1>A few little breaks.</h1><p>Twenty-four quiet diversions, and a counter-clockwise seconds countdown.<br>In the timer these are occasional, silent moments between brushstrokes.</p>
+<nav aria-label="Choose a little break"><label for="action">Choose a moment <select id="action"></select></label><button id="previous">← Previous</button><button id="next">Next →</button></nav>
 <canvas id="clock" aria-label="Preview of the cat's selected break behind frosted glass"></canvas><div class="playback"><button id="play">Pause</button><button id="replay">Replay</button><span class="note">The real clock always takes priority.</span></div><p id="error" role="alert"></p>
 <script type="module">
 import {Scene} from '../../src/scenes.js';
 import {loadPaintAssets} from '../../src/paint.js';
-import {boredMoment} from '../../src/boredom.js';
-const canvas=document.getElementById('clock'),play=document.getElementById('play');let scene,elapsed=0,playing=true,last=null,entry,type='watch';
-function choose(value){type=value;let seed=0;for(;seed<1000;seed++){entry=boredMoment({seed,minute:5,age:28});if(entry?.type===type)break;}scene=new Scene();scene.boredSeed=seed;scene.draw(canvas,{remaining:300,initial:300,time:0});elapsed=0;playing=true;last=null;play.textContent='Pause';for(const b of document.querySelectorAll('[data-action]'))b.setAttribute('aria-pressed',String(b.dataset.action===type));draw();}
-function draw(){const time=entry.start-.8+elapsed;scene.draw(canvas,{remaining:300-time,initial:300,time});}
-try{await loadPaintAssets();choose(type);for(const b of document.querySelectorAll('[data-action]'))b.onclick=()=>choose(b.dataset.action);play.onclick=()=>{playing=!playing;play.textContent=playing?'Pause':'Play';last=null;};document.getElementById('replay').onclick=()=>choose(type);
- window.breakReview={ready:true,seek(local){elapsed=.8+local;playing=false;play.textContent='Play';draw();},get action(){return scene.analogAction;}};
+import {diversionDetails,diversionPlan} from '../../src/boredom.js';
+const canvas=document.getElementById('clock'),play=document.getElementById('play'),select=document.getElementById('action');let scene,elapsed=0,playing=true,last=null,entry,type='watch';
+for(const [value,{label}]of Object.entries(diversionDetails))select.add(new Option(label,value));select.add(new Option('Seconds: 59 → 58 → … → 0','countdown'));
+function choose(value){type=value;let seed=0;entry={start:0,duration:60};if(type!=='countdown')for(;seed<1000;seed++){entry=diversionPlan({seed,minute:5});if(entry.type===type)break;}
+ scene=new Scene();scene.boredSeed=seed;scene.draw(canvas,{remaining:type==='countdown'?60:300,initial:600,time:0});elapsed=0;playing=true;last=null;play.textContent='Pause';select.value=type;draw();}
+function draw(){if(type==='countdown'){scene.draw(canvas,{remaining:Math.max(0,60-elapsed),initial:600,time:elapsed,phase:'red',completed:elapsed>=60});}else{const time=entry.start-.8+elapsed;scene.draw(canvas,{remaining:300-time,initial:300,time});}}
+try{await loadPaintAssets();choose(type);select.onchange=()=>choose(select.value);
+ for(const [id,direction]of [['previous',-1],['next',1]])document.getElementById(id).onclick=()=>{const next=(select.selectedIndex+direction+select.options.length)%select.options.length;choose(select.options[next].value);};
+ play.onclick=()=>{playing=!playing;play.textContent=playing?'Pause':'Play';last=null;};document.getElementById('replay').onclick=()=>choose(type);
+ window.breakReview={ready:true,seek(local){elapsed=type==='countdown'?local:.8+local;playing=false;play.textContent='Play';draw();},get action(){return scene.analogAction;},get second(){return scene.lastContact?.index;}};
  function frame(now){if(last!==null&&playing){elapsed+=Math.min(.1,(now-last)/1000);if(elapsed>entry.duration+1.6){elapsed=entry.duration+1.6;playing=false;play.textContent='Play';}draw();}last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
 }catch(error){document.getElementById('error').textContent='The preview could not load: '+error.message;}
+
 </script></body></html>

@@ -10,7 +10,7 @@ try{
   const cv=document.createElement('canvas');cv.width=1000;cv.height=600;const c=cv.getContext('2d');
   let contactError=0,paintError=0,maxFlex=0,minFlex=180;
   for(let second=0;second<60;second++)for(const fraction of [.35,.4,.5]){
-   const state=drawClawAction(c,60-second-fraction,300,225),path=scratchPath(second,225),expected={x:path.start.x+(path.end.x-path.start.x)*state.progress,y:path.start.y+(path.end.y-path.start.y)*state.progress};
+   const state=drawClawAction(c,60-second-fraction,300,225),path=scratchPath(state.index,225),expected={x:path.start.x+(path.end.x-path.start.x)*state.progress,y:path.start.y+(path.end.y-path.start.y)*state.progress};
    contactError=Math.max(contactError,Math.hypot(state.paw.x-expected.x,state.paw.y-expected.y));const flex=state.paw.anatomy.elbowFlex*180/Math.PI;maxFlex=Math.max(maxFlex,flex);minFlex=Math.min(minFlex,flex);
   }
   for(let mark=0;mark<60;mark+=3)for(let amount=0;amount<=1;amount+=.1){const a=mark*Math.PI/30-Math.PI/2,target={x:Math.cos(a)*225*.78*amount,y:Math.sin(a)*225*.78*amount};paintError=Math.max(paintError,drawGlassCat(c,target,225,amount,{brush:true}).error);}

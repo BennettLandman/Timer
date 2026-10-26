@@ -1,6 +1,6 @@
 # Private hosting handoff
 
-Timer 2.1.0 is ready to serve as static files. No deployment has been performed.
+Timer 2.2.0 is ready to serve as static files. No deployment has been performed.
 
 1. Build with `npm run build` (Node.js 18+) or use the supplied production archive.
 2. Copy the **contents** of `dist/` into your private website directory. Keep `index.html` and the `src/` directory together. Relative links support hosting under a subdirectory.
