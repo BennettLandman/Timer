@@ -3,7 +3,7 @@
   "version": "2.2.0",
   "private": true,
   "type": "module",
-  "description": "An illustrated classroom timer, made for private hosting",
+  "description": "An illustrated classroom timer with painted 3D characters",
   "scripts": {
     "test": "node --test tests/*.test.js",
     "build": "node scripts/build.js",

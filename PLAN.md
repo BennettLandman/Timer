@@ -4,7 +4,7 @@ The attached discussion supplied product ideas, not instructions to invoke servi
 
 ## Confirmed decisions and delivery
 
-- Name: Timer. Repository: `BennettLandman/Timer`, private. The owner will host the static site; no public deployment.
+- Name: Timer. Repository: `BennettLandman/Timer`. The owner authorized making the repository public and publishing the static application through GitHub Pages. Future pushes to `main` run checks and publish the production build.
 - JavaScript website with analog and digital scenes, presets/custom time, pause/resume, restart, cancel, added time, fullscreen, keyboard controls, saved settings, and accessible announcements.
 - Deadline-based timing independent of animation. Red is capped at one minute; yellow lasts twice red. For original duration D, R = min(60, D/6), with yellow starting at 3R and red at R.
 - Sound defaults to silent. Independent end sound, ticking, ambient tones, master mute, and volume. Default glass-break ending, optional gentle ending, and reduced motion.

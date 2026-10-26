@@ -26,7 +26,7 @@ with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslev
         bundle.write(path, name)
     for name in ['HOSTING.md', 'ASSETS.md']:
         bundle.write(root / name, name)
-    bundle.writestr('VERSION.txt', f'Timer {version}\nSource commit: {revision}\nPrivate hosting by the owner; no deployment performed.\n')
+    bundle.writestr('VERSION.txt', f'Timer {version}\nSource commit: {revision}\nStatic hosting archive; public site: https://bennettlandman.github.io/Timer/\n')
     bundle.writestr('SHA256.json', json.dumps(manifest, indent=2) + '\n')
 with zipfile.ZipFile(archive) as bundle:
     assert bundle.testzip() is None

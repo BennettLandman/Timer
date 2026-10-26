@@ -1,6 +1,6 @@
 # Asset provenance — Timer 2.2.0
 
-All character geometry, rigs, clock geometry, and sound synthesis are original project work. No third-party character models, sprite packs, recordings, paintings, or font files ship with the website. This private-project ledger grants no public reuse license for original artwork.
+All character geometry, rigs, clock geometry, and sound synthesis are original project work. No third-party character models, sprite packs, recordings, paintings, or font files ship with the website. Public hosting and source visibility grant no additional reuse license for original artwork. The bundled Three.js runtime retains its included MIT license.
 
 | Asset | Shipping location | Source and treatment |
 | --- | --- | --- |

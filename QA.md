@@ -28,4 +28,4 @@ Physical tablets, a classroom projector, low-powered classroom hardware, Safari,
 
 ## Hosting handoff
 
-The archive is built from the production directory and compared byte-for-byte with the current source and build. Every site entry is checked against SHA-256 hashes after compression, and the ZIP integrity check must pass. It includes hosting instructions, the asset ledger, the source commit, a content manifest, and the bundled renderer’s MIT license. The source repository remains private. No site has been deployed.
+The archive is built from the production directory and compared byte-for-byte with the current source and build. Every site entry is checked against SHA-256 hashes after compression, and the ZIP integrity check must pass. It includes hosting instructions, the asset ledger, the source commit, a content manifest, and the bundled renderer’s MIT license. These release measurements preceded public hosting. The owner subsequently authorized a public repository and GitHub Pages deployment; see HOSTING.md for the publishing workflow.

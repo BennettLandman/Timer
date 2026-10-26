@@ -2,6 +2,8 @@
 
 **Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.2.0 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
 
+**Use the timer:** [bennettlandman.github.io/Timer](https://bennettlandman.github.io/Timer/).
+
 - **The painter:** a cat works behind textured frosted glass. The cat paints the first minute hand immediately after Start, then erases and repaints at minute changes. Its quieter head and paw movements remain visible between strokes, and the setup preview demonstrates the painting. Its 24 occasional diversions include checking a watch, stretching, yoga, a biscuit, grooming, an almost-sneeze, a magnifying-glass investigation, reading, tea, and a silent ukulele solo. These brief, silent diversions stay behind the glass and finish before the next painting stroke. During the last minute, the claws move counter-clockwise, removing the 59, 58, …, 0 marks in order and leaving scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
 - **The builders:** solid segments enter recessed sockets from behind and fall forward into debris. Twenty-five animated animals visit occasionally to clear the floor. At zero, the red-capped cat peeks from behind the clock, whose housing stays fixed.
 
@@ -21,7 +23,9 @@ python3 -m http.server 8080 --bind 127.0.0.1
 
 Open `http://127.0.0.1:8080/`. JavaScript modules require a server rather than opening the HTML as a file. Use a browser with WebGL 2 enabled. The complete site is approximately 29 MB before transfer compression. Assets and shaders are prepared before Start becomes available.
 
-## Private hosting
+## Hosting
+
+The public site is published to GitHub Pages by [the deployment workflow](.github/workflows/pages.yml). Each push to `main` runs the unit checks, builds the site, and publishes only the contents of `dist/`. The workflow can also be run manually from GitHub Actions. Development review pages stay in the source repository.
 
 With Node.js 18 or newer:
 
@@ -29,7 +33,7 @@ With Node.js 18 or newer:
 npm run build
 ```
 
-Upload the contents of `dist/` to your private static host, or extract `releases/Timer-private-hosting.zip`. See [HOSTING.md](HOSTING.md). Everything is local: no CDN, remote fonts, tracking, accounts, API keys, backend, or package installation. The Three.js runtime and its MIT license are bundled. Nothing has been publicly deployed.
+For another static host, upload the contents of `dist/`, or build the optional archive with `npm run package:release`. See [HOSTING.md](HOSTING.md). All runtime resources ship with the site: no CDN, remote fonts, tracking, accounts, API keys, backend, or package installation. The Three.js runtime and its MIT license are bundled.
 
 ## Use
 
