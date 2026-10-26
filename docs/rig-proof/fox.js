@@ -3,16 +3,22 @@ import * as T from './vendor/three.module.js';
 import {paintedMaterials} from './materials.js';
 import {smooth} from './rig.js';
 export async function createFox(){
- const {material}=await paintedMaterials(),rust=material('#ba612b'),cream=material('#ecddb8'),black=material('#302c24'),inner=material('#9c684b');
+ const {material}=await paintedMaterials(),rust=material('#ba612b'),cream=material('#ecddb8'),black=material('#302c24'),inner=material('#b88765');
  const fox=new T.Group(),hips=new T.Bone();hips.name='fox-hips';fox.add(hips);const limbs=[];
  function oval(parent,mat,p,s){const m=new T.Mesh(new T.SphereGeometry(1,32,24),mat);m.position.set(...p);m.scale.set(...s);m.castShadow=true;parent.add(m);if(parent.name!=='fox-head'||mat===rust||mat===cream)m.userData.continuous=true;return m;}
  function tube(parent,pts,r,mat){const m=new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(pts.map(p=>new T.Vector3(...p))),32,r,10,false),mat);parent.add(m);m.userData.continuous=true;m.userData.surfacePath=pts.map(p=>new T.Vector3(...p));m.userData.radii=[r,r,r,r];return m;}
  oval(hips,rust,[0,1.0,0],[.83,.34,.29]);oval(hips,cream,[.32,.98,.16],[.37,.28,.18]);oval(hips,rust,[-.52,.91,0],[.35,.38,.27]);
  const neck=new T.Bone();neck.name='fox-neck';neck.position.set(.62,1.10,0);hips.add(neck);oval(neck,rust,[.08,.16,0],[.29,.37,.25]);
- const head=new T.Bone();head.name='fox-head';head.position.set(.22,.40,.01);neck.add(head);oval(head,rust,[0,0,0],[.30,.28,.24]);oval(head,cream,[.14,-.10,.02],[.29,.125,.18]);oval(head,rust,[.22,-.035,0],[.25,.13,.14]);oval(head,black,[.44,-.035,0],[.067,.052,.065]);
+ const head=new T.Bone();head.name='fox-head';head.position.set(.22,.40,.01);neck.add(head);oval(head,rust,[0,0,0],[.335,.305,.265]);oval(head,cream,[.145,-.105,.02],[.28,.145,.20]);oval(head,rust,[.22,-.03,0],[.225,.14,.16]);oval(head,black,[.42,-.03,0],[.070,.057,.067]);
+ const eyeRim=material('#735335'),iris=material('#b89f58'),shine=material('#fff4db'),smile=material('#80543a');
+ function detail(points,radius,mat){head.add(new T.Mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),24,radius,8,false),mat));}
  for(const z of [-.16,.16]){
-  const shape=new T.Shape();shape.moveTo(-.13,0);shape.lineTo(-.09,.39);shape.quadraticCurveTo(.05,.35,.16,.02);shape.closePath();const ear=new T.Mesh(new T.ExtrudeGeometry(shape,{depth:.055,bevelEnabled:true,bevelSize:.025,bevelThickness:.025,bevelSegments:3}),rust);ear.position.set(-.08,.17,z);head.add(ear);oval(head,inner,[-.13,.34,z+.055],[.055,.13,.012]);
-  oval(head,black,[.12,.055,z*1.39],[.070,.035,.017]);oval(head,material('#ae9d45'),[.14,.055,z*1.46],[.030,.027,.011]);oval(head,black,[.15,.055,z*1.50],[.010,.024,.006]);
+  const shape=new T.Shape();shape.moveTo(-.13,0);shape.quadraticCurveTo(-.14,.20,-.105,.32);shape.quadraticCurveTo(-.08,.385,-.045,.34);shape.quadraticCurveTo(.10,.24,.16,.02);shape.quadraticCurveTo(.02,-.025,-.13,0);const ear=new T.Mesh(new T.ExtrudeGeometry(shape,{depth:.055,bevelEnabled:true,bevelSize:.025,bevelThickness:.025,bevelSegments:3}),rust);ear.position.set(-.08,.17,z);head.add(ear);oval(head,inner,[-.12,.32,z+.055],[.06,.11,.012]);
+  const side=Math.sign(z);
+  oval(head,eyeRim,[.10,.07,side*.263],[.090,.062,.023]);oval(head,iris,[.11,.07,side*.281],[.067,.046,.014]);oval(head,black,[.12,.07,side*.294],[.028,.036,.009]);
+  oval(head,shine,[.105,.089,side*.305],[.012,.012,.004]);oval(head,shine,[.135,.056,side*.305],[.005,.005,.004]);
+  detail([[.35,-.10,side*.17],[.25,-.17,side*.20],[.12,-.125,side*.23]],.006,smile);
+
  }
  const tail=new T.Bone();tail.name='fox-tail';tail.position.set(-.62,1.06,0);hips.add(tail);const tailMesh=tube(tail,[[0,0,0],[-.40,-.10,0],[-.78,-.28,.03],[-1.04,-.38,.08]],.19,rust);oval(tail,cream,[-1.03,-.38,.08],[.26,.17,.17]);
  for(const [x,z,phase]of [[.52,-.19,.5],[-.52,-.19,.25],[.52,.19,0],[-.52,.19,.75]]){

@@ -11,7 +11,7 @@
   "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
   "frames": {
     "samples": 125,
-    "median": 16.699999999999932,
+    "median": 16.699999999999818,
     "p95": 16.799999999999955
   },
   "errors": []

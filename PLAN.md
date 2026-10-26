@@ -83,3 +83,5 @@ October 26: the motion study now uses closed, continuous skinned cat/fox bodies 
 October 26 acting revision: replaced the cat's flexible arm chain with one-elbow anatomy and authored acting beats; rebuilt the neutral bind pose and masked skin influences to prevent hands from deforming the torso. Added fox rear stifle/hock controls and a slower grounded walk. Mechanical checks pass; normal-speed motion review remains pending.
 
 Elbow follow-up: inspected close-ups through reach and return; removed independent forearm roll, lowered the elbow path, and smoothed surface-neighbor joint weights. Added an elbow close-up viewing control and an influence-continuity regression. Motion review remains pending.
+
+The owner accepted the motion and requested friendlier cat/fox faces. Facial geometry/material changes are implemented and presented as matched stills at `/docs/rig-proof/friendly-review.html`, with the accepted movement retained. Appearance review is pending before extending the style to other characters.

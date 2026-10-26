@@ -4,7 +4,7 @@ import {paintedMaterials} from './materials.js';
 const V=(x,y,z)=>new T.Vector3(x,y,z);
 export async function createCat(){
  const {material}=await paintedMaterials();
- const fur=material('#ffffff',true),cream=material('#f2dfb5'),red=material('#c7321b'),dark=material('#30251b'),pink=material('#b67d60'),nose=material('#9e4934');
+ const fur=material('#ffffff',true),cream=material('#f2dfb5'),red=material('#d6472b'),dark=material('#594332'),pink=material('#c38b73'),nose=material('#b76851');
  const chest=fur.clone();chest.onBeforeCompile=shader=>{fur.onBeforeCompile(shader);shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
  float bib=smoothstep(.38,.80,paintPosition.z)*(1.0-smoothstep(.40,.72,abs(paintPosition.x)));
  float edge=sin(paintPosition.y*80.0+paintPosition.x*30.0)*.06;
@@ -32,19 +32,25 @@ export async function createCat(){
  limb('rest',[[-.31,1.85,.01],[-.63,1.45,.06],[-.65,1.20,.08],[-.68,.95,.10]],[.175,.14,.11,.085],fur);const restHand=shape(root,cream,[-.69,.86,.11],[.115,.16,.11],-.03);
  const tailPoints=[[-.24,.87,-.19],[-.64,1.12,-.35],[-.91,1.56,-.36],[-1.05,2.04,-.34],[-.95,2.45,-.30],[-.77,2.62,-.25],[-.65,2.62,-.20]];limb('tail',tailPoints,[.16,.15,.14,.13,.12,.115,.04],fur);
  const head=new T.Bone();head.name='head';head.position.set(.08,2.27,.02);head.rotation.set(-.03,-.12,.15);root.add(head);joints.head=head;
- shape(head,fur,[0,.08,0],[.43,.38,.34]);shape(head,fur,[-.24,-.05,.06],[.24,.22,.25]);shape(head,fur,[.24,-.05,.06],[.24,.22,.25]);
+ shape(head,fur,[0,.08,0],[.46,.40,.36]);shape(head,fur,[-.24,-.05,.06],[.245,.235,.265]);shape(head,fur,[.24,-.05,.06],[.245,.235,.265]);
  // Rounded triangular ears, with sculpted front/back rather than flat cutouts.
- function ear(x,side){const shape2=new T.Shape();shape2.moveTo(-.15,0);shape2.quadraticCurveTo(-.12,.30,-.08,.41);shape2.quadraticCurveTo(.02,.38,.16,.03);shape2.quadraticCurveTo(.02,-.055,-.15,0);const g=new T.ExtrudeGeometry(shape2,{depth:.07,bevelEnabled:true,bevelSegments:4,steps:1,bevelSize:.045,bevelThickness:.04,curveSegments:24});const mesh=new T.Mesh(g,fur);mesh.position.set(x,.27,-.08);mesh.rotation.z=side*.19;head.add(mesh);shape(head,pink,[x-side*.01,.44,.042],[.082,.17,.025],side*.23);}
+ function ear(x,side){const shape2=new T.Shape();shape2.moveTo(-.15,0);shape2.quadraticCurveTo(-.13,.23,-.10,.32);shape2.quadraticCurveTo(-.08,.385,-.035,.33);shape2.quadraticCurveTo(.055,.22,.16,.03);shape2.quadraticCurveTo(.02,-.055,-.15,0);const g=new T.ExtrudeGeometry(shape2,{depth:.07,bevelEnabled:true,bevelSegments:4,steps:1,bevelSize:.045,bevelThickness:.04,curveSegments:24});const mesh=new T.Mesh(g,fur);mesh.position.set(x,.27,-.08);mesh.rotation.z=side*.19;head.add(mesh);shape(head,pink,[x-side*.01,.425,.042],[.082,.145,.025],side*.23);}
  ear(-.29,1);ear(.29,-1);
- shape(head,cream,[0,-.13,.255],[.27,.17,.11]);shape(head,cream,[-.12,-.095,.32],[.145,.105,.075]);shape(head,cream,[.12,-.095,.32],[.145,.105,.075]);shape(head,cream,[0,-.23,.24],[.17,.08,.12]);
- for(const x of [-.19,.19]){
-  shape(head,dark,[x,.075,.297],[.122,.068,.040],x>0?.18:-.18);
-  shape(head,material('#8d9c4b'),[x,.075,.335],[.098,.046,.026],x>0?.18:-.18);
-  shape(head,dark,[x+.008,.077,.36],[.014,.043,.008]);shape(head,material('#fff0cf'),[x-.027,.099,.366],[.012,.012,.005]);
-  curve(head,[[x-.12,.15,.30],[x,.18,.325],[x+.12,.15,.29]],.026,fur);
+ shape(head,cream,[0,-.13,.255],[.29,.18,.115]);shape(head,cream,[-.12,-.095,.32],[.155,.115,.078]);shape(head,cream,[.12,-.095,.32],[.155,.115,.078]);shape(head,cream,[0,-.23,.24],[.17,.08,.12]);
+ const eyeRim=material('#594c36'),iris=material('#96ad67'),pupil=material('#352f26'),shine=material('#fff4dd'),brow=material('#c7985d');
+ for(const x of [-.205,.205]){
+  const tilt=x>0?.04:-.04;
+  shape(head,eyeRim,[x,.085,.337],[.137,.086,.035],tilt);
+  shape(head,iris,[x,.085,.365],[.117,.069,.024],tilt);
+  shape(head,pupil,[x+.006,.085,.391],[.033,.050,.010]);
+  shape(head,shine,[x-.034,.111,.405],[.020,.019,.004]);shape(head,shine,[x+.022,.062,.404],[.008,.008,.004]);
+  curve(head,[[x-.11,.195,.32],[x,.225,.34],[x+.11,.197,.31]],.014,brow);
  }
- shape(head,nose,[0,-.095,.433],[.065,.041,.03]);curve(head,[[0,-.12,.439],[0,-.18,.42],[-.06,-.20,.40]],.008,dark);curve(head,[[0,-.18,.42],[.06,-.20,.40]],.008,dark);
- const whisker=new T.MeshStandardMaterial({color:'#e7d4b3',roughness:1});for(const side of [-1,1])for(let i=0;i<3;i++){curve(head,[[side*.16,-.14+i*.023,.411],[side*.36,-.14+(i-1)*.06,.43],[side*(.60-i*.03),-.13+(i-1)*.11,.36]],.0035,whisker);}
+ shape(head,nose,[0,-.095,.433],[.065,.041,.03]);
+ curve(head,[[0,-.12,.433],[0,-.165,.405],[0,-.185,.395]],.0065,dark);
+ for(const side of [-1,1])curve(head,[[0,-.185,.395],[side*.065,-.19,.403],[side*.11,-.14,.405]],.0065,dark);
+
+ const whisker=new T.MeshStandardMaterial({color:'#e7d4b3',roughness:1});for(const side of [-1,1])for(let i=0;i<3;i++){curve(head,[[side*.16,-.14+i*.023,.411],[side*.36,-.14+(i-1)*.06,.43],[side*(.54-i*.03),-.13+(i-1)*.11,.36]],.0035,whisker);}
  const hat=new T.Group();hat.position.set(.015,.36,-.005);hat.rotation.z=-.20;head.add(hat);shape(hat,red,[0,.025,0],[.43,.16,.33]);shape(hat,red,[-.09,.09,-.02],[.39,.12,.29]);curve(hat,[[0,.18,0],[.02,.24,0],[.065,.26,.005]],.029,red);
  // Distinct toe separations and tiny ivory claw tips at the active hand.
  const toeMarks=[];for(const footX of [-.32,.40])for(const offset of [-.06,.02,.09]){const mark=curve(root,[[footX+offset,.13,.49],[footX+offset,.08,.50]],.007,dark);toeMarks.push({mark,footX});}

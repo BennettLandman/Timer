@@ -66,3 +66,11 @@ Close-up review exposed a pointed web at the inside of the elbow/armpit and unwa
 Arm weights now treat the upper arm and forearm as rigid sections, with narrower elbow and wrist transition bands. A build-time, surface-neighbor smoothing pass removes abrupt influence boundaries without transferring weights through spatially nearby parts. Waist/hip isolation is retained. A new regression limits influence jumps between adjacent elbow vertices. Seventeen unit/source checks and the motion browser checks pass, including front, three-quarter, and elbow-close-up view controls.
 
 Choose **View → Elbow close-up** to examine the full action. `elbow-review.png` and `elbow-review-front.png` contain annotated joint close-ups at eight moments, inspected alongside the complete movement. These are engineering review captures, not final artwork. The skin fold is reduced and the bend plane is stable; artistic acceptance remains pending owner review.
+
+## Friendlier faces — October 26, 2026
+
+The owner accepted the motion and requested a cuter, more approachable appearance. The cat now has a slightly rounder head and cheeks, more open level eyes, softer round/oval pupils, larger catchlights, lighter relaxed brows, a warmer nose/beret, rounded ear tips, and upturned mouth corners. The fox has a softer head/muzzle, rounder brighter eyes with catchlights, a small smile, and rounded ear tips/warmer inner ears.
+
+The same painted material treatment is retained. Head/face geometry and materials were changed directly in the native 3D models; no new generated images or pose sheets were needed. The skeleton positions, animation curves, elbow constraints, footfalls, and timing are unchanged. The fused skin surfaces were rebuilt for the small head changes. All 17 unit checks and the dedicated motion/browser checks pass, with the same measured joint/contact results as the accepted motion.
+
+`friendly-review.html` compares one matched pose for each animal before and after the changes. `friendly-before.png` and `friendly-after.png` are actual browser-rendered model captures with matching camera, lighting, and pose. The motion page also uses the new faces. Friendlier appearance review is pending before expanding the cast.
