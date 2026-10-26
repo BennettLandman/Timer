@@ -1,37 +1,29 @@
-# Verification record
+# Timer 2.0.0 verification
 
-Verified locally on October 25, 2026. The pose-based animation revision is ready for private hosting; no deployment was performed.
+Release checks run on October 26, 2026, with installed desktop Chrome, hardware-accelerated WebGL on an Apple M4 Pro, and Playwright. The complete machine-readable report is `docs/verification-2.0.0.json`. Run `node scripts/check-release.mjs` with the local server and Playwright environment to repeat the suite.
 
-## Animation revision
+## Automated coverage
 
-All character mesh warping has been removed. The runtime uses 28 prepacked painted sequences with 24 poses each: 25 gaits plus dedicated cat painting, claw-scratching, and peeking actions. Frames are registered to a common scale and ground anchor before playback. Scratch clips play one contact cycle per second. Painting uses a single slow, contact-registered tail sweep per hand change. Adjacent painted poses are blended continuously, including the loop boundary. Fox and turkey playback uses body registration and a closed pose ordering chosen from the actual paintings; it does not extract silhouettes, stretch limbs, or deform a texture mesh while the timer runs.
+- **39 unit checks:** deadline accuracy after background gaps; pause/resume/add/restart; warning thresholds and caps; input/duration bounds; digital projection depth; all 25 closed, connected continuous character surfaces; normalized skin weights; cat waist isolation and gradual elbow influences.
+- **Controls and all species:** invalid input, start, both modes, pause, frozen countdown, add while paused, resume, restart, cancel, custom added time, completion, revival after completion, saved settings, and 25 visibly changing continuous 3D characters at small size. At least 16 sampled distinct poses per species.
+- **Long sequences:** background reconciliation, minute painting, final-minute scratches, glass break/reveal, optional synthesized audio without runtime errors, mute, saved preferences, pixel-identical paused canvas, reduced motion, and a three-minute visitor/debris simulation. Debris is capped at 100; visits remain separated by more than 30 seconds.
+- **Glass contact:** 180 scratch-contact samples cover all 60 second marks, with maximum projected error below 0.01 pixel. Brush reach is checked across the dial and the full painted stroke. Elbow motion remains within 10–145 degrees. This verifies geometric contact; appearance is also inspected in captured start/middle/end painting and four-quadrant scratching frames.
+- **Digital ending:** normal and 999:59 housing geometry stays fixed at completion; the cat visibly emerges from behind it. Sampled normal housing pixels are identical, with at most one channel value of antialiasing difference in the long-format check.
+- **Walking anatomy:** all 22 additional walking species have reachable foot targets and planted stance; fish uses a fin/tail/flop action. The separate approved cat/fox regression checks foot planting, the single elbow, wrist bend, contact, loop closure, deterministic seeking, pause, and mobile layout.
+- **Production package:** served from `/dist/` to verify subdirectory-relative resources, mobile layout, keyboard pause/resume, completion, and no external requests or page errors.
 
-The cat visibly reaches, contacts the glass with its forepaw/claws, scratches downward, and retracts before shifting position. One contact interval removes the corresponding perimeter tick and leaves three radial scratches each second in the final minute. The cat follows the marks around the glass, with its claw tip registered to the active stroke in every quadrant. The last stroke remains in contact through the glass-break deadline. Earlier minute changes use the forepaw erasing poses followed by coordinated body/tail painting poses.
+## Local animation measurements
 
-At digital completion the actual running housing geometry, width, location and socket layout are reused. The red-capped cat rises from behind the unchanged top edge and changes head pose. The panel occludes its lower body. The completion caption sits below the clock rather than displacing it.
+Both production scenes are sampled for 120 frames at a 1440 × 1000 viewport. The analog test includes the active final-minute 3D cat and scratches; digital includes an animated visitor and 100 debris fragments. Median frame intervals are approximately 16.7 ms, with the 95th percentile approximately 16.8 ms on this machine, equivalent to its 60 Hz refresh. Exact values are recorded in the report. Frame pacing depends on the browser, display, and hardware.
 
-## Automated checks
+The approved acting regression retains an 8-degree wrist bend, one rigid upper-arm segment, elbow flexion approximately 31–120 degrees, planted cat ankles, and matching fox stance velocity. Production glass work uses the same solver with its own targets; its sampled elbow range is approximately 43–89 degrees.
 
-- Thirteen unit tests pass: timer deadlines, pause/add/resume/restart, warning boundaries, extension behavior, limits, input/formatting, cast membership, projected depth, per-second claw contact, short timers, bounded pose selection, final peek hold, and the last scratch reaching the break deadline.
-- Browser controls pass for both scenes, invalid input, start, pause, frozen readout, added time while paused, restart, cancel, custom additions, completion, and adding time after completion. No JavaScript runtime errors were reported.
-- Each of the 25 gait sequences was sampled at 64 points through its cycle. Each produced at least 16 distinct rendered poses, including transitions between source poses. The manifest contains 24 registered complete poses for every action.
-- A dedicated pixel comparison verifies unchanged housing-corner pixels and identical geometry through normal-duration completion. A long-duration layout also remains registered, with a maximum one-channel difference of 1 from raster antialias rounding. The cat's above-panel region changes as it peeks out.
-- Final-minute contact/retract frames, accumulated claw scratches, painting, the complete cast, digital peeking, and desktop/mobile layouts were visually inspected. Generated fox/elephant atlases with touching figures were replaced; registered packing preserves complete limbs that cross nominal cell edges.
-- A three-minute digital simulation verifies randomized visitors spaced over 30 seconds apart, a bounded pile of 100 fragments, and at most seven simultaneously falling segments in that run. Values can vary with random choices. The paused canvas remains byte-for-byte identical across time.
-- At 1440 × 1000, local Chrome 120-frame samples measured median render intervals of 16.7 ms in both modes, with 95th percentiles of 16.8 ms for active final-minute scratching and 16.8 ms for a digital visitor with 100 fragments. This is approximately 60 screen renders per second on the test machine; character playback uses the 24-pose cycles.
-- The production copy under `/dist/` passes subdirectory hosting, keyboard pause/resume, completion, no external requests, and no runtime-error checks.
-- Packed PNG intermediates and the lossless WebP delivery images were decoded and compared. All 28 RGBA buffers match exactly. Frame registration is delivered in the manifest, avoiding runtime extraction work.
+## Visual and device scope
 
-The small-size motion regression samples a full loop at 120 points, at a rendered width of 130 pixels. The largest successive RGB pixel change falls from 10.51 to 1.33 for the fox and 13.31 to 1.65 for the turkey (about 87% lower). This measures discontinuity, not artistic realism. All 60 second marks are tested for claw/stroke contact, and painting and scratches in multiple quadrants are captured for visual review. `tests/motion.mjs` reproduces these checks. `scripts/register-gaits.py` reproduces the two species' metadata registration/order (development-only Pillow/NumPy required).
+Captured and inspected setup, both running scenes, painting, scratches, all species, the fixed-clock peek, and completion. Layout checks include a 390 × 844 mobile viewport and reduced-motion emulation. The cast and setup captures are retained under `docs/`; fuller evidence is generated under ignored `test-results/`.
 
-## Scope
+Physical tablets, a classroom projector, low-powered classroom hardware, Safari, Firefox, and Edge have not been validated in this release run. Mobile viewport emulation is not a physical touch-device or browser-engine test. The site uses standard modules, Canvas, WebGL 2, and Web Audio; target-device confirmation remains part of the owner’s hosting setup. No unsupported cross-browser or hardware performance guarantee is implied.
 
-Tests ran in installed Google Chrome on this Mac. Safari, Firefox, Edge, physical tablets, projectors, and low-powered classroom computers have not been tested here. Frame pacing depends on hardware and browser. Actual speaker volume and private-host access controls require checks on the owner's hosting/classroom setup.
+## Hosting handoff
 
-The characters are painted pose animations rather than motion capture or a physically simulated skeleton. Their anatomy and action transitions were visually reviewed; artistic motion quality remains something to judge in the local preview.
-
-A suspended browser/device can delay audio callbacks. The displayed time reconciles with its deadline when the tab becomes active. No service worker or background alarm service is installed.
-
-## Reproduce
-
-See README.md for local serving and optional Playwright instructions. `tests/anatomy.mjs` covers claw scenes and the stationary-housing peek regression. Browser scripts write evidence to `test-results/` (ignored by Git). Build before running `tests/production.mjs`. No browser automation package ships in the website.
+The archive is built from the production directory and compared byte-for-byte with the current source and build. Every site entry is checked against SHA-256 hashes after compression, and the ZIP integrity check must pass. It includes hosting instructions, the asset ledger, the source commit, a content manifest, and the bundled renderer’s MIT license. The source repository remains private. No site has been deployed.

@@ -1,8 +1,8 @@
-import * as T from '../docs/rig-proof/vendor/three.module.js';
+import * as T from '../src/characters/vendor/three.module.js';
 import {readFile,writeFile} from 'node:fs/promises';
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
-for(const type of ['cat','fox']){
- const spec=JSON.parse(await readFile(new URL(`../docs/rig-proof/assets/${type}-skin.spec.json`,import.meta.url)));
+for(const type of (process.argv.slice(2).length?process.argv.slice(2):['cat','fox'])){
+ const spec=JSON.parse(await readFile(new URL(`../src/characters/assets/${type}-skin.spec.json`,import.meta.url)));
  const shapes=spec.shapes.map(s=>{
   if(s.kind==='ellipsoid'){
    const rot=new T.Matrix4().makeRotationFromQuaternion(new T.Quaternion(...s.q).invert()).elements,r=s.scale;
@@ -27,7 +27,8 @@ for(const type of ['cat','fox']){
   return Math.hypot(x-p[0],y-p[1],z-p[2])<r;
  }
  const field=(x,y,z)=>{let d=1e6;for(const s of shapes){const e=s.distance(x,y,z),k=.085,h=Math.max(k-Math.abs(d-e),0)/k;d=Math.min(d,e)-h*h*k*.25;}return d;};
- const min=type==='cat'?[-1.42,-.12,-.63]:[-2.1,-.16,-.62],max=type==='cat'?[1.25,3.15,.72]:[1.6,2.16,.75],step=.038,nx=Math.ceil((max[0]-min[0])/step)+1,ny=Math.ceil((max[1]-min[1])/step)+1,nz=Math.ceil((max[2]-min[2])/step)+1,N=nx*ny*nz,grid=new Float32Array(N);
+ const bounds=spec.shapes.flatMap(s=>s.kind==='ellipsoid'?[s.p.map((v,i)=>v-s.scale[i]-.15),s.p.map((v,i)=>v+s.scale[i]+.15)]:s.path.flatMap(p=>[p.map(v=>v-Math.max(...s.radii)-.15),p.map(v=>v+Math.max(...s.radii)+.15)]));
+ const min=type==='cat'?[-1.42,-.12,-.63]:[0,1,2].map(i=>Math.min(...bounds.map(p=>p[i]))),max=type==='cat'?[1.25,3.15,.72]:[0,1,2].map(i=>Math.max(...bounds.map(p=>p[i]))),step=type==='cat'||type==='fox'?.038:.065,nx=Math.ceil((max[0]-min[0])/step)+1,ny=Math.ceil((max[1]-min[1])/step)+1,nz=Math.ceil((max[2]-min[2])/step)+1,N=nx*ny*nz,grid=new Float32Array(N);
  const id=(x,y,z)=>(z*ny+y)*nx+x,xyz=i=>[min[0]+(i%nx)*step,min[1]+(Math.floor(i/nx)%ny)*step,min[2]+Math.floor(i/(nx*ny))*step];
  for(let z=0;z<nz;z++)for(let y=0;y<ny;y++)for(let x=0;x<nx;x++)grid[id(x,y,z)]=field(min[0]+x*step,min[1]+y*step,min[2]+z*step);
  const position=[],normal=[],uv=[],weights=[],skin=[],coat=[],index=[],edges=new Map();
@@ -53,6 +54,6 @@ for(const type of ['cat','fox']){
   }current=next;}
   for(let i=0;i<n;i++){const sorted=spec.bones.map((_,b)=>[b,current[i*B+b]]).sort((a,b)=>b[1]-a[1]).slice(0,4),sum=sorted.reduce((s,v)=>s+v[1],0);for(let k=0;k<4;k++){skin[i*4+k]=sorted[k][0];weights[i*4+k]=sorted[k][1]/sum;}}
  }
- const arrays=[new Uint32Array([0x534b494e,1,position.length/3,index.length]),new Float32Array(position),new Float32Array(normal),new Float32Array(uv),new Float32Array(weights),new Float32Array(coat),new Uint16Array(skin),new Uint32Array(index)];const binary=Buffer.concat(arrays.map(a=>Buffer.from(a.buffer)));await writeFile(new URL(`../docs/rig-proof/assets/${type}-smooth.skin`,import.meta.url),binary);
+ const arrays=[new Uint32Array([0x534b494e,1,position.length/3,index.length]),new Float32Array(position),new Float32Array(normal),new Float32Array(uv),new Float32Array(weights),new Float32Array(coat),new Uint16Array(skin),new Uint32Array(index)];const binary=Buffer.concat(arrays.map(a=>Buffer.from(a.buffer)));await writeFile(new URL(`../src/characters/assets/${type}-smooth.skin`,import.meta.url),binary);
  console.log(type,{vertices:position.length/3,triangles:index.length/3,bytes:binary.length});
 }

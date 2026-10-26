@@ -1,41 +1,79 @@
-// Painted pose sequences, prepared at build time. Runtime playback only chooses
-// a complete frame and applies uniform layout scaling: no mesh or limb warping.
+// One shared transparent WebGL surface renders continuous, painted 3D rigs.
+// The timer and all poses use elapsed time, never a sequence of image frames.
+import * as T from './characters/vendor/three.module.js';
+import {createCat} from './characters/cat.js';
+import {createFox,foxPose} from './characters/fox.js';
+import {createAnimal,animalPose,animalAspect} from './characters/cast.js';
+import {catPose,catWalkPose,catWorkPose,catIdlePose} from './characters/rig.js';
 import {species} from './art.js';
 export const painted={};
-const sequences=new Map(),pending=new Map();let coreLoading,visitorLoading,manifestLoading;
+const models=new Map();let coreLoading,visitorLoading,renderer,stage,camera,current;
 const image=async path=>{const img=new Image();img.src=new URL(`assets/${path}`,import.meta.url).href;await img.decode();return img;};
-function manifest(){return manifestLoading ||= fetch(new URL('assets/animation/manifest.json',import.meta.url)).then(r=>{if(!r.ok)throw new Error('Animation manifest unavailable');return r.json();});}
-export async function sequence(name){
- if(sequences.has(name))return sequences.get(name);
- if(!pending.has(name))pending.set(name,(async()=>{const specs=await manifest();if(!specs[name])throw new Error(`Animation missing: ${name}`);const img=await image(`animation/${name}.webp`);const meta={...specs[name],img};sequences.set(name,meta);return meta;})());
- return pending.get(name);
+function studio(){
+ if(renderer)return;
+ renderer=new T.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true,powerPreference:'low-power'});
+ renderer.setSize(640,640,false);renderer.setClearColor(0,0);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+ stage=new T.Scene();camera=new T.OrthographicCamera(-3,3,4.4,-1.6,.1,30);camera.position.set(0,0,8);camera.lookAt(0,0,0);
+ stage.add(new T.HemisphereLight('#fff4df','#777459',2.6));const key=new T.DirectionalLight('#fff0ce',3);key.position.set(-3,6,6);stage.add(key);const fill=new T.DirectionalLight('#c7d9d4',.8);fill.position.set(4,2,3);stage.add(fill);
+ renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();painted.contextLost=true;});
+ renderer.domElement.addEventListener('webglcontextrestored',()=>{painted.contextLost=false;});
 }
-export function loadPaintAssets(){return coreLoading ||= Promise.all([
- image('glass.png').then(v=>painted.glass=v),image('paint.png').then(v=>painted.paint=v),
- ...['cat-walk','cat-scratch','cat-paint','cat-peek'].map(sequence)
- ]).then(()=>{painted.cat=true;});}
-export function loadVisitorAssets(){return visitorLoading ||= loadPaintAssets().then(()=>Promise.all(species.filter(s=>s!=='cat').map(s=>sequence(`${s}-walk`))));}
-export function animationMeta(name){return sequences.get(name);}
-export function frameIndex(progress,{loop=true}={}){return loop?Math.floor(((progress%1+1)%1)*24):Math.min(23,Math.max(0,Math.floor(progress*24)));}
-export function spritePlacement(name,x,y,width){const m=sequences.get(name);if(!m)return null;const scale=width/m.inkWidth;return {m,scale,left:x-m.cw*.5*scale,top:y-m.bottom*scale,width:m.cw*scale,height:m.ch*scale};}
-export function drawAnimation(c,name,x,y,width,progress,{loop=true,direction=1,opacity=1}={}){
- const p=spritePlacement(name,x,y,width);if(!p)return null;const {m}=p;
- const phase=loop?((progress%1+1)%1)*24:Math.min(23,Math.max(0,progress*24));
- const current=Math.floor(phase),next=loop?(current+1)%24:Math.min(23,current+1);
- const order=m.playbackOrder,frame=order?order[current]:current;
- const mix=phase-current;
- c.save();c.globalAlpha*=opacity;if(direction===-1){c.translate(x*2,0);c.scale(-1,1);}
- if(mix>0||m.registration){
-  m.blendCanvas??=document.createElement('canvas');const cv=m.blendCanvas,pad=32;
-  if(cv.width!==m.frameWidth+pad*2||cv.height!==m.frameHeight+pad*2){cv.width=m.frameWidth+pad*2;cv.height=m.frameHeight+pad*2;}
-  const b=cv.getContext('2d');b.clearRect(0,0,cv.width,cv.height);
-  const paint=(f,alpha)=>{const reg=m.registration?.[f]||{x:0,y:0,scale:1};b.globalAlpha=alpha;b.drawImage(m.img,f%6*m.frameWidth,Math.floor(f/6)*m.frameHeight,m.frameWidth,m.frameHeight,pad+m.anchorX*(1-reg.scale)+reg.x,pad+m.anchorY*(1-reg.scale)+reg.y,m.frameWidth*reg.scale,m.frameHeight*reg.scale);};
-  b.globalCompositeOperation='source-over';paint(frame,1-mix);
-  if(mix>0){b.globalCompositeOperation='lighter';paint(order?order[next]:next,mix);}b.globalAlpha=1;b.globalCompositeOperation='source-over';
-  c.drawImage(cv,x-(m.anchorX+pad)*p.scale,y-(m.anchorY+pad)*p.scale,cv.width*p.scale,cv.height*p.scale);
- }else c.drawImage(m.img,(frame%6)*m.frameWidth,Math.floor(frame/6)*m.frameHeight,m.frameWidth,m.frameHeight,x-m.anchorX*p.scale,y-m.anchorY*p.scale,m.frameWidth*p.scale,m.frameHeight*p.scale);
- c.restore();return {...p,frame};
+function select(model){if(current!==model){if(current)stage.remove(current);current=model;stage.add(model);}}
+function render(c,model,x,y,unit,{direction=1,opacity=1,angle=0}={}){
+ if(painted.contextLost)return;
+ select(model);model.rotation.y=angle;renderer.render(stage,camera);
+ c.save();c.globalAlpha*=opacity;c.translate(x,y);c.scale(direction,1);c.drawImage(renderer.domElement,-3*unit,-4.4*unit,6*unit,6*unit);c.restore();
 }
-export function drawPaintedAnimal(c,type,x,y,width,time=0,{direction=1,still=false,opacity=1}={}){const name=sequences.has(`${type}-walk`)?`${type}-walk`:'cat-walk';return drawAnimation(c,name,x,y,width,still?0:time/.8,{direction,opacity});}
-export function paintedAspect(type){const m=sequences.get(`${type}-walk`)||sequences.get('cat-walk');return m.inkWidth/m.inkHeight;}
+export function loadPaintAssets(){return coreLoading ||= (async()=>{
+ studio();const [glass,paint,cat,fox]=await Promise.all([image('glass.png'),image('paint.png'),createCat(),createFox()]);
+ painted.glass=glass;painted.paint=paint;models.set('cat',cat);models.set('fox',fox);painted.cat=true;
+ // Compile the primary actor before enabling the timer.
+ select(cat);renderer.compile(stage,camera);
+})();}
+export function loadVisitorAssets(){return visitorLoading ||= loadPaintAssets().then(async()=>{
+ for(const type of species){if(!models.has(type))models.set(type,await createAnimal(type));
+  select(models.get(type));await renderer.compileAsync(stage,camera);
+  await new Promise(resolve=>setTimeout(resolve,0));
+ }
+});}
+export function paintedAspect(type){return type==='cat'?.78:type==='fox'?1.8:animalAspect(type);}
+export function visitorMotionTime(type,distance,width){
+ const span=type==='cat'?2.35:type==='fox'?3.7:models.get(type)?.userData.span||3.45;
+ const factor=type==='cat'?1:type==='fox'?1:type==='turtle'?.45:type==='rabbit'?1.05:.8;
+ const speed=type==='cat'?.36/(.66*1.5):(models.get(type)?.userData.limbs?.[0]?.stride??.40)/(.68*1.5);
+ return distance/(width/span*speed*factor);
+}
+export function drawPaintedAnimal(c,type,x,y,width,time=0,{direction=1,still=false,opacity=1}={}){
+ const model=models.get(type)||models.get('fox');if(!model)return;
+ model.position.z=0;if(model.userData.brush)model.userData.brush.visible=false;const t=still?0:time;
+ if(type==='cat')catWalkPose(model,t);else if(type==='fox')foxPose(model,t);else animalPose(model,t);
+ const span=type==='cat'?2.35:type==='fox'?3.7:model.userData.span||3.7;
+ render(c,model,x,y,width/span,{direction,opacity,angle:type==='cat'?-.12:-.18});
+}
+// Compatibility for the fixed completion pose; there are no raster frames.
+export function drawAnimation(c,name,x,y,width,progress){
+ const cat=models.get('cat');if(!cat)return;
+ cat.position.z=0;if(cat.userData.brush)cat.userData.brush.visible=false;catPose(cat,0);cat.userData.joints.head.rotation.y=.16*Math.sin(Math.min(1,progress)*Math.PI);
+ render(c,cat,x,y,width/2.35);
+}
+export function drawGlassCat(c,target,r,time,{brush=false,rest=false}={}){
+ const cat=models.get('cat');if(!cat)return null;
+ const unit=r*.66,base=r*.99,x=rest?-r*.1:target.x*.48-unit*.31;
+ cat.position.z=-.40;
+ const modelTarget=new T.Vector3((target.x-x)/unit,(base-target.y)/unit,.64);
+ const state=rest?(catIdlePose(cat,time),null):catWorkPose(cat,modelTarget,time);
+ let tool=cat.userData.brush;
+ if(!tool){
+  tool=new T.Group();const handle=new T.Mesh(new T.CylinderGeometry(.015,.015,.34,10),new T.MeshStandardMaterial({color:'#82603c',roughness:1}));handle.position.y=-.14;tool.add(handle);
+  const bristles=new T.Mesh(new T.ConeGeometry(.042,.12,12),new T.MeshStandardMaterial({color:'#40392b',roughness:1}));bristles.rotation.z=Math.PI;bristles.position.y=-.36;tool.add(bristles);
+  // The brush is held in the same hand as the contact locator. Its tip is
+  // exactly at that locator, so paint and bristles cannot drift apart.
+  tool.position.y=.42;cat.userData.contact.add(tool);cat.userData.brush=tool;
+ }
+ tool.visible=brush;
+ render(c,cat,x,base,unit);
+ if(!state)return null;
+ return {x:x+state.tip.x*unit,y:base-state.tip.y*unit,error:state.error*unit,target:{...target},anatomy:state.anatomy};
+}
 export function drawPaintTexture(c,x,y,w,h,opacity=.25){c.save();c.globalAlpha*=opacity;c.drawImage(painted.paint,1010,12,420,190,x,y,w,h);c.restore();}
+export function animationDiagnostics(){return {technique:'continuous 3D skin',models:models.size,contexts:1,renderer:renderer?.info,contextLost:!!painted.contextLost};}

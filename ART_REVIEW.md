@@ -31,3 +31,7 @@ The final-minute claw stroke is synchronized to a new set of three glass scratch
 The digital housing retains its running position, dimensions and socket layout at completion. The red-capped cat emerges above the unchanged top edge with actual panel occlusion. The completion caption is placed below the housing to leave the head visible.
 
 [Animation prompts](docs/ANIMATION_PROMPTS.md), [initial still prompts](docs/painted-cast/PROMPTS.md), and [proof prompts](docs/art-review-v2/PROMPTS.md) record built-in image-generation usage.
+
+## Final 3D implementation approved — October 26, 2026
+
+After selecting actual painted 3D animation, the owner approved the continuous cat/fox motion, elbow correction, and friendlier faces, then requested completion of the project. Timer 2.0.0 integrates those models and extends the same materials and facial language across the 25-species cast. It generates no new image pose sequences. The older raster approvals above remain as a historical record. The updated application and cast captures are `docs/setup.png` and `docs/characters.png`.

@@ -1,31 +1,27 @@
 # timer.
 
-**Time to keep track of time.** A quiet, illustrated JavaScript timer for the classroom.
+**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.0.0 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
 
-The painted character style, clock treatments, and all 25 species have been approved and integrated. See [the artwork record](ART_REVIEW.md).
+- **The painter:** a cat works behind textured frosted glass. A held brush paints the minute hand and the paw erases it. During the last minute, the claws remove each second’s perimeter mark and leave scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
+- **The builders:** solid segments enter recessed sockets from behind and fall forward into debris. Twenty-five animated animals visit occasionally to clear the floor. At zero, the red-capped cat peeks from behind the clock, whose housing stays fixed.
 
-Two scenes share original artwork inspired by the simple contours, flat color, and cat-and-red-fish palette requested in the discussion:
-
-- **The painter:** a painted cat erases with its forepaw and paints minute changes with its tail behind frosted glass. In the final minute, each visible claw-contact stroke removes its own perimeter tick and leaves three scratch marks; the last stroke continues into the glass break.
-- **The builders:** block segments slide through recessed sockets, fall away, and break into debris. A randomized cast of 25 animals clears them. At zero, the clock housing stays in its exact running position while the red-capped cat rises behind the top edge and peeks out.
-
-All 25 characters use 24-frame painted pose sequences with transparent edges. Separate cat sequences handle tail painting, claw scratching, and peeking. The renderer plays complete poses without mesh warping. Walking gait phase follows traversal distance; frames are prepared and ground-registered before playback, with continuous transitions. Fox and turkey poses are also body-aligned and reordered for smoother small-size motion. Reduced motion is supported.
+Characters are continuous 3D surfaces with skeletal motion and stable painted materials. Poses are evaluated from elapsed time; no image-frame sequences, crossfading, or image warping remain. One shared offscreen WebGL renderer supplies the characters to the clock scenes. The cast shares the approved material and facial style, with species-specific proportions, markings, ears, horns, wings, shells, and tails.
 
 ![Timer setup](docs/setup.png)
 
-[View the complete character cast](docs/characters.png).
+[See all 25 characters](docs/characters.png).
 
 ## Run locally
 
-No package installation is needed. The first load includes about 45 MB of losslessly encoded painted animation assets; subsequent visits can use the browser cache. Serve this directory with any static web server. For example:
+No package installation is required. Serve the repository with a static web server:
 
 ```sh
 python3 -m http.server 8080 --bind 127.0.0.1
 ```
 
-Open `http://127.0.0.1:8080`. A local server is required because the app uses JavaScript modules.
+Open `http://127.0.0.1:8080/`. JavaScript modules require a server rather than opening the HTML as a file. Use a browser with WebGL 2 enabled. The complete site is approximately 29 MB before transfer compression. Assets and shaders are prepared before Start becomes available.
 
-## Build for private hosting
+## Private hosting
 
 With Node.js 18 or newer:
 
@@ -33,45 +29,39 @@ With Node.js 18 or newer:
 npm run build
 ```
 
-Upload the contents of `dist/` to your private static host. The build has no external runtime dependencies, fonts, media requests, analytics, or backend. See [HOSTING.md](HOSTING.md). This repository and its source are private; nothing has been publicly deployed.
+Upload the contents of `dist/` to your private static host, or extract `releases/Timer-private-hosting.zip`. See [HOSTING.md](HOSTING.md). Everything is local: no CDN, remote fonts, tracking, accounts, API keys, backend, or package installation. The Three.js runtime and its MIT license are bundled. Nothing has been publicly deployed.
 
 ## Use
 
-Choose either scene and a preset of 1, 5, 10, 15, or 30 minutes, or enter minutes and seconds. While running, pause/resume, restart, cancel, add 3 or 5 minutes, or add a custom duration. Fullscreen is optional. Space pauses/resumes when focus is on the page; buttons retain normal keyboard behavior. F toggles fullscreen. Escape closes dialogs and can exit fullscreen.
+Choose a scene, a preset (1, 5, 10, 15, or 30 minutes), or a custom duration. Controls offer pause/resume, restart, cancel, +3 minutes, +5 minutes, custom added time, and fullscreen. Space pauses/resumes when the page has focus; F toggles fullscreen. Buttons retain normal keyboard behavior. Dialogs support Escape.
 
-Sound starts off. End sound, rising ticking, and original ambient tones can be enabled independently, with master mute and volume controls. Settings are stored on the current browser. The glass break is the default visual ending; a gentle alternative is available.
+Sound defaults to silent. End sound, ticking, and original ambient tones have independent switches, volume, and master mute. Settings remain in the current browser. Less motion and the operating system’s reduced-motion preference provide still characters and simple clock changes.
 
-Red lasts `min(60, original duration / 6)` seconds. Yellow lasts twice that length and precedes red. Thus a 5-minute timer turns yellow at 2:30 and red at 0:50; a 10-minute timer turns yellow at 3:00 and red at 1:00. Added time preserves the original thresholds. Restart restores the original selected duration. Custom timers and added durations are capped at 999:59.
+Red lasts `min(60, original duration / 6)` seconds, with yellow lasting twice as long immediately beforehand. A five-minute timer turns yellow at 2:30 and red at 0:50; a ten-minute timer turns yellow at 3:00 and red at 1:00. Added time preserves those thresholds. Restart restores the selected duration. Times are capped at 999:59.
 
-The analog dial uses brushed countdown hands and 60 perimeter marks over a textured frosted-glass face. The long hand represents remaining minutes within the hour, and the short hand represents hours; a large exact readout below the dial removes ambiguity for short or long durations. The cat erases and repaints the long hand at minute changes. Scratches reflect the current remaining time and retreat if time is added.
+The analog hands represent remaining minutes within the hour and hours. An exact readout below the dial clarifies every duration. The cat repaints the long hand at minute changes. Final-minute scratches reflect current remaining time, including after added time. Countdown accuracy is independent of rendering speed and reconciles with the deadline when a background tab returns.
 
-## Verification
+## Checks and maintenance
 
 ```sh
 npm test
+npm run build
+npm run test:browser
+npm run test:rig
+npm run test:performance
 ```
 
-Optional browser checks use Playwright, a running local server on port 8080, and Chrome/Chromium:
+Browser checks require Playwright, Chrome, and the local server. Set `PLAYWRIGHT_PATH` to an installed Playwright package and optionally `CHROME_PATH` to the browser executable. `npm run test:gaits` checks the additional animals’ planted feet. Screenshots and measurements are saved under ignored `test-results/`. See [QA.md](QA.md) for evidence and device-testing limits.
 
-```sh
-node tests/browser.mjs
-node tests/sequences.mjs
-node tests/performance.mjs
-node tests/production.mjs
-node tests/anatomy.mjs
-```
-
-Install Playwright separately or set `PLAYWRIGHT_PATH` to its existing package location. Set `CHROME_PATH` for a custom browser executable; macOS defaults to the installed Google Chrome, other platforms use Playwright's Chromium. Screenshots and measured results are written to the ignored `test-results/` folder. See [QA.md](QA.md) for the verified scope and remaining device checks.
+The approved motion demonstration remains at `/docs/rig-proof/motion.html`; it imports the shipping rigs. To rebuild the additional continuous surfaces after changing construction geometry, run `node scripts/extract-cast.mjs` with the local server, followed by `node scripts/build-smooth-skins.mjs <species...>`. These are development steps; hosting needs only the finished static build.
 
 ## Source map
 
-- `src/clock.js`: deadline-based countdown and phase rules.
-- `src/art.js`: shared palette, phase themes, and cast registry.
-- `src/paint.js`: prepacked pose loading, fixed-frame playback, and uniform placement.
-- `src/cat-actions.js`: claw-contact timing and painting choreography.
-- `src/depth.js`: perspective-projected sockets and solid segment geometry.
-- `src/scenes.js`: frosted-glass painting, scratches, blocks, debris, visitors, and endings.
-- `src/audio.js`: original Web Audio synthesis.
-- `src/app.js`: interface, settings, keyboard controls, and render loop.
-- [PLAN.md](PLAN.md): discussion-derived requirements and confirmed decisions.
-- [ASSETS.md](ASSETS.md): artwork and sound provenance.
+- `src/clock.js`: deadline timer, states, phase rules, and bounds.
+- `src/characters/`: painted materials, anatomical rigs, continuous skins, bundled renderer, and cast.
+- `src/paint.js`: asset preparation, shared 3D renderer, and glass contacts.
+- `src/cat-actions.js`: second-by-second claw and brush choreography.
+- `src/scenes.js` / `src/depth.js`: glass, painted marks, projected solids, debris, visits, and endings.
+- `src/app.js` / `src/audio.js`: interface, settings, keyboard, render loop, and original synthesized audio.
+- [PLAN.md](PLAN.md): final scope and confirmed decisions.
+- [ASSETS.md](ASSETS.md): provenance and licenses.

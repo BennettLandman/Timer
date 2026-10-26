@@ -1,0 +1,1 @@
+{"type":"fish","bones":["fox-hips","fox-neck","fox-head","fox-tail"],"shapes":[{"kind":"ellipsoid","p":[0,0.43,0],"q":[0,0,0,1],"scale":[0.75,0.42,0.29],"bone":0,"coat":0},{"kind":"ellipsoid","p":[0.68,0.43,0],"q":[0,0,0,1],"scale":[0.29,0.28,0.25],"bone":2,"coat":0}]}

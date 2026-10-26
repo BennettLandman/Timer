@@ -1,7 +1,7 @@
 import {themes,prepareCanvas,paper,species} from './art.js';
 import {formatTime} from './clock.js';
 import {drawClawAction,drawPainterAction,scratchTiming,scratchPath} from './cat-actions.js';
-import {painted,drawPaintedAnimal,drawPaintTexture,paintedAspect,drawAnimation,spritePlacement,frameIndex} from './paint.js';
+import {painted,drawPaintedAnimal,drawPaintTexture,paintedAspect,drawAnimation,drawGlassCat,visitorMotionTime} from './paint.js';
 import {drawSolid,drawSocket,drawHousing,project,segmentPolygon} from './depth.js';
 const TAU=Math.PI*2;
 const ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
@@ -53,15 +53,15 @@ export class Scene {
   if(!this.shadowCanvas){this.shadowCanvas=document.createElement('canvas');this.shadowCanvas.width=900;this.shadowCanvas.height=900;}
   const sc=this.shadowCanvas.getContext('2d');sc.setTransform(1,0,0,1,0,0);sc.clearRect(0,0,900,900);sc.translate(450,450);
   let claw=null;
-  if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;}
-  else if(changing)drawPainterAction(sc,target,r,age,{erase,reduced});
-  else drawAnimation(sc,'cat-paint',-r*.10,r*.80,r*.74,0,{loop:false});
+  if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;this.lastContact=claw;}
+  else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced});
+  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:time,{rest:true});
   c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.58:.15+proximity*.35;c.filter=`blur(${final?1.2:changing?1.3:7-proximity*5}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
   // A glazing pass sits in front of the animal, so the painted cat is behind a real surface.
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.14;c.globalCompositeOperation='screen';c.drawImage(painted.glass,-r,-r,r*2,r*2);c.restore();
   for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;const tick=final?scratchTiming(remaining,initial):null;const removed=tick&&(i<tick.completed?1:i===tick.index?tick.progress:0);c.save();c.globalAlpha=1-(removed||0);stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);c.restore();}
   for(let i=1;i<=12;i++){const a=i/12*TAU-Math.PI/2;text(c,String(i===12?60:i*5),Math.cos(a)*(r-44),Math.sin(a)*(r-44),`${preview?9:14}px Georgia`,theme.ink+'a8');}
-  // The hands are brushed marks, rebuilt once per minute by the tail's contact stroke.
+  // The brush tip and the growing/erasing painted hand share one glass target.
   paintStroke(c,hourAngle,r*.43,preview?5:8,theme.ink,.98);
   if(erase){paintStroke(c,oldAngle,r*.78,preview?6:10,theme.ink,amount);paintStroke(c,angle,r*.78,preview?6:10,theme.ink,.05);}
   else paintStroke(c,angle,r*.78,preview?6:10,theme.ink,amount);
@@ -119,9 +119,9 @@ export class Scene {
   stroke(c,[[cx-width*scale/2-50,floor],[cx+width*scale/2+50,floor]],theme.ink+'24',1);
   if(preview){drawPaintedAnimal(c,'cat',cx-width*scale/2-14,floor+2,130,reduced?0:time,{still:reduced});return;}
   if(!reduced&&time>=this.nextVisit&&!this.visitor){this.visitor={start:time,type:species[Math.floor(Math.random()*species.length)],direction:Math.random()<.5?1:-1};this.nextVisit=time+50+Math.random()*25;}
-  if(this.visitor&&!reduced){const age=time-this.visitor.start,t=age/13,d=this.visitor.direction,px=d===1?-170+t*1340:1170-t*1340;
-   const aspect=paintedAspect(this.visitor.type),visitorWidth=Math.min(205,112*aspect),stride=Math.max(visitorWidth*.38,(visitorWidth/aspect)*.6);
-   drawPaintedAnimal(c,this.visitor.type,px,floor+8,visitorWidth,age*(1340/13)/stride*.8,{direction:d});
+  if(this.visitor&&!reduced){const age=time-this.visitor.start,duration=this.visitor.type==='turtle'?90:this.visitor.type==='fish'?24:40,t=age/duration,d=this.visitor.direction,px=d===1?-170+t*1340:1170-t*1340;
+   const aspect=paintedAspect(this.visitor.type),visitorWidth=Math.min(205,112*aspect);
+   drawPaintedAnimal(c,this.visitor.type,px,floor+8,visitorWidth,visitorMotionTime(this.visitor.type,age*1340/duration,visitorWidth),{direction:d});
    const local=(px-cx)/scale+width/2;
    this.debris=this.debris.filter(p=>{const scatter=Math.abs(Math.sin(p.a*12.4))*28;if(d===1&&p.x<local+90+scatter)p.x=local+90+scatter;if(d===-1&&p.x>local-90-scatter)p.x=local-90-scatter;return p.x>-110&&p.x<width+110;});if(t>=1)this.visitor=null;
   }
@@ -143,10 +143,10 @@ export class Scene {
    const panelTop=layout.cy-112*layout.scale;
    // The head rises from behind the stationary top edge. Panel occlusion is real,
    // so the beret and ears appear first; the clock is never translated or rescaled.
-   drawAnimation(c,'cat-peek',layout.cx+layout.width*layout.scale*.30,panelTop+110*(1-rise)+45,150,look,{loop:false});
+   drawAnimation(c,'cat-peek',layout.cx+layout.width*layout.scale*.30,panelTop+200-110*rise,150,look,{loop:false});
    c.drawImage(this.endPanel,0,0);
   }else{
-   drawAnimation(c,'cat-walk',500,535,360,0,{loop:false});
+   drawAnimation(c,'cat-walk',500,535,250,0,{loop:false});
   }
   if(mode==='analog'&&t<1){if(time<.25){c.save();c.globalAlpha=1-time/.25;for(let claw=0;claw<3;claw++)stroke(c,[[500+(this.lastClaw?.x||0)+claw*2.5,270+(this.lastClaw?.y||0)-5],[499+(this.lastClaw?.x||0)+claw*2.5,270+(this.lastClaw?.y||0)+2]],theme.ink,1.3);c.restore();}for(let i=0;i<24;i++){const a=i*TAU/24,b=(i+1)*TAU/24;c.save();c.translate(500+Math.cos(a)*t*175,270+t*t*430);c.rotate((i%2?1:-1)*t*.8);c.beginPath();c.moveTo(0,0);c.lineTo(Math.cos(a)*225,Math.sin(a)*225);c.lineTo(Math.cos(b)*225,Math.sin(b)*225);c.closePath();c.clip();c.globalAlpha=(1-t)*.88;c.drawImage(painted.glass,-225,-225,450,450);c.globalCompositeOperation='multiply';c.fillStyle=theme.glass;c.fillRect(-225,-225,450,450);c.restore();}}
   this.particles=[];this.debris=[];this.visitor=null;

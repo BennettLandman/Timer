@@ -50,4 +50,4 @@ function frame(now){const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastF
  }
  requestAnimationFrame(frame);
 }
-loadPaintAssets().then(()=>{lastFrame=performance.now();requestAnimationFrame(frame);return loadVisitorAssets();}).then(()=>{$('start').disabled=false;$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';}).catch(()=>{$('input-error').textContent='The studio could not load. Please reload the page.';});
+loadPaintAssets().then(()=>{lastFrame=performance.now();requestAnimationFrame(frame);return loadVisitorAssets();}).then(()=>{$('start').disabled=false;$('preview-caption').textContent=mode==='analog'?'A little painter, behind the glass.':'A little help with the passing seconds.';}).catch(error=>{console.error(error);$('input-error').textContent='The studio could not load. Please reload in a browser with WebGL enabled.';});
