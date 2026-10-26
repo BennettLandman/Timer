@@ -25,6 +25,8 @@ try{
   document.getElementById('phase').textContent=state.phase;document.getElementById('position').textContent=(timeline%6).toFixed(1)+' s';if(document.activeElement!==document.getElementById('seek'))document.getElementById('seek').value=timeline%6;
   window.motion.state=state;
  }
+ function setView(value){const quarter=value==='quarter';catStage.camera.position.set(quarter?2.2:0,1.65,8);catStage.camera.lookAt(0,1.5,0);foxStage.camera.position.set(quarter?2.8:0,1.6,8);foxStage.camera.lookAt(0,.95,0);}
+ setView('quarter');document.getElementById('view').onchange=e=>{setView(e.target.value);draw();};
  window.motion={ready:true,cat,fox,stages:scenes,draw,seek(t){timeline=t;draw();},pause(){playing=false;document.getElementById('play').textContent='Play';},play(){playing=true;last=null;document.getElementById('play').textContent='Pause';},get time(){return timeline;},get frames(){return frames;}};
  document.getElementById('play').onclick=()=>playing?motion.pause():motion.play();document.getElementById('restart').onclick=()=>{timeline=0;draw();};document.getElementById('speed').onchange=e=>{speed=Number(e.target.value);};document.getElementById('seek').oninput=e=>{motion.pause();timeline=Number(e.target.value);draw();};
  document.addEventListener('visibilitychange',()=>{last=null;});draw();ready=true;

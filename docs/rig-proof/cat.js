@@ -1,3 +1,4 @@
+import {smoothSkin} from './smooth-skin.js';
 import * as T from './vendor/three.module.js';
 import {paintedMaterials} from './materials.js';
 const V=(x,y,z)=>new T.Vector3(x,y,z);
@@ -11,7 +12,7 @@ export async function createCat(){
  diffuseColor.rgb=mix(diffuseColor.rgb,vec3(.89,.75,.50),bib);
  `);};
  const cat=new T.Group();cat.name='Painted tabby';const root=new T.Bone();root.name='pelvis';cat.add(root);const joints={pelvis:root};
- function shape(parent,mat,pos,size,rot=0){const mesh=new T.Mesh(new T.SphereGeometry(1,48,32),mat);mesh.position.set(...pos);mesh.scale.set(...size);mesh.rotation.z=rot;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);return mesh;}
+ function shape(parent,mat,pos,size,rot=0){const mesh=new T.Mesh(new T.SphereGeometry(1,48,32),mat);mesh.position.set(...pos);mesh.scale.set(...size);mesh.rotation.z=rot;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);if(parent===root||(parent.name==='head'&&mat===fur))mesh.userData.continuous=true;return mesh;}
  function curve(parent,points,radius,mat){const path=new T.CatmullRomCurve3(points.map(p=>V(...p)));const mesh=new T.Mesh(new T.TubeGeometry(path,48,radius,8,false),mat);parent.add(mesh);mesh.castShadow=true;return mesh;}
  function limb(name,points,radii,mat){
   const path=new T.CatmullRomCurve3(points.map(p=>V(...p))),segments=56,sides=16,frames=path.computeFrenetFrames(segments,false),vertices=[],normals=[],uv=[],indices=[],skinIndices=[],weights=[];
@@ -19,7 +20,7 @@ export async function createCat(){
    for(let k=0;k<=sides;k++){const a=k/sides*Math.PI*2,n=frames.normals[i].clone().multiplyScalar(Math.cos(a)).addScaledVector(frames.binormals[i],Math.sin(a));const p=center.clone().addScaledVector(n,r);vertices.push(p.x,p.y,p.z);normals.push(n.x,n.y,n.z);uv.push(k/sides,t);const b=t*(points.length-1),lo=Math.min(points.length-2,Math.floor(b)),mix=b-lo;skinIndices.push(lo,lo+1,0,0);weights.push(1-mix,mix,0,0);if(i<segments&&k<sides){const n=i*(sides+1)+k;indices.push(n,n+sides+1,n+1,n+1,n+sides+1,n+sides+2);}}
   }
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(vertices,3));g.setAttribute('normal',new T.Float32BufferAttribute(normals,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setAttribute('skinIndex',new T.Uint16BufferAttribute(skinIndices,4));g.setAttribute('skinWeight',new T.Float32BufferAttribute(weights,4));g.setIndex(indices);
-  const mesh=new T.SkinnedMesh(g,mat),bones=[];for(let i=0;i<points.length;i++){const bone=new T.Bone();bone.name=name+'-'+i;const position=path.getPointAt(i/(points.length-1));bone.position.copy(i?position.clone().sub(path.getPointAt((i-1)/(points.length-1))):position);if(i)bones[i-1].add(bone);else mesh.add(bone);bones.push(bone);joints[bone.name]=bone;}mesh.bind(new T.Skeleton(bones));mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);mesh.userData.rest=points.map((_,i)=>path.getPointAt(i/(points.length-1)));mesh.userData.bones=bones;cat.userData.limbs??={};cat.userData.limbs[name]=mesh;return mesh;
+  const mesh=new T.SkinnedMesh(g,mat),bones=[];for(let i=0;i<points.length;i++){const bone=new T.Bone();bone.name=name+'-'+i;const position=path.getPointAt(i/(points.length-1));bone.position.copy(i?position.clone().sub(path.getPointAt((i-1)/(points.length-1))):position);if(i)bones[i-1].add(bone);else mesh.add(bone);bones.push(bone);joints[bone.name]=bone;}mesh.bind(new T.Skeleton(bones));mesh.castShadow=mesh.receiveShadow=true;root.add(mesh);mesh.userData.continuous=true;mesh.userData.surfacePath=path.getSpacedPoints(16);mesh.userData.radii=radii;mesh.userData.rest=points.map((_,i)=>path.getPointAt(i/(points.length-1)));mesh.userData.bones=bones;cat.userData.limbs??={};cat.userData.limbs[name]=mesh;return mesh;
  }
  shape(root,chest,[0,1.17,-.04],[.43,.77,.32],-.08);shape(root,chest,[.025,1.75,.0],[.37,.48,.29],-.12);
 
@@ -50,5 +51,5 @@ export async function createCat(){
  const claws=[];for(let i=0;i<3;i++)claws.push(curve(root,[[.91+(i-1)*.052,2.85,.22],[.94+(i-1)*.052,2.92,.24]],.010,cream));
  root.updateMatrixWorld(true);joints['hind-left-3'].attach(leftFoot);joints['hind-right-3'].attach(rightFoot);joints['reach-3'].attach(hand);joints['rest-3'].attach(restHand);for(const {mark,footX}of toeMarks)joints[footX<0?'hind-left-3':'hind-right-3'].attach(mark);for(const claw of claws)joints['reach-3'].attach(claw);
  const contact=new T.Object3D();contact.position.set(.94,2.92,.24);root.add(contact);root.updateMatrixWorld(true);joints['reach-3'].attach(contact);cat.userData.contact=contact;cat.userData.limbs.reach.userData.rest.push(new T.Vector3(.94,2.92,.24));cat.userData.limbs.reach.userData.bones=[...cat.userData.limbs.reach.userData.bones,contact];
- cat.userData.joints=joints;return cat;
+ cat.userData.joints=joints;await smoothSkin(cat,'cat',fur);return cat;
 }

@@ -6,7 +6,7 @@
   "seekError": 0,
   "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
   "frames": {
-    "samples": 125,
+    "samples": 124,
     "median": 16.699999999999818,
     "p95": 16.799999999999955
   },

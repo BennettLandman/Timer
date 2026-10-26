@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {writeFile,mkdir} from 'node:fs/promises';
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_PATH||'playwright');
 const browser=await chromium.launch({headless:true,executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',args:['--no-sandbox']});
-const page=await browser.newPage({viewport:{width:1200,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('http://127.0.0.1:8080/docs/rig-proof/motion.html');await page.waitForFunction(()=>window.motion?.ready,{},{timeout:60000});await page.locator('#play').click();
+const page=await browser.newPage({viewport:{width:1200,height:1000}}),errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/WebGLProgram|shader|VALIDATE_STATUS/i.test(m.text()))errors.push(m.text());});await page.goto('http://127.0.0.1:8080/docs/rig-proof/motion.html');await page.waitForFunction(()=>window.motion?.ready,{},{timeout:60000});await page.locator('#play').click();
 const result=await page.evaluate(async()=>{
  const T=await import('/docs/rig-proof/vendor/three.module.js');const {catPose}=await import('/docs/rig-proof/rig.js');const {foxPose}=await import('/docs/rig-proof/fox.js');
  let contactError=0,footError=0,foxFootError=0;
