@@ -1,11 +1,15 @@
-# Approved painted 3D motion study
+# Character motion studies
 
-The owner approved the cat/fox appearance, continuous joints, anatomical movement, corrected elbow, and friendlier faces, then authorized completion of the application. This study is now a reference for the shipping implementation in `src/characters/`; its model, material, and rig modules re-export that code.
+These development pages exercise the same cat and fox modules used by the timer. Serve the repository locally as described in the [developer guide](../DEVELOPMENT.md). The pages are excluded from the production website.
 
-Open `/docs/rig-proof/motion.html` for the six-second cat acting sequence, the fox walk, pause/speed/seek controls, small-size view, and front/quarter/elbow cameras. `friendly-review.html` retains the matched facial appearance review. `approval-still.png` and review captures show actual rendered geometry.
+| Page | Purpose |
+| --- | --- |
+| [motion.html](motion.html) | Cat acting, fox walking, playback speed, seeking, and front/quarter/elbow camera views |
+| [little-breaks.html](little-breaks.html) | All 24 cat diversions and the final 59 → 0 scratch sequence through the actual glass renderer |
+| [friendly-review.html](friendly-review.html) | Historical comparison of facial and character appearance |
 
-The main timer now uses those continuous 3D characters, glass-contact choreography, digital peeking, and the complete 25-species cast. The old raster sequences no longer ship. The glass is a texture-and-blur compositor treatment; the characters and joints are actual 3D geometry.
+The models use continuous 3D geometry and skeletal motion. Painted pigment is mapped onto their surfaces. Glass uses a separate texture-and-blur treatment.
 
-Run `npm run test:rig` for the approved motion regression. It checks the single elbow, wrist limits, planted cat ankles, fox stance, claw contact, loop closure, deterministic seeking, pause, and mobile layout. Production-specific motion checks and the other animals’ gait checks are separate scripts; see the main README and QA.md.
+Run `npm run test:rig` from the repository root to check elbow and wrist constraints, planted feet, fox stance, claw contact, loop closure, deterministic seeking, pause, and mobile layout. Production choreography and the other animals have separate checks; see [testing coverage](../../QA.md).
 
-Three.js 0.180.0 and its complete MIT license are bundled under `src/characters/vendor/`. One approved image-generated tabby pigment swatch is mapped to the original cat surface. Other shapes, materials, markings, and motion are authored in code. See ASSETS.md for the material prompt and provenance. No further generated pose frames were used.
+See [ASSETS.md](../../ASSETS.md) for material provenance and the bundled Three.js license. Historical screenshots in this directory record earlier visual reviews.

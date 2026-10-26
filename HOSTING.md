@@ -1,23 +1,54 @@
 # Hosting Timer
 
-Timer 2.2.0 runs as static files. The public GitHub Pages address is [https://bennettlandman.github.io/Timer/](https://bennettlandman.github.io/Timer/).
+The public timer is available at **[bennettlandman.github.io/Timer](https://bennettlandman.github.io/Timer/)**. It runs entirely in the browser; no database, application server, API key, or account service is needed.
 
 ## GitHub Pages
 
-The repository uses GitHub Actions as its Pages publishing source. `.github/workflows/pages.yml` runs the unit checks, builds with Node.js 24, uploads only `dist/`, and deploys to the `github-pages` environment. Each push to `main` publishes the current build after the checks pass; the workflow also supports manual runs. Official deployment actions are pinned to verified commit hashes.
+[The deployment workflow](https://github.com/BennettLandman/Timer/blob/main/.github/workflows/pages.yml) publishes the site after every push to `main`. It runs the unit checks, builds with Node.js 24, and uploads only the production `dist/` directory. It can also be run manually from the repository’s Actions tab. The repository’s Pages publishing source is **GitHub Actions**.
 
-The build includes `index.html` and `src/`, with relative asset paths that work under `/Timer/`. It excludes development previews, historical artwork, tests, and documentation from the website. The public repository still contains the development source and history. No custom domain, secrets, server, or package installation is required.
+The production site contains `index.html` and `src/`. Relative paths support the `/Timer/` project address and other subdirectories. Development previews, tests, and reference artwork remain in the source repository and are excluded from the published site.
 
-## Another static host
+## Host your own copy
 
-1. Build with `npm run build` (Node.js 18+) or use the supplied production archive.
-2. Copy the **contents** of `dist/` into your website directory. Keep `index.html` and the `src/` directory together. Relative links support hosting under a subdirectory.
-3. If private access is needed on that host, configure its access controls. The website itself does not implement user accounts.
-4. Serve over HTTPS, with `.js` files served as JavaScript and `.css` files as CSS. WebGL 2 must be enabled for the painted 3D characters. Serve `.skin` files as binary data (for example `application/octet-stream`); do not route these requests to an HTML fallback. No URL rewriting, database, API keys, application server, CDN, or third-party services are required.
-5. Open the hosted site and try each clock with a short timer. Enable sounds with a user click and check volume on the classroom computer. Test fullscreen and projection before classroom use.
+Download `Timer-2.2.0.zip` from the [release page](https://github.com/BennettLandman/Timer/releases/latest), or build from source with Node.js 18 or newer:
 
-For a local-only preview, run `python3 -m http.server 8080 --bind 127.0.0.1` in the extracted website directory. This binds only to the current computer. Open `http://127.0.0.1:8080`.
+```sh
+npm run build
+```
 
-The app has no remote resources. All 25 character assets are prepared before Start becomes available, so the active timer does not need additional network access. It does not install an offline service worker. Browser/device sleep can delay audio and visual callbacks. On returning to an active tab, the displayed time reconciles with the absolute deadline. Keep the classroom device awake when an end sound must occur on time.
+No package installation is required. Upload the **contents** of `dist/` to a static web host, or extract the release ZIP into its web directory. Keep `index.html` and the `src/` directory together.
 
-Settings are kept in browser local storage when available. No student information or usage data is collected.
+Serve the site over HTTPS. JavaScript modules need a JavaScript content type, stylesheets need CSS, and `.skin` assets must be served as binary files, such as `application/octet-stream`. Do not redirect missing asset requests to an HTML fallback. No URL rewriting is required.
+
+The application has no sign-in or access controls. If your copy needs restricted access, configure that on the host.
+
+## Run locally
+
+From the repository root or the extracted release directory, use Python 3:
+
+```sh
+python3 -m http.server 8080 --bind 127.0.0.1
+```
+
+Open [http://127.0.0.1:8080/](http://127.0.0.1:8080/). This server is reachable only from the current computer. Opening `index.html` directly as a file does not support the application’s JavaScript modules.
+
+## Loading and offline use
+
+The production site is approximately 29 MB before transfer compression. The 25 character models and their shaders are prepared before **Start timer** becomes available. All runtime resources are included with the site; no fonts, scripts, or artwork are fetched from third-party services.
+
+After loading, an active timer does not need further network requests. Timer does not install an offline service worker, so reopening the hosted address without a connection is not guaranteed. Use a downloaded copy and a local server when dependable offline access is needed.
+
+WebGL 2 must be enabled. Device sleep or browser throttling can delay audio and visual updates; the remaining time reconciles with the deadline when the page becomes active again. Keep the classroom device awake and check volume, full screen, and projection before use.
+
+## Release archive
+
+To build the ZIP and its checksum from a checkout:
+
+```sh
+npm run build
+npm run package:release
+```
+
+The files are written to `releases/Timer-2.2.0.zip` and `releases/Timer-2.2.0.sha256`. The package includes the production site, hosting guide, asset credits, source revision, and a per-file SHA-256 manifest. Packaging checks that every site file matches the source and verifies the completed ZIP.
+
+Settings are stored in browser local storage when available. The application has no analytics or application-side data collection.

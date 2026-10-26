@@ -1,72 +1,55 @@
 # timer.
 
-**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.2.0 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
+**Time to keep track of time.** A quiet classroom countdown timer with painted characters, gentle humor, and two ways to watch the time pass.
 
-**Use the timer:** [bennettlandman.github.io/Timer](https://bennettlandman.github.io/Timer/).
+### [Open the timer →](https://bennettlandman.github.io/Timer/)
 
-- **The painter:** a cat works behind textured frosted glass. The cat paints the first minute hand immediately after Start, then erases and repaints at minute changes. Its quieter head and paw movements remain visible between strokes, and the setup preview demonstrates the painting. Its 24 occasional diversions include checking a watch, stretching, yoga, a biscuit, grooming, an almost-sneeze, a magnifying-glass investigation, reading, tea, and a silent ukulele solo. These brief, silent diversions stay behind the glass and finish before the next painting stroke. During the last minute, the claws move counter-clockwise, removing the 59, 58, …, 0 marks in order and leaving scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
-- **The builders:** solid segments enter recessed sockets from behind and fall forward into debris. Twenty-five animated animals visit occasionally to clear the floor. At zero, the red-capped cat peeks from behind the clock, whose housing stays fixed.
+No installation or account is needed. Choose a clock, set a duration, and press **Start timer**.
 
-Characters are continuous 3D surfaces with skeletal motion and stable painted materials. Poses are evaluated from elapsed time; no image-frame sequences, crossfading, or image warping remain. One shared offscreen WebGL renderer supplies the characters to the clock scenes. The cast shares the approved material and facial style, with species-specific proportions, markings, ears, horns, wings, shells, and tails.
+![Timer setup with clock choices and duration controls](docs/setup.png)
 
-![Timer setup](docs/setup.png)
+## Two clocks, a little company
 
-[See all 25 characters](docs/characters.png).
+**The painter · Analog**
 
-## Run locally
+A cat paints the hands behind frosted glass, occasionally taking a small break to check a watch, stretch, read, or sip tea. In the final minute, it scratches away the seconds counter-clockwise, from 59 to 0. When time is up, the glass breaks to reveal the artist. A gentle ending is also available.
 
-No package installation is required. Serve the repository with a static web server:
+**The builders · Digital**
 
-```sh
-python3 -m http.server 8080 --bind 127.0.0.1
-```
+Solid pieces slide into the clock from behind and tumble out as the digits change. A cast of 25 animals occasionally helps clear the floor. At the end, the red-capped cat peeks out from behind the clock.
 
-Open `http://127.0.0.1:8080/`. JavaScript modules require a server rather than opening the HTML as a file. Use a browser with WebGL 2 enabled. The complete site is approximately 29 MB before transfer compression. Assets and shaders are prepared before Start becomes available.
+| The painter | The builders |
+| --- | --- |
+| ![Analog timer with the cat behind frosted glass](docs/analog.png) | ![Digital timer with painted clock segments](docs/digital.png) |
 
-## Hosting
+## Using the timer
 
-The public site is published to GitHub Pages by [the deployment workflow](.github/workflows/pages.yml). Each push to `main` runs the unit checks, builds the site, and publishes only the contents of `dist/`. The workflow can also be run manually from GitHub Actions. Development review pages stay in the source repository.
+1. Choose **The painter** or **The builders**.
+2. Select a 1, 5, 10, 15, or 30 minute preset, or enter your own minutes and seconds.
+3. Press **Start timer**. Use **Pause**, **Restart**, or **Cancel** as needed. Add 3 minutes, 5 minutes, or a custom amount without starting over.
 
-With Node.js 18 or newer:
+The background changes from green to yellow to red as the deadline approaches. Red never lasts more than a minute; yellow lasts twice as long as red. For example, a 10 minute timer turns yellow with 3 minutes left and red with 1 minute left.
 
-```sh
-npm run build
-```
+Use **Full screen** for a classroom display. During a timer, **Space** pauses or resumes and **F** toggles full screen when focus is outside a button or input. Buttons also support normal keyboard controls.
 
-For another static host, upload the contents of `dist/`, or build the optional archive with `npm run package:release`. See [HOSTING.md](HOSTING.md). All runtime resources ship with the site: no CDN, remote fonts, tracking, accounts, API keys, backend, or package installation. The Three.js runtime and its MIT license are bundled.
+## Sound and motion
 
-## Use
+Sound starts off. Open **Sound & settings** to enable the end sound, ticking, or soft ambient tones, adjust the volume, or mute everything.
 
-Choose a scene, a preset (1, 5, 10, 15, or 30 minutes), or a custom duration. Controls offer pause/resume, restart, cancel, +3 minutes, +5 minutes, custom added time, and fullscreen. Space pauses/resumes when the page has focus; F toggles fullscreen. Buttons retain normal keyboard behavior. Dialogs support Escape.
+Choose **Gentle ending** to reveal the analog artist without breaking the glass. **Less motion** provides still characters and simpler clock changes; the timer also respects your device’s reduced-motion preference. Settings are saved in the current browser.
 
-Sound defaults to silent. End sound, ticking, and original ambient tones have independent switches, volume, and master mute. Settings remain in the current browser. Less motion and the operating system’s reduced-motion preference provide still characters and simple clock changes.
+## Before classroom use
 
-Red lasts `min(60, original duration / 6)` seconds, with yellow lasting twice as long immediately beforehand. A five-minute timer turns yellow at 2:30 and red at 0:50; a ten-minute timer turns yellow at 3:00 and red at 1:00. Added time preserves those thresholds. Restart restores the selected duration. Times are capped at 999:59.
+Use a browser with WebGL 2 enabled and allow the artwork to finish loading before starting. Keep the device awake if an end sound needs to play on time. The countdown catches up when you return from another tab, but a sleeping device can delay sound and screen updates.
 
-The analog hands represent remaining minutes within the hour and hours. An exact readout below the dial clarifies every duration. The cat repaints the long hand at minute changes. Final-minute scratches reflect current remaining time, including after added time. Countdown accuracy is independent of rendering speed and reconciles with the deadline when a background tab returns.
+Timer has no accounts, advertising, or analytics. The application stores preferences in your browser and sends no timer or student data to an application server. The hosted site loads from GitHub Pages. See [hosting and offline use](HOSTING.md) for self-hosting options and limitations.
 
-## Checks and maintenance
+## Downloads and documentation
 
-```sh
-npm test
-npm run build
-npm run test:browser
-npm run test:rig
-npm run test:performance
-```
-
-Browser checks require Playwright, Chrome, and the local server. Set `PLAYWRIGHT_PATH` to an installed Playwright package and optionally `CHROME_PATH` to the browser executable. `npm run test:gaits` checks the additional animals’ planted feet. Screenshots and measurements are saved under ignored `test-results/`. See [QA.md](QA.md) for evidence and device-testing limits.
-
-Preview all 24 quiet diversions and the seconds countdown at `/docs/rig-proof/little-breaks.html`. The approved motion demonstration remains at `/docs/rig-proof/motion.html`; it imports the shipping rigs. To rebuild the additional continuous surfaces after changing construction geometry, run `node scripts/extract-cast.mjs` with the local server, followed by `node scripts/build-smooth-skins.mjs <species...>`. These are development steps; hosting needs only the finished static build.
-
-## Source map
-
-- `src/clock.js`: deadline timer, states, phase rules, and bounds.
-- `src/characters/`: painted materials, anatomical rigs, continuous skins, bundled renderer, and cast.
-- `src/paint.js`: asset preparation, shared 3D renderer, and glass contacts.
-- `src/boredom.js`: quiet-minute diversion scheduling and blending.
-- `src/cat-actions.js`: second-by-second claw and brush choreography.
-- `src/scenes.js` / `src/depth.js`: glass, painted marks, projected solids, debris, visits, and endings.
-- `src/app.js` / `src/audio.js`: interface, settings, keyboard, render loop, and original synthesized audio.
-- [PLAN.md](PLAN.md): final scope and confirmed decisions.
-- [ASSETS.md](ASSETS.md): provenance and licenses.
+- [Latest release and static-site download](https://github.com/BennettLandman/Timer/releases/latest)
+- [Hosting guide](HOSTING.md)
+- [Developer guide](docs/DEVELOPMENT.md)
+- [Release notes](CHANGELOG.md)
+- [Testing and browser coverage](QA.md)
+- [Artwork and dependency credits](ASSETS.md)
+- [Report a problem or suggest an improvement](https://github.com/BennettLandman/Timer/issues)

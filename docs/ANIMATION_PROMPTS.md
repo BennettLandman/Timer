@@ -1,8 +1,8 @@
-# Pose-animation generation record
+# Historical pose-animation prompts
 
-Built-in image_gen was used to create painted pose sequences from the owner's approved character artwork. Each runtime action or gait has 24 poses. Images were then encoded as lossless WebP; every decoded RGBA pixel was checked against its packed PNG intermediate. No mesh deformation is used. Transparent silhouette extraction preserves complete poses that slightly cross nominal atlas cell boundaries, without stretching the artwork.
+This file records an earlier image-animation experiment. The released timer uses continuous 3D models and skeletal motion; these pose atlases are excluded from the production build. See [current artwork notes](ARTWORK.md) and the [asset ledger](../ASSETS.md) for the shipping implementation.
 
-The master cat reference is saved as `docs/art-review-v2/cat-cutout-reference.png`. Other species references are the approved `docs/painted-cast/sheet-1.png` through `sheet-4.png`.
+The following text preserves the generation prompts as historical records, including their original references to production assets. Each experimental action used a 24-pose sheet. These descriptions are not instructions for maintaining the current renderer.
 
 ## cat-scratch.webp
 

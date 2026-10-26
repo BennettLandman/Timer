@@ -19,7 +19,7 @@ for name, source in expected.items():
 
 out = root / 'releases'
 out.mkdir(exist_ok=True)
-archive = out / 'Timer-private-hosting.zip'
+archive = out / f'Timer-{version}.zip'
 manifest = {name: hashlib.sha256(path.read_bytes()).hexdigest() for name, path in sorted(files.items())}
 with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as bundle:
     for name, path in sorted(files.items()):
@@ -34,7 +34,7 @@ with zipfile.ZipFile(archive) as bundle:
         assert hashlib.sha256(bundle.read(name)).hexdigest() == digest, name
     assert len(bundle.namelist()) == len(manifest) + 4
 checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
-(out / 'Timer-private-hosting.sha256').write_text(f'{checksum}  {archive.name}\n')
+(out / f'Timer-{version}.sha256').write_text(f'{checksum}  {archive.name}\n')
 print(f'Timer {version}: {len(files)} site files verified; {archive.stat().st_size:,} bytes')
 print(f'Source commit: {revision}')
 print(f'Archive: {archive}')

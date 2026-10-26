@@ -1,31 +1,36 @@
-# Asset provenance — Timer 2.2.0
+# Artwork and dependency credits
 
-All character geometry, rigs, clock geometry, and sound synthesis are original project work. No third-party character models, sprite packs, recordings, paintings, or font files ship with the website. Public hosting and source visibility grant no additional reuse license for original artwork. The bundled Three.js runtime retains its included MIT license.
+Timer’s character geometry, rigs, clock geometry, and sound synthesis were created for this project. The application includes a locally bundled Three.js runtime and a small number of image-generated material textures.
 
-| Asset | Shipping location | Source and treatment |
+## What ships with the timer
+
+Paths in this table are relative to the repository root and the release website directory.
+
+| Asset | Location | Origin and use |
 | --- | --- | --- |
-| Painted cat | `src/characters/cat.js`, `assets/cat-smooth.skin` | Original sculpted forms and skeleton; continuous surface with volume-preserving skinning and the approved corrected elbow. |
-| Painted fox | `src/characters/fox.js`, `assets/fox-smooth.skin` | Original continuous quadruped with stifle/hock anatomy and planted stance. |
-| Other 23 species | `src/characters/cast.js`, `assets/<species>-smooth.skin` | Original procedural forms, fused offline; species-specific anatomy, features, coat patterns, and gaits. |
-| Analog diversions and props | `src/boredom.js`, `src/characters/rig.js`, `src/characters/props.js` | 24 original time-based routines; native painted 3D wristwatch, biscuit, baton, magnifier, teacup, book with a turning page, feather, and ukulele. No new bitmap art or image frames. |
-| Surface construction | `src/characters/assets/*-skin.spec.json`, `scripts/build-smooth-skins.mjs` | Original bind-pose specifications, surface fusion, closed indexed meshes, and normalized skin weights. |
-| Tabby pigment | `src/characters/assets/tabby-paint.png` | One generated material swatch based on the approved cat painting; mapped to geometry rather than used as pose frames. |
-| Shared paint treatment | `src/characters/materials.js` | Original stable surface pigment shader and seeded micro-bump texture. No per-frame texture regeneration. |
-| Frosted glass | `src/assets/glass.png` | Existing approved image-generation texture, phase-tinted with composited blur. This is an artistic frosted-glass treatment rather than a physical transmission simulation. |
-| Clock pigment | `src/assets/paint.png` | Blank textured region of the approved digital-clock proof. |
-| Clock marks and solids | `src/scenes.js`, `src/depth.js`, `src/cat-actions.js` | Original procedural geometry and strokes synchronized with the character’s glass target. |
-| End shimmer, ticking, ambient tones | `src/audio.js` | Original Web Audio oscillator synthesis; no audio files. |
-| Typography | CSS system stacks | Installed system fonts; no distributed font files. |
-| Three.js 0.180.0 | `src/characters/vendor/` | Bundled upstream runtime under the included complete MIT license. No runtime CDN requests. |
+| Cat and fox | `src/characters/cat.js`, `src/characters/fox.js` | Original character construction and anatomical rigs, rendered as continuous skinned surfaces. |
+| Other 23 species | `src/characters/cast.js` | Original procedural character forms, species-specific proportions, markings, and gaits. |
+| Character surfaces | `src/characters/assets/*-smooth.skin`, `*-skin.spec.json` | Generated from the project’s geometry specifications; closed indexed meshes with normalized joint weights. |
+| Cat gestures and props | `src/boredom.js`, `src/characters/rig.js`, `src/characters/props.js` | 24 time-based routines and original 3D props, including a watch, biscuit, magnifier, book, teacup, and ukulele. |
+| Tabby pigment | `src/characters/assets/tabby-paint.png` | An image-generated paint swatch mapped onto the cat’s 3D surface. |
+| Shared painted materials | `src/characters/materials.js` | Procedural pigment, markings, and surface texture. |
+| Frosted glass | `src/assets/glass.png` | An image-generated material texture, combined with phase tinting and blur. |
+| Clock pigment | `src/assets/paint.png` | A blank textured region extracted from the project’s image-generated digital-clock study. |
+| Clock marks and solids | `src/scenes.js`, `src/depth.js`, `src/cat-actions.js` | Procedural geometry and strokes synchronized with the countdown and character contact. |
+| Sounds | `src/audio.js` | Original Web Audio synthesis for the end shimmer, ticking, and ambient tones. No recordings are distributed. |
+| Typography | System font stacks | Fonts installed on the visitor’s device; no font files are distributed. |
+| Three.js 0.180.0 | `src/characters/vendor/` | Third-party runtime distributed under its included MIT license. |
 
-## Approved references and material generation
+## Image-generated materials and references
 
-The master cat reference is `docs/art-review-v2/cat-cutout-reference.png`; approved species stills remain in `docs/painted-cast/`. The user approved the continuous 3D cat/fox motion, elbow correction, and friendlier faces before authorizing full integration and cast completion. See `docs/rig-proof/friendly-review.html` for the matched appearance review.
+The tabby swatch was generated on October 25, 2026, using the project’s painted cat reference. Its prompt requested a seamless matte oil-painted texture with ochre, cream, and charcoal tabby pigment, visible brushwork, and even illumination, without a character, scene, text, or lighting effects. It is a surface material, not an animation frame.
 
-The tabby material was generated with the built-in image-generation tool on October 25, 2026, using that approved cat reference. The prompt requested one seamless flat albedo swatch of oil-painted ochre/gold/cream and charcoal tabby pigment: small directional strokes, honey ochre, jagged charcoal bands, cream flecks, matte impasto, even illumination, and no cat, body, scene, text, shadows, or vignette. Other materials, markings, geometry, and motion are implemented directly in code. No further AI pose sheets were generated for version 2.0.0.
+The frosted-glass texture and digital-clock pigment came from earlier image-generated material studies. Character shapes, skeletal movement, props, and the other species’ markings are implemented in code. The release does not use generated pose-frame sequences.
 
-The user supplied the Amsterdam clock screenshot as a conceptual reference; neither the screenshot nor its captions ship with the website. No existing Matisse painting is reproduced.
+[Artwork notes](https://github.com/BennettLandman/Timer/blob/main/docs/ARTWORK.md) link the original character sheets and material studies retained in the source repository. The historical prompts document their creation. The Amsterdam clock screenshot supplied during development was a conceptual reference and is not distributed with the website. No existing Matisse painting is reproduced.
 
-## Superseded artwork
+## Licensing
 
-The old 24-pose raster sequences have been removed from the runtime and build. Their prompts and still approvals remain in the documentation; the old assets are recoverable from Git history. They are historical development evidence, not the animation method used by this release.
+Three.js retains the copyright notice and MIT license in [`src/characters/vendor/LICENSE`](src/characters/vendor/LICENSE). A second copy accompanies the historical motion-study runtime in the source repository.
+
+No additional reuse license for the project’s original artwork is granted by this document. Public source availability and hosting do not change the existing licensing terms.

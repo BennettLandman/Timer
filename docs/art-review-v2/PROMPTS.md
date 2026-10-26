@@ -1,6 +1,6 @@
-# Painted artwork proof prompts
+# Historical clock and painting study prompts
 
-Generated with the built-in image_gen tool on October 25, 2026. These are single-frame approval proofs, not animation frames or production-ready layered assets. The first analog proof was refined once to replace the held brush with tail painting.
+These prompts record the original visual studies. The released timer uses the painted 3D characters described in the [artwork notes](../ARTWORK.md). Some textures derived from these studies still ship; see the [asset ledger](../../ASSETS.md). The prompt wording below describes the studies at the time they were made.
 
 ## Character painting
 

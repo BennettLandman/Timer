@@ -1,6 +1,6 @@
-# Painted production asset prompts
+# Historical character and material prompts
 
-Built-in image_gen was used. The owner approved the principal painting and clock treatments, then approved all four remaining character sheets before animation integration. Raster alpha was preserved. Character motion is created by an articulated raster mesh at runtime rather than independently redrawing the painting for every frame.
+These prompts record the original painted character sheets and material experiments. The sheets are visual references; the released timer uses continuous 3D character models rather than raster atlases. See the [artwork notes](../ARTWORK.md) and [asset ledger](../../ASSETS.md) for the current implementation. The original prompt text follows for provenance.
 
 ## Painted transparent cat
 
