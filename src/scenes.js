@@ -1,5 +1,6 @@
 import {themes,prepareCanvas,paper,species} from './art.js';
 import {formatTime} from './clock.js';
+import {boredMoment,boredWeight} from './boredom.js';
 import {drawClawAction,drawPainterAction,scratchTiming,scratchPath} from './cat-actions.js';
 import {painted,drawPaintedAnimal,drawPaintTexture,paintedAspect,drawAnimation,drawGlassCat,visitorMotionTime} from './paint.js';
 import {drawSolid,drawSocket,drawHousing,project,segmentPolygon} from './depth.js';
@@ -17,7 +18,7 @@ function paintStroke(c,angle,length,width,color,amount=1){
 }
 export class Scene {
  constructor(){this.reset();}
- reset(){this.previousDigits=new Map();this.particles=[];this.debris=[];this.nextVisit=45+Math.random()*20;this.visitor=null;this.lastMinute=null;this.minuteChanged=0;this.oldMinute=null;this.completeAt=null;this.shadowCanvas=null;this.endPanel=null;this.digitalLayout=null;}
+ reset(){this.boredSeed=Math.floor(Math.random()*0x7fffffff);this.minuteSpan=60;this.previousDigits=new Map();this.particles=[];this.debris=[];this.nextVisit=45+Math.random()*20;this.visitor=null;this.lastMinute=null;this.minuteChanged=0;this.oldMinute=null;this.completeAt=null;this.shadowCanvas=null;this.endPanel=null;this.digitalLayout=null;}
  draw(canvas,{remaining=300,initial=300,phase='green',mode='analog',time=0,reduced=false,completed=false,gentle=false,preview=false,paused=false}={}){
   const {c,w,h}=prepareCanvas(canvas);if(!w||!h||!painted.glass)return;const theme=themes[phase];paper(c,w,h);c.save();
   if(preview){c.translate(w/2,h/2);let s=Math.min(w/660,h/340);c.scale(s,s);c.translate(-500,-300);if(mode==='analog'){this.analog(c,{remaining,initial,theme,time,reduced,preview},500,275,135);}else this.digital(c,{remaining,theme,time,reduced,preview},500,255,.72);}
@@ -31,7 +32,7 @@ export class Scene {
  }
  analog(c,{remaining,initial,theme,time,reduced,preview},cx,cy,r){
   const minute=Math.ceil(remaining/60);
-  if(this.lastMinute!==minute){this.oldMinute=this.lastMinute;this.lastMinute=minute;this.minuteChanged=time;}
+  if(this.lastMinute!==minute){this.oldMinute=this.lastMinute;this.lastMinute=minute;this.minuteChanged=time;this.minuteSpan=remaining%60||60;}
   // Draw the first hand immediately. The setup preview repeats that opening
   // action; running timers subsequently repaint only when the minute changes.
   const opening=preview?time<16.4:this.oldMinute===null;
@@ -45,7 +46,9 @@ export class Scene {
   const engagement=changing?ease(age/(opening?.6:.5))*(1-ease((age-(opening?3.2:4.6))/1.2)):0;
   const workAngle=erase?oldAngle:angle,workLength=r*.78*amount;
   const target={x:Math.cos(workAngle)*workLength,y:Math.sin(workAngle)*workLength};
-  this.analogAction={opening,changing,erase,amount,engagement,age};
+  const moment=!preview&&!reduced&&!final&&!changing?boredMoment({seed:this.boredSeed,minute,age,span:this.minuteSpan}):null;
+  const curiosity=boredWeight(moment);
+  this.analogAction={opening,changing,erase,amount,engagement,age,moment};
   c.save();c.translate(cx,cy);
   // Physical rim, subtle cast shadow, and a static raster glass surface (no boiling noise).
   c.shadowColor='#1b332b20';c.shadowBlur=16;c.shadowOffsetY=8;circle(c,0,0,r+11);c.fillStyle='#4a5b3b';c.fill();c.shadowColor='transparent';
@@ -56,8 +59,8 @@ export class Scene {
   let claw=null;
   if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;this.lastContact=claw;}
   else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced,engagement});
-  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:Math.max(0,Math.min(48,age-(opening?4.4:6))),{rest:true});
-  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.38+engagement*.20:.38;c.filter=`blur(${final?1.2:changing?3.0-engagement*1.7:3.0}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
+  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:Math.max(0,Math.min(48,age-(opening?4.4:6))),{rest:true,moment});
+  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.38+engagement*.20:.38+curiosity*.07;c.filter=`blur(${final?1.2:changing?3.0-engagement*1.7:3.0-curiosity*.6}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
   // A glazing pass sits in front of the animal, so the painted cat is behind a real surface.
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.14;c.globalCompositeOperation='screen';c.drawImage(painted.glass,-r,-r,r*2,r*2);c.restore();
   for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;const tick=final?scratchTiming(remaining,initial):null;const removed=tick&&(i<tick.completed?1:i===tick.index?tick.progress:0);c.save();c.globalAlpha=1-(removed||0);stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);c.restore();}

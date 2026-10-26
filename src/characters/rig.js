@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
+import {boredWeight} from '../boredom.js';
 // Solve a fixed-length chain in model coordinates. Rendered poses never depend
 // on the number of previous screen frames, making pause/scrub/restart exact.
 export function solveLimb(mesh,target){
@@ -99,9 +100,49 @@ export function catIdlePose(cat,time){
  // Inspect the painting hand, then lower it. A deliberate shoulder/elbow
  // gesture remains visible through the frosted panel between minute changes.
  const lift=smooth((beat-2)/1.5)*(1-smooth((beat-6)/2));
- actingArm(cat.userData.limbs.reach,new T.Vector3(.55+.08*lift,1.07+.63*lift,.30+.18*lift),new T.Vector3(1.1,1.25,-.55));
+ const hand=new T.Vector3(.55+.08*lift,1.07+.63*lift,.30+.18*lift);
+ actingArm(cat.userData.limbs.reach,hand,new T.Vector3(1.1,1.25,-.55));
  const blink=((time%7.3)+7.3)%7.3,closed=blink>6.9?Math.sin((blink-6.9)/.4*Math.PI)**2:0;
  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y=eye.height*(1-.96*closed);
  cat.userData.joints['tail-0'].rotation.y=.04*Math.sin(time*.45);
- cat.updateMatrixWorld(true);
+ cat.updateMatrixWorld(true);return {hand,head:cat.userData.joints.head.rotation.clone()};
+}
+
+function freeArmPose(cat,wrist){
+ const mesh=cat.userData.limbs.rest,free=mesh.userData,upper=free.rest[1].distanceTo(free.rest[0]),lower=free.rest[2].distanceTo(free.rest[1])+free.rest[3].distanceTo(free.rest[2]);
+ const solution=twoBone(free.rest[0],wrist,new T.Vector3(-1.1,1.5,.60),upper,lower);
+ applyArm(mesh,[free.rest[0],solution.elbow,solution.elbow.clone().lerp(solution.wrist,free.rest[1].distanceTo(free.rest[2])/lower),solution.wrist],new T.Quaternion().setFromUnitVectors(free.rest[3].clone().sub(free.rest[1]).normalize(),solution.wrist.clone().sub(solution.elbow).normalize()));
+}
+export function catBoredPose(cat,time,moment){
+ const idle=catIdlePose(cat,time),{joints,limbs}=cat.userData,{local:t,duration,type}=moment;
+ const weight=boredWeight(moment),root=joints.pelvis;
+ let hand=new T.Vector3(.55,1.07,.30),free=new T.Vector3(-.55,1.02,.20),head=new T.Euler(-.03,.03,.04),lift=0;
+ if(type==='watch'){
+  // Raise the watch, tap it once, then give the room a mildly dubious look.
+  const tap=smooth((t-2.6)/.25)*(1-smooth((t-3.0)/.35)),audience=smooth((t-4.4)/.7)*(1-smooth((t-6.0)/.5));
+  free.set(-.10,1.58,.55);hand.set(-.015,1.62,.69-.035*tap);
+  head.set(.22*(1-audience),-.16*(1-audience),.11);
+ }else if(type==='stretch'){
+  hand.set(.62,2.90,.45);free.set(-.52,2.70,.30);head.set(-.14,.03,-.04);
+  root.position.y=.015*weight;
+ }else if(type==='yoga'){
+  lift=smooth((t-1.5)/1.4)*(1-smooth((t-duration+3.1)/1.3));
+  root.position.x=(-.12+.012*Math.sin(t*3.1)*lift)*weight;root.position.y=-.035*weight;
+  hand.set(.12,1.60,.60);free.set(-.10,1.50,.55);head.set(-.04,.03,-.05);
+  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y*=1-.66*weight;
+ }else if(type==='snack'){
+  hand.set(.25,2.04,.57);head.set(.075+.018*Math.sin(t*7.0),-.08,.05);
+ }
+ const reach=idle.hand.clone().lerp(hand,weight).sub(root.position),left=new T.Vector3(-.55,1.02,.20).lerp(free,weight).sub(root.position);
+ // Hands arc forward on the way overhead, avoiding an over-folded elbow
+ // while the wrists pass shoulder height.
+ if(type==='stretch'){const arc=.13*Math.sin(Math.PI*weight);reach.z+=arc;left.z+=arc;}
+ const anatomy=actingArm(limbs.reach,reach,new T.Vector3(1.1,1.25,-.55));freeArmPose(cat,left);
+ joints.head.rotation.set(mix(idle.head.x,head.x,weight),mix(idle.head.y,head.y,weight),mix(idle.head.z,head.z,weight));
+ for(const [name,x]of [['hind-left',-.32],['hind-right',.39]]){
+  const goal=new T.Vector3(x,.105,.28+(x>0?.02:0));
+  if(name==='hind-right')goal.lerp(new T.Vector3(.055,.53,.23),lift);
+  solveLimb(limbs[name],goal.sub(root.position));
+ }
+ cat.updateMatrixWorld(true);return {type,weight,lift,anatomy,handTarget:reach.clone().add(root.position),freeTarget:left.clone().add(root.position)};
 }

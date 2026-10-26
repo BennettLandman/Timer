@@ -1,8 +1,8 @@
 # timer.
 
-**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.0.1 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
+**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.1.0 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
 
-- **The painter:** a cat works behind textured frosted glass. The cat paints the first minute hand immediately after Start, then erases and repaints at minute changes. Its quieter head and paw movements remain visible between strokes, and the setup preview demonstrates the painting. During the last minute, the claws remove each second’s perimeter mark and leave scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
+- **The painter:** a cat works behind textured frosted glass. The cat paints the first minute hand immediately after Start, then erases and repaints at minute changes. Its quieter head and paw movements remain visible between strokes, and the setup preview demonstrates the painting. Occasionally it checks a wristwatch, stretches, attempts one-foot yoga, or sneaks a fish-shaped biscuit. These brief, silent diversions stay behind the glass and finish before the next painting stroke. During the last minute, the claws remove each second’s perimeter mark and leave scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
 - **The builders:** solid segments enter recessed sockets from behind and fall forward into debris. Twenty-five animated animals visit occasionally to clear the floor. At zero, the red-capped cat peeks from behind the clock, whose housing stays fixed.
 
 Characters are continuous 3D surfaces with skeletal motion and stable painted materials. Poses are evaluated from elapsed time; no image-frame sequences, crossfading, or image warping remain. One shared offscreen WebGL renderer supplies the characters to the clock scenes. The cast shares the approved material and facial style, with species-specific proportions, markings, ears, horns, wings, shells, and tails.
@@ -53,13 +53,14 @@ npm run test:performance
 
 Browser checks require Playwright, Chrome, and the local server. Set `PLAYWRIGHT_PATH` to an installed Playwright package and optionally `CHROME_PATH` to the browser executable. `npm run test:gaits` checks the additional animals’ planted feet. Screenshots and measurements are saved under ignored `test-results/`. See [QA.md](QA.md) for evidence and device-testing limits.
 
-The approved motion demonstration remains at `/docs/rig-proof/motion.html`; it imports the shipping rigs. To rebuild the additional continuous surfaces after changing construction geometry, run `node scripts/extract-cast.mjs` with the local server, followed by `node scripts/build-smooth-skins.mjs <species...>`. These are development steps; hosting needs only the finished static build.
+Preview the four quiet diversions at `/docs/rig-proof/little-breaks.html`. The approved motion demonstration remains at `/docs/rig-proof/motion.html`; it imports the shipping rigs. To rebuild the additional continuous surfaces after changing construction geometry, run `node scripts/extract-cast.mjs` with the local server, followed by `node scripts/build-smooth-skins.mjs <species...>`. These are development steps; hosting needs only the finished static build.
 
 ## Source map
 
 - `src/clock.js`: deadline timer, states, phase rules, and bounds.
 - `src/characters/`: painted materials, anatomical rigs, continuous skins, bundled renderer, and cast.
 - `src/paint.js`: asset preparation, shared 3D renderer, and glass contacts.
+- `src/boredom.js`: quiet-minute diversion scheduling and blending.
 - `src/cat-actions.js`: second-by-second claw and brush choreography.
 - `src/scenes.js` / `src/depth.js`: glass, painted marks, projected solids, debris, visits, and endings.
 - `src/app.js` / `src/audio.js`: interface, settings, keyboard, render loop, and original synthesized audio.

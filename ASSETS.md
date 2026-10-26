@@ -1,4 +1,4 @@
-# Asset provenance — Timer 2.0.0
+# Asset provenance — Timer 2.1.0
 
 All character geometry, rigs, clock geometry, and sound synthesis are original project work. No third-party character models, sprite packs, recordings, paintings, or font files ship with the website. This private-project ledger grants no public reuse license for original artwork.
 
@@ -7,6 +7,7 @@ All character geometry, rigs, clock geometry, and sound synthesis are original p
 | Painted cat | `src/characters/cat.js`, `assets/cat-smooth.skin` | Original sculpted forms and skeleton; continuous surface with volume-preserving skinning and the approved corrected elbow. |
 | Painted fox | `src/characters/fox.js`, `assets/fox-smooth.skin` | Original continuous quadruped with stifle/hock anatomy and planted stance. |
 | Other 23 species | `src/characters/cast.js`, `assets/<species>-smooth.skin` | Original procedural forms, fused offline; species-specific anatomy, features, coat patterns, and gaits. |
+| Analog diversions and props | `src/boredom.js`, `src/characters/rig.js`, `src/characters/props.js` | Original time-based watch/stretch/yoga/snack poses, painted 3D wristwatch and fish-biscuit geometry. No new bitmap art or image frames. |
 | Surface construction | `src/characters/assets/*-skin.spec.json`, `scripts/build-smooth-skins.mjs` | Original bind-pose specifications, surface fusion, closed indexed meshes, and normalized skin weights. |
 | Tabby pigment | `src/characters/assets/tabby-paint.png` | One generated material swatch based on the approved cat painting; mapped to geometry rather than used as pose frames. |
 | Shared paint treatment | `src/characters/materials.js` | Original stable surface pigment shader and seeded micro-bump texture. No per-frame texture regeneration. |

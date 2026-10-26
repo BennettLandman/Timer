@@ -4,8 +4,9 @@ import * as T from './characters/vendor/three.module.js';
 import {createCat} from './characters/cat.js';
 import {createFox,foxPose} from './characters/fox.js';
 import {createAnimal,animalPose,animalAspect} from './characters/cast.js';
-import {catPose,catWalkPose,catWorkPose,catIdlePose} from './characters/rig.js';
+import {catPose,catWalkPose,catWorkPose,catIdlePose,catBoredPose} from './characters/rig.js';
 import {species} from './art.js';
+import {addBoredProps,hideBoredProps} from './characters/props.js';
 export const painted={};
 const models=new Map();let coreLoading,visitorLoading,renderer,stage,camera,current;
 const image=async path=>{const img=new Image();img.src=new URL(`assets/${path}`,import.meta.url).href;await img.decode();return img;};
@@ -26,7 +27,7 @@ function render(c,model,x,y,unit,{direction=1,opacity=1,angle=0}={}){
 }
 export function loadPaintAssets(){return coreLoading ||= (async()=>{
  studio();const [glass,paint,cat,fox]=await Promise.all([image('glass.png'),image('paint.png'),createCat(),createFox()]);
- painted.glass=glass;painted.paint=paint;models.set('cat',cat);models.set('fox',fox);painted.cat=true;
+ await addBoredProps(cat);painted.glass=glass;painted.paint=paint;models.set('cat',cat);models.set('fox',fox);painted.cat=true;
  // Compile the primary actor before enabling the timer.
  select(cat);renderer.compile(stage,camera);
 })();}
@@ -45,7 +46,7 @@ export function visitorMotionTime(type,distance,width){
 }
 export function drawPaintedAnimal(c,type,x,y,width,time=0,{direction=1,still=false,opacity=1}={}){
  const model=models.get(type)||models.get('fox');if(!model)return;
- model.position.z=0;if(model.userData.brush)model.userData.brush.visible=false;const t=still?0:time;
+ hideBoredProps(model);model.position.z=0;if(model.userData.brush)model.userData.brush.visible=false;const t=still?0:time;
  if(type==='cat')catWalkPose(model,t);else if(type==='fox')foxPose(model,t);else animalPose(model,t);
  const span=type==='cat'?2.35:type==='fox'?3.7:model.userData.span||3.7;
  render(c,model,x,y,width/span,{direction,opacity,angle:type==='cat'?-.12:-.18});
@@ -53,15 +54,17 @@ export function drawPaintedAnimal(c,type,x,y,width,time=0,{direction=1,still=fal
 // Compatibility for the fixed completion pose; there are no raster frames.
 export function drawAnimation(c,name,x,y,width,progress){
  const cat=models.get('cat');if(!cat)return;
- cat.position.z=0;if(cat.userData.brush)cat.userData.brush.visible=false;catPose(cat,0);cat.userData.joints.head.rotation.y=.16*Math.sin(Math.min(1,progress)*Math.PI);
+ hideBoredProps(cat);cat.position.z=0;if(cat.userData.brush)cat.userData.brush.visible=false;catPose(cat,0);cat.userData.joints.head.rotation.y=.16*Math.sin(Math.min(1,progress)*Math.PI);
  render(c,cat,x,y,width/2.35);
 }
-export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1}={}){
+export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1,moment=null}={}){
  const cat=models.get('cat');if(!cat)return null;
  const unit=r*.66,base=r*.99,home=-r*.1,work=target.x*.48-unit*.31,x=rest?home:home+(work-home)*engagement;
  cat.position.z=-.40;
  const modelTarget=new T.Vector3((target.x-x)/unit,(base-target.y)/unit,.64);
- const state=rest?(catIdlePose(cat,time),null):catWorkPose(cat,modelTarget,time,engagement);
+ const idle=rest?(moment?catBoredPose(cat,time,moment):(catIdlePose(cat,time),null)):null;
+ const state=rest?null:catWorkPose(cat,modelTarget,time,engagement);
+ const props=cat.userData.boredProps;if(props){props.watch.visible=true;props.snack.visible=!!(moment?.type==='snack'&&idle?.weight>.08);}
  let tool=cat.userData.brush;
  if(!tool){
   tool=new T.Group();const handle=new T.Mesh(new T.CylinderGeometry(.015,.015,.34,10),new T.MeshStandardMaterial({color:'#82603c',roughness:1}));handle.position.y=-.14;tool.add(handle);
