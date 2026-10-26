@@ -68,17 +68,18 @@ export function catPose(cat,time){
 // The production glass actor shares the reviewed single-elbow solver. Targets
 // are expressed on the glass plane; the pelvis lowers for low marks while
 // the feet remain on their support plane.
-export function catWorkPose(cat, target, time=0){
+export function catWorkPose(cat, target, time=0, engagement=1){
  catPose(cat,0);
  const {joints,limbs}=cat.userData;
- joints.pelvis.position.y=.10*smooth((target.y-2.5)/.5)-.80*smooth((1.5-target.y)/1.1);
+ joints.pelvis.position.y=(.10*smooth((target.y-2.5)/.5)-.80*smooth((1.5-target.y)/1.1))*engagement;
  const root=joints.pelvis.position;
- joints.head.rotation.set(-.03+Math.max(-.20,Math.min(.20,(2.25-target.y)*.10)),Math.max(-.22,Math.min(.22,(target.x-.3)*.12)),Math.max(-.16,Math.min(.16,(target.x-.3)*-.08)));
- const anatomy=actingArm(limbs.reach,target.clone().sub(root),new T.Vector3(1.1,1.25,-.55));
+ joints.head.rotation.set(-.03+Math.max(-.20,Math.min(.20,(2.25-target.y)*.10))*engagement,mix(.03,Math.max(-.22,Math.min(.22,(target.x-.3)*.12)),engagement),mix(.04,Math.max(-.16,Math.min(.16,(target.x-.3)*-.08)),engagement));
+ const goal=new T.Vector3(.55,1.07,.30).lerp(target,engagement);
+ const anatomy=actingArm(limbs.reach,goal.clone().sub(root),new T.Vector3(1.1,1.25,-.55));
  for(const [name,x,y,z]of [['hind-left',-.32,.105,.28],['hind-right',.39,.105,.30]])solveLimb(limbs[name],new T.Vector3(x,y,z).sub(root));
  cat.updateMatrixWorld(true);
  const actual=cat.worldToLocal(cat.userData.contact.getWorldPosition(new T.Vector3()));
- return {tip:actual,target,anatomy,error:actual.distanceTo(target)};
+ return {tip:actual,target:goal,anatomy,error:actual.distanceTo(goal)};
 }
 export function catWalkPose(cat,time){
  catPose(cat,0);const root=cat.userData.joints.pelvis,phase=time/1.5;
@@ -92,11 +93,15 @@ export function catWalkPose(cat,time){
 
 export function catIdlePose(cat,time){
  catPose(cat,0);
- const beat=((time%41)+41)%41,look=smooth((beat-27)/2)*(1-smooth((beat-33)/2));
- cat.userData.joints.head.rotation.y+=.15*look;
- cat.userData.joints.head.rotation.z+=.055*look;
+ const beat=((time%12)+12)%12,look=smooth((beat-1)/1.5)*(1-smooth((beat-7)/2));
+ cat.userData.joints.head.rotation.y+=.20*look;
+ cat.userData.joints.head.rotation.z+=.08*look;
+ // Inspect the painting hand, then lower it. A deliberate shoulder/elbow
+ // gesture remains visible through the frosted panel between minute changes.
+ const lift=smooth((beat-2)/1.5)*(1-smooth((beat-6)/2));
+ actingArm(cat.userData.limbs.reach,new T.Vector3(.55+.08*lift,1.07+.63*lift,.30+.18*lift),new T.Vector3(1.1,1.25,-.55));
  const blink=((time%7.3)+7.3)%7.3,closed=blink>6.9?Math.sin((blink-6.9)/.4*Math.PI)**2:0;
  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y=eye.height*(1-.96*closed);
- cat.userData.joints['tail-0'].rotation.y=.012*Math.sin(time*.45);
+ cat.userData.joints['tail-0'].rotation.y=.04*Math.sin(time*.45);
  cat.updateMatrixWorld(true);
 }

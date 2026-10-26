@@ -56,12 +56,12 @@ export function drawAnimation(c,name,x,y,width,progress){
  cat.position.z=0;if(cat.userData.brush)cat.userData.brush.visible=false;catPose(cat,0);cat.userData.joints.head.rotation.y=.16*Math.sin(Math.min(1,progress)*Math.PI);
  render(c,cat,x,y,width/2.35);
 }
-export function drawGlassCat(c,target,r,time,{brush=false,rest=false}={}){
+export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1}={}){
  const cat=models.get('cat');if(!cat)return null;
- const unit=r*.66,base=r*.99,x=rest?-r*.1:target.x*.48-unit*.31;
+ const unit=r*.66,base=r*.99,home=-r*.1,work=target.x*.48-unit*.31,x=rest?home:home+(work-home)*engagement;
  cat.position.z=-.40;
  const modelTarget=new T.Vector3((target.x-x)/unit,(base-target.y)/unit,.64);
- const state=rest?(catIdlePose(cat,time),null):catWorkPose(cat,modelTarget,time);
+ const state=rest?(catIdlePose(cat,time),null):catWorkPose(cat,modelTarget,time,engagement);
  let tool=cat.userData.brush;
  if(!tool){
   tool=new T.Group();const handle=new T.Mesh(new T.CylinderGeometry(.015,.015,.34,10),new T.MeshStandardMaterial({color:'#82603c',roughness:1}));handle.position.y=-.14;tool.add(handle);

@@ -17,6 +17,6 @@ export function drawClawAction(c,remaining,initial,r,{reduced=false}={}){
  const paw=drawGlassCat(c,target,r,reduced?0:Math.min(60,initial)-remaining,{rest:reduced});
  return {...state,paw,last:path.end};
 }
-export function drawPainterAction(c,target,r,age,{erase=false,reduced=false}={}){
- return drawGlassCat(c,target,r,age,{brush:!erase,rest:reduced});
+export function drawPainterAction(c,target,r,age,{erase=false,reduced=false,engagement=1}={}){
+ return drawGlassCat(c,target,r,age,{brush:!erase,rest:reduced,engagement});
 }

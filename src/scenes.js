@@ -31,32 +31,33 @@ export class Scene {
  }
  analog(c,{remaining,initial,theme,time,reduced,preview},cx,cy,r){
   const minute=Math.ceil(remaining/60);
-  if(this.lastMinute!==minute){this.oldMinute=this.lastMinute??minute;this.lastMinute=minute;this.minuteChanged=time;}
-  const age=time-this.minuteChanged,changing=!reduced&&this.oldMinute!==minute&&remaining>60&&age<4.2;
+  if(this.lastMinute!==minute){this.oldMinute=this.lastMinute;this.lastMinute=minute;this.minuteChanged=time;}
+  // Draw the first hand immediately. The setup preview repeats that opening
+  // action; running timers subsequently repaint only when the minute changes.
+  const opening=preview?time<16.4:this.oldMinute===null;
+  const age=preview?time%16.4:time-this.minuteChanged;
+  const changing=!reduced&&remaining>60&&(preview||opening||this.oldMinute!==minute)&&age<(opening?4.4:6);
   const angle=(minute%60)/60*TAU-Math.PI/2,oldAngle=((this.oldMinute??minute)%60)/60*TAU-Math.PI/2;
   const hourAngle=(remaining/3600%12)/12*TAU-Math.PI/2;
   const final=remaining<=60;
-  const scratches=Math.max(0,Math.min(60,Math.ceil(initial))-Math.ceil(remaining));
-  const scratchAngle=-Math.PI/2+(scratches+Math.ceil(remaining)-remaining)*TAU/60;
-  const erase=changing&&age<1.55;
-  const amount=changing?(erase?1-ease(age/1.5):ease((age-1.55)/2.4)):1;
-  const workAngle=final?scratchAngle:erase?oldAngle:angle;
-  const workLength=final?r*.9:r*.78*Math.max(.07,amount);
+  const erase=changing&&!opening&&age<1.9;
+  const amount=changing?(erase?1-ease((age-.5)/1.35):ease((age-(opening?.6:2.0))/2.4)):1;
+  const engagement=changing?ease(age/(opening?.6:.5))*(1-ease((age-(opening?3.2:4.6))/1.2)):0;
+  const workAngle=erase?oldAngle:angle,workLength=r*.78*amount;
   const target={x:Math.cos(workAngle)*workLength,y:Math.sin(workAngle)*workLength};
+  this.analogAction={opening,changing,erase,amount,engagement,age};
   c.save();c.translate(cx,cy);
   // Physical rim, subtle cast shadow, and a static raster glass surface (no boiling noise).
   c.shadowColor='#1b332b20';c.shadowBlur=16;c.shadowOffsetY=8;circle(c,0,0,r+11);c.fillStyle='#4a5b3b';c.fill();c.shadowColor='transparent';
   circle(c,0,0,r+5);c.fillStyle='#e3d5ac';c.fill();circle(c,0,0,r);c.fillStyle=theme.glass;c.fill();
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.86;c.drawImage(painted.glass,-r,-r,r*2,r*2);c.globalAlpha=.36;c.globalCompositeOperation='multiply';c.fillStyle=theme.glass;c.fillRect(-r,-r,r*2,r*2);c.restore();
-  const active=!reduced&&(changing||final);
-  const proximity=reduced?.2:final?.68*ease((Math.min(60,initial)-remaining)/1.5):changing?ease(age/.6)*(1-ease((age-3.4)/.8)):.08;
   if(!this.shadowCanvas){this.shadowCanvas=document.createElement('canvas');this.shadowCanvas.width=900;this.shadowCanvas.height=900;}
   const sc=this.shadowCanvas.getContext('2d');sc.setTransform(1,0,0,1,0,0);sc.clearRect(0,0,900,900);sc.translate(450,450);
   let claw=null;
   if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;this.lastContact=claw;}
-  else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced});
-  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:time,{rest:true});
-  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.58:.15+proximity*.35;c.filter=`blur(${final?1.2:changing?1.3:7-proximity*5}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
+  else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced,engagement});
+  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:Math.max(0,Math.min(48,age-(opening?4.4:6))),{rest:true});
+  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.38+engagement*.20:.38;c.filter=`blur(${final?1.2:changing?3.0-engagement*1.7:3.0}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
   // A glazing pass sits in front of the animal, so the painted cat is behind a real surface.
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.14;c.globalCompositeOperation='screen';c.drawImage(painted.glass,-r,-r,r*2,r*2);c.restore();
   for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;const tick=final?scratchTiming(remaining,initial):null;const removed=tick&&(i<tick.completed?1:i===tick.index?tick.progress:0);c.save();c.globalAlpha=1-(removed||0);stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);c.restore();}

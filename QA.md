@@ -1,6 +1,6 @@
-# Timer 2.0.0 verification
+# Timer 2.0.1 verification
 
-Release checks run on October 26, 2026, with installed desktop Chrome, hardware-accelerated WebGL on an Apple M4 Pro, and Playwright. The complete machine-readable report is `docs/verification-2.0.0.json`. Run `node scripts/check-release.mjs` with the local server and Playwright environment to repeat the suite.
+Release checks run on October 26, 2026, with installed desktop Chrome, hardware-accelerated WebGL on an Apple M4 Pro, and Playwright. The complete machine-readable report is `docs/verification-2.0.1.json`. Run `node scripts/check-release.mjs` with the local server and Playwright environment to repeat the suite.
 
 ## Automated coverage
 
@@ -8,6 +8,7 @@ Release checks run on October 26, 2026, with installed desktop Chrome, hardware-
 - **Controls and all species:** invalid input, start, both modes, pause, frozen countdown, add while paused, resume, restart, cancel, custom added time, completion, revival after completion, saved settings, and 25 visibly changing continuous 3D characters at small size. At least 16 sampled distinct poses per species.
 - **Long sequences:** background reconciliation, minute painting, final-minute scratches, glass break/reveal, optional synthesized audio without runtime errors, mute, saved preferences, pixel-identical paused canvas, reduced motion, and a three-minute visitor/debris simulation. Debris is capped at 100; visits remain separated by more than 30 seconds.
 - **Glass contact:** 180 scratch-contact samples cover all 60 second marks, with maximum projected error below 0.01 pixel. Brush reach is checked across the dial and the full painted stroke. Elbow motion remains within 10–145 degrees. This verifies geometric contact; appearance is also inspected in captured start/middle/end painting and four-quadrant scratching frames.
+- **Analog visibility regression:** compare glass-interior pixels rather than changing readout text. Verify visible movement in the first seconds, between minute changes, and in the setup preview; a continuous preview loop; unchanged pixels for reduced motion and pause; and actual Start/Pause interface behavior.
 - **Digital ending:** normal and 999:59 housing geometry stays fixed at completion; the cat visibly emerges from behind it. Sampled normal housing pixels are identical, with at most one channel value of antialiasing difference in the long-format check.
 - **Walking anatomy:** all 22 additional walking species have reachable foot targets and planted stance; fish uses a fin/tail/flop action. The separate approved cat/fox regression checks foot planting, the single elbow, wrist bend, contact, loop closure, deterministic seeking, pause, and mobile layout.
 - **Production package:** served from `/dist/` to verify subdirectory-relative resources, mobile layout, keyboard pause/resume, completion, and no external requests or page errors.

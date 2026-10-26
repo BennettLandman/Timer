@@ -1,8 +1,8 @@
 # timer.
 
-**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.0.0 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
+**Time to keep track of time.** A quiet JavaScript classroom timer with painted 3D characters. Version 2.0.1 integrates the approved cat/fox appearance, continuous joints, corrected elbows, and friendlier faces into the application.
 
-- **The painter:** a cat works behind textured frosted glass. A held brush paints the minute hand and the paw erases it. During the last minute, the claws remove each second’s perimeter mark and leave scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
+- **The painter:** a cat works behind textured frosted glass. The cat paints the first minute hand immediately after Start, then erases and repaints at minute changes. Its quieter head and paw movements remain visible between strokes, and the setup preview demonstrates the painting. During the last minute, the claws remove each second’s perimeter mark and leave scratches. The final scratch leads into the glass break and artist reveal; a gentle alternative is available.
 - **The builders:** solid segments enter recessed sockets from behind and fall forward into debris. Twenty-five animated animals visit occasionally to clear the floor. At zero, the red-capped cat peeks from behind the clock, whose housing stays fixed.
 
 Characters are continuous 3D surfaces with skeletal motion and stable painted materials. Poses are evaluated from elapsed time; no image-frame sequences, crossfading, or image warping remain. One shared offscreen WebGL renderer supplies the characters to the clock scenes. The cast shares the approved material and facial style, with species-specific proportions, markings, ears, horns, wings, shells, and tails.

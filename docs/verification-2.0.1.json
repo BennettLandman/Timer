@@ -1,0 +1,267 @@
+{
+  "version": "2.0.1",
+  "date": "2026-10-26",
+  "unitTests": 39,
+  "checks": [
+    "--test tests/animation.test.js tests/clock.test.js tests/depth.test.js tests/smooth-skins.test.js",
+    "scripts/build.js",
+    "tests/browser.mjs",
+    "tests/sequences.mjs",
+    "tests/anatomy.mjs",
+    "tests/motion.mjs",
+    "tests/analog-visibility.mjs",
+    "tests/gaits.mjs",
+    "tests/rig-motion.mjs",
+    "tests/performance.mjs",
+    "tests/production.mjs"
+  ],
+  "browsers": "Installed desktop Chrome; mobile viewport emulation",
+  "results": {
+    "browser-results": {
+      "errors": [],
+      "poses": {
+        "cat": 64,
+        "dog": 64,
+        "panda": 64,
+        "turtle": 64,
+        "pig": 64,
+        "bear": 64,
+        "cow": 64,
+        "fish": 64,
+        "eagle": 64,
+        "turkey": 64,
+        "raven": 64,
+        "rabbit": 64,
+        "fox": 64,
+        "deer": 64,
+        "horse": 64,
+        "sheep": 64,
+        "goat": 64,
+        "elephant": 64,
+        "giraffe": 64,
+        "zebra": 64,
+        "lion": 64,
+        "penguin": 64,
+        "owl": 64,
+        "frog": 64,
+        "hedgehog": 64
+      },
+      "checks": [
+        "invalid input",
+        "start",
+        "pause",
+        "pause freezes clock",
+        "add while paused",
+        "resume",
+        "restart",
+        "cancel",
+        "both clock modes",
+        "custom add",
+        "completion",
+        "revive completion",
+        "25 continuous 3D species with >=16 distinct poses",
+        "mobile overflow",
+        "reduced motion"
+      ]
+    },
+    "sequence-results": {
+      "errors": [],
+      "longRun": {
+        "visits": 2,
+        "minInterval": 65.60000000000001,
+        "maxParticles": 7,
+        "maxDebris": 100
+      },
+      "checks": [
+        "background countdown reconciliation",
+        "minute painting",
+        "final-minute scratches",
+        "glass break and reveal",
+        "saved settings",
+        "audio controls enable without errors",
+        "master mute",
+        "pause freezes canvas",
+        "3 minute debris and visitor simulation",
+        "visitor minimum interval"
+      ]
+    },
+    "anatomy-results": {
+      "stationary": true,
+      "sameLayout": true,
+      "peekChanged": true,
+      "longStationary": true,
+      "longDiff": 1
+    },
+    "motion-results": {
+      "contactError": 1.6077746776921858e-13,
+      "paintError": 1.5920661319837343e-13,
+      "maxFlex": 89.03557719814012,
+      "minFlex": 42.728676043365056,
+      "continuity": {
+        "fox": {
+          "distinct": 117,
+          "max": 0.18360532407407407,
+          "median": 0.13671875,
+          "p95": 0.1698090277777778
+        },
+        "turkey": {
+          "distinct": 120,
+          "max": 0.5850462962962963,
+          "median": 0.427181712962963,
+          "p95": 0.5512847222222222
+        }
+      },
+      "technique": "continuous 3D skin"
+    },
+    "analog-visibility": {
+      "opening": {
+        "changed": 57187,
+        "mean": 24.060289097875305
+      },
+      "idle": {
+        "changed": 7335,
+        "mean": 1.4377951933124347
+      },
+      "preview": {
+        "changed": 52660,
+        "mean": 20.886130268199235
+      },
+      "loop": {
+        "changed": 52,
+        "mean": 0.07585858585858586
+      },
+      "reduced": {
+        "changed": 0,
+        "mean": 0
+      },
+      "pause": {
+        "changed": 0,
+        "mean": 0
+      }
+    },
+    "gaits": {
+      "dog": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "panda": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "turtle": {
+        "error": 1.4752290795525882e-16,
+        "plantError": 3.3335590258932494e-16
+      },
+      "pig": {
+        "error": 2.9504581591051765e-16,
+        "plantError": 5.095246377785861e-16
+      },
+      "bear": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "cow": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "eagle": {
+        "error": 3.477763656540197e-16,
+        "plantError": 4.1748851477261605e-16
+      },
+      "turkey": {
+        "error": 3.477763656540197e-16,
+        "plantError": 4.1748851477261605e-16
+      },
+      "raven": {
+        "error": 3.477763656540197e-16,
+        "plantError": 4.1748851477261605e-16
+      },
+      "rabbit": {
+        "error": 4.518280359883027e-16,
+        "plantError": 7.850462293418876e-16
+      },
+      "deer": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "horse": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "sheep": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "goat": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "elephant": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "giraffe": {
+        "error": 6.834017936133214e-16,
+        "plantError": 7.447602459741819e-16
+      },
+      "zebra": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "lion": {
+        "error": 4.518280359883027e-16,
+        "plantError": 5.79553433516819e-16
+      },
+      "penguin": {
+        "error": 1.0500451862475693e-16,
+        "plantError": 1.1443916996305594e-16
+      },
+      "owl": {
+        "error": 1.7772239894833365e-16,
+        "plantError": 2.966732183033997e-16
+      },
+      "frog": {
+        "error": 1.4752290795525882e-16,
+        "plantError": 2.3263411494723067e-16
+      },
+      "hedgehog": {
+        "error": 1.4752290795525882e-16,
+        "plantError": 2.3263411494723067e-16
+      }
+    },
+    "rig-motion-results": {
+      "contactError": 9.50197851991224e-16,
+      "footError": 2.9728800768279507e-8,
+      "foxFootError": 5.812540412712249e-16,
+      "loopError": 0,
+      "seekError": 0,
+      "maxWristBend": 8.000000000000163,
+      "minElbow": 30.87508308037738,
+      "maxElbow": 119.64956180430288,
+      "upperArmKink": 2.1073424255447017e-8,
+      "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M4 Pro, Unspecified Version)",
+      "frames": {
+        "samples": 124,
+        "median": 16.699999999999932,
+        "p95": 16.700000000000273
+      },
+      "errors": []
+    },
+    "performance": {
+      "analog": {
+        "viewport": "1440 x 1000",
+        "mode": "painted analog, active 3D cat, final-minute claw contacts",
+        "samples": 120,
+        "medianFrameMs": 16.699999999999818,
+        "p95FrameMs": 16.799999999999727,
+        "note": "Local headless Chrome measurement; actual refresh rate and performance depend on hardware and browser."
+      },
+      "digital": {
+        "samples": 120,
+        "medianFrameMs": 16.699999999999932,
+        "p95FrameMs": 16.799999999999955,
+        "mode": "painted digital with visitor and 100 debris fragments"
+      }
+    }
+  }
+}
