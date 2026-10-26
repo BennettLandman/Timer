@@ -33,3 +33,5 @@ The owner supplied an Amsterdam clock screenshot as a conceptual reference. That
 The approved 3D study now also contains an original procedural fox (`fox.js`) and continuous joint motion (`rig.js`), sharing the same painted material code. No further generated character frames or third-party model assets were added.
 
 The experimental cat/fox bodies were fused into original continuous skinned meshes on October 26, using the existing procedural bind-pose forms and paint texture. The meshes and their build specifications are under `docs/rig-proof/assets/`. No external model assets or new generated paintings were added for this revision.
+
+The acting revision rebinds the existing painted cat in a neutral arm-clear pose and adds original fox hock controls. Skin weights are rebuilt from anatomical attachment regions. No new external artwork or model assets were added.

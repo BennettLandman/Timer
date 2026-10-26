@@ -10,7 +10,7 @@ export function skinSpec(model,type){
    shapes.push({kind:'ellipsoid',p:p.toArray(),q:q.toArray(),scale:scale.toArray(),bone:owner(o.parent),coat:type==='cat'?(o.material.map?0:1):coat});
   }else if(o.userData.surfacePath){
    const path=o.userData.surfacePath.map(p=>p.clone().applyMatrix4(matrix).toArray());
-   shapes.push({kind:'tube',path,radii:o.userData.radii,bones:o.isSkinnedMesh?o.skeleton.bones.map(b=>bones.indexOf(b)):[owner(o.parent)],coat:0});
+   shapes.push({kind:'tube',path,boneFractions:o.userData.boneFractions,radii:o.userData.radii,bones:o.isSkinnedMesh?o.skeleton.bones.map(b=>bones.indexOf(b)):[owner(o.parent)],coat:0});
   }
  });return {type,bones:bones.map(b=>b.name),shapes};
 }

@@ -12,16 +12,27 @@ for(const type of ['cat','fox']){
    const segments=s.path.slice(1).map((b,i)=>{const a=s.path[i],v=b.map((n,j)=>n-a[j]);return {a,v,l:v.reduce((sum,n)=>sum+n*n,0),i};});
    const radius=t=>{const f=t*(s.radii.length-1),i=Math.min(s.radii.length-2,Math.floor(f));return s.radii[i]+(s.radii[i+1]-s.radii[i])*(f-i);};
    const closest=(x,y,z)=>{let best=Infinity,along=0;for(const seg of segments){const [ax,ay,az]=seg.a,[vx,vy,vz]=seg.v,t=clamp(((x-ax)*vx+(y-ay)*vy+(z-az)*vz)/seg.l),u=(seg.i+t)/segments.length,d=Math.hypot(x-ax-vx*t,y-ay-vy*t,z-az-vz*t)-radius(u);if(d<best){best=d;along=u;}}return [best,along];};
-   s.distance=(x,y,z)=>closest(x,y,z)[0];s.influence=(x,y,z)=>{if(s.bones.length===1)return [[s.bones[0],1]];const f=closest(x,y,z)[1]*(s.bones.length-1),i=Math.min(s.bones.length-2,Math.floor(f));return [[s.bones[i],1-(f-i)],[s.bones[i+1],f-i]];};
+   s.distance=(x,y,z)=>closest(x,y,z)[0];s.influence=(x,y,z)=>{if(s.bones.length===1)return [[s.bones[0],1]];const t=closest(x,y,z)[1],fractions=s.boneFractions||s.bones.map((_,i)=>i/(s.bones.length-1));let i=0;while(i<fractions.length-2&&t>fractions[i+1])i++;const f=clamp((t-fractions[i])/(fractions[i+1]-fractions[i]));return [[s.bones[i],1-f],[s.bones[i+1],f]];};
   }return s;
  });
+ const groupOf=name=>{
+  if(name==='pelvis'||name==='fox-hips')return 'body';if(name==='head'||name==='fox-neck'||name==='fox-head')return 'head';
+  if(name.startsWith('fox-')&&!name.includes('tail'))return 'leg'+name.match(/\d+$/)[0];
+  return name.replace(/-\d+$/,'');
+ };
+ const groups=spec.bones.map(groupOf);
+ function jointZone(group,x,y,z){let p,r=.36;
+  if(type==='cat'){p=group==='reach'?[.31,1.85,.01]:group==='rest'?[-.31,1.85,.01]:group==='hind-left'?[-.26,.92,-.02]:group==='hind-right'?[.25,.92,-.02]:group==='head'?[.08,2.1,0]:[-.24,.87,-.19];}
+  else{if(group.startsWith('leg')){const i=Number(group.slice(3));p=[i===0||i===2?.52:-.52,.86,i<2?-.19:.19];r=.27;}else p=group==='head'?[.62,1.10,0]:[-.62,1.06,0];}
+  return Math.hypot(x-p[0],y-p[1],z-p[2])<r;
+ }
  const field=(x,y,z)=>{let d=1e6;for(const s of shapes){const e=s.distance(x,y,z),k=.085,h=Math.max(k-Math.abs(d-e),0)/k;d=Math.min(d,e)-h*h*k*.25;}return d;};
  const min=type==='cat'?[-1.42,-.12,-.63]:[-2.1,-.16,-.62],max=type==='cat'?[1.25,3.15,.72]:[1.6,2.16,.75],step=.038,nx=Math.ceil((max[0]-min[0])/step)+1,ny=Math.ceil((max[1]-min[1])/step)+1,nz=Math.ceil((max[2]-min[2])/step)+1,N=nx*ny*nz,grid=new Float32Array(N);
  const id=(x,y,z)=>(z*ny+y)*nx+x,xyz=i=>[min[0]+(i%nx)*step,min[1]+(Math.floor(i/nx)%ny)*step,min[2]+Math.floor(i/(nx*ny))*step];
  for(let z=0;z<nz;z++)for(let y=0;y<ny;y++)for(let x=0;x<nx;x++)grid[id(x,y,z)]=field(min[0]+x*step,min[1]+y*step,min[2]+z*step);
  const position=[],normal=[],uv=[],weights=[],skin=[],coat=[],index=[],edges=new Map();
  function vertex(a,b){const key=Math.min(a,b)*N+Math.max(a,b);if(edges.has(key))return edges.get(key);const A=xyz(a),B=xyz(b),t=grid[a]/(grid[a]-grid[b]),p=A.map((v,i)=>v+(B[i]-v)*t),[x,y,z]=p,e=.001;let n=[field(x+e,y,z)-field(x-e,y,z),field(x,y+e,z)-field(x,y-e,z),field(x,y,z+e)-field(x,y,z-e)];const length=Math.hypot(...n);n=n.map(v=>v/length);const ds=shapes.map(s=>s.distance(x,y,z)),low=Math.min(...ds),bones=new Map();let total=0,cream=0,black=0;
-  shapes.forEach((s,i)=>{const w=Math.exp(-(ds[i]-low)/.055);total+=w;if(s.coat===1)cream+=w;if(s.coat===2)black+=w;for(const [b,f]of s.influence(x,y,z))bones.set(b,(bones.get(b)||0)+w*f);});
+  const primary=shapes[ds.indexOf(low)],primaryGroup=groups[primary.bone??primary.bones[0]];shapes.forEach((s,i)=>{const group=groups[s.bone??s.bones[0]],connected=group===primaryGroup||(group==='body'&&jointZone(primaryGroup,x,y,z))||(primaryGroup==='body'&&jointZone(group,x,y,z));const w=connected?Math.exp(-(ds[i]-low)/.055):0;total+=w;if(s.coat===1)cream+=w;if(s.coat===2)black+=w;for(const [b,f]of s.influence(x,y,z))bones.set(b,(bones.get(b)||0)+w*f);});
   const dominant=[...bones.entries()].sort((a,b)=>b[1]-a[1]).slice(0,4),sum=dominant.reduce((s,v)=>s+v[1],0);while(dominant.length<4)dominant.push([0,0]);skin.push(...dominant.map(v=>v[0]));weights.push(...dominant.map(v=>v[1]/sum));const fade=t=>{t=clamp(t);return t*t*(3-2*t);};const bib=type==='cat'?fade((.28-Math.abs(x-.015))/.11)*fade((z-.12)/.13)*fade((y-.48)/.20)*fade((2.03-y)/.18):0;coat.push(Math.max(cream/total,bib),black/total);position.push(...p);normal.push(...n);uv.push(x*.45+.5,y*.45);const result=position.length/3-1;edges.set(key,result);return result;
  }
  function triangle(a,b,c){const A=position.slice(a*3,a*3+3),B=position.slice(b*3,b*3+3),C=position.slice(c*3,c*3+3),ab=B.map((v,i)=>v-A[i]),ac=C.map((v,i)=>v-A[i]),cross=[ab[1]*ac[2]-ab[2]*ac[1],ab[2]*ac[0]-ab[0]*ac[2],ab[0]*ac[1]-ab[1]*ac[0]],dot=cross.reduce((s,v,i)=>s+v*normal[a*3+i],0);if(dot<0)index.push(a,c,b);else index.push(a,b,c);}

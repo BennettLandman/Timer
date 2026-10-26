@@ -44,3 +44,17 @@ The original overlapping torso/limb pieces have been replaced in the preview wit
 The production timer still awaits motion approval and integration. Mesh connectivity prevents separation at joints; further artistic refinement of muscle deformation remains possible after review.
 
 Joint transforms use dual-quaternion blending (`skin-deformation.js`) to preserve volume during large bends instead of flattening a joint through weighted matrices. The graphics check captures shader compilation failures as well as page errors. Fifteen source/unit checks and the dedicated motion/browser checks pass.
+
+## Acting and anatomy revision — October 26, 2026
+
+The earlier free-chain arm solve met contact targets but allowed several sections of the arm to bend independently. The original folded bind pose also merged moving forearms with the torso, and proximity-only weights allowed a resting hand to influence the hip. These defects made the movement implausible despite its smooth frame pacing.
+
+The cat now has a neutral arm-clear bind pose, one elbow per arm, rigid intermediate upper-arm/forearm controls, pole-guided elbow placement, and bounded flexion. A closed-form solve places the wrist and palm together, retaining a small 8-degree wrist bend without iterative orientation flipping. The head leads the action. Staging is look/prepare, curved reach, contact, deliberate scratch, lift away, lower the hand, and return to balance. The free hand rests near the hip. The tail responds slightly to the weight shift rather than waving each segment independently.
+
+Skin influence is now limited to anatomically adjacent groups and joint attachment regions. Hands do not influence waist/hip vertices merely because they rest nearby. `tests/smooth-skins.test.js` checks that regression. Surface connectivity and volume-preserving blending are retained.
+
+The fox retains a quadrupedal walk. It now has separate rear stifle and hock controls, distinct front/rear bend directions, a slower four-beat cycle, lower foot clearance, reduced body/head oscillation, and contact shadows. It does not reuse the same two-link bend for all four legs.
+
+The browser test measures the driven world-space elbow and wrist angles, verifies that the upper arm cannot develop a second bend, and checks claw contact, fixed cat ankles, fox support-foot placement, seeking, pause, graphics errors, and mobile fit. Sixteen unit/source checks pass. Local frame pacing remains approximately 60 fps. These are mechanical checks, not a certification of anatomical realism or artistic appeal; the owner must judge the normal-speed performance in the preview before integration.
+
+Rigging reference: [Blender's IK constraint documentation](https://docs.blender.org/manual/en/latest/animation/constraints/tracking/ik_solver.html), specifically the elbow/pole-target relationship. The preview uses its own analytic solver rather than a Blender runtime.
