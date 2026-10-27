@@ -5,6 +5,8 @@ import {createCat} from './characters/cat.js';
 import {createFox,foxPose} from './characters/fox.js';
 import {createAnimal,animalPose,animalAspect} from './characters/cast.js';
 import {catPose,catWalkPose,catWorkPose,catIdlePose,catBoredPose} from './characters/rig.js';
+import {catMindfulnessPose} from './characters/mindfulness.js';
+import {activityDetails,activityWeight} from './mindfulness.js';
 import {species} from './art.js';
 import {addBoredProps,hideBoredProps,poseBoredProps} from './characters/props.js';
 export const painted={};
@@ -57,14 +59,14 @@ export function drawAnimation(c,name,x,y,width,progress){
  hideBoredProps(cat);cat.position.z=0;if(cat.userData.brush)cat.userData.brush.visible=false;catPose(cat,0);cat.userData.joints.head.rotation.y=.16*Math.sin(Math.min(1,progress)*Math.PI);
  render(c,cat,x,y,width/2.35);
 }
-export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1,moment=null}={}){
+export function drawGlassCat(c,target,r,time,{brush=false,rest=false,engagement=1,moment=null,mindful=false}={}){
  const cat=models.get('cat');if(!cat)return null;
- const unit=r*.66,base=r*.99,home=-r*.1,work=target.x*.48-unit*.31,x=rest?home:home+(work-home)*engagement;
+ const unit=r*(mindful?.55:.66),base=r*(mindful?.83:.99)-(moment?.mindful&&activityDetails[moment.type]?.group==='floor'?r*.24*activityWeight(moment):0),home=mindful?0:-r*.1,work=target.x*.48-unit*.31,x=rest?home:home+(work-home)*engagement;
  cat.position.z=-.40;cat.rotation.y=0;
  const modelTarget=new T.Vector3((target.x-x)/unit,(base-target.y)/unit,.64);
- const idle=rest?(moment?catBoredPose(cat,time,moment):(catIdlePose(cat,time),null)):null;
+ const idle=rest?(moment?(moment.mindful?catMindfulnessPose(cat,time,moment):catBoredPose(cat,time,moment)):(catIdlePose(cat,time),null)):null;
  const state=rest?null:catWorkPose(cat,modelTarget,time,engagement);
- poseBoredProps(cat,moment,idle?.weight||0);
+ poseBoredProps(cat,moment?.mindful?null:moment,idle?.weight||0);
  let tool=cat.userData.brush;
  if(!tool){
   tool=new T.Group();const handle=new T.Mesh(new T.CylinderGeometry(.015,.015,.34,10),new T.MeshStandardMaterial({color:'#82603c',roughness:1}));handle.position.y=-.14;tool.add(handle);

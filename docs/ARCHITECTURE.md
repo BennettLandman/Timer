@@ -24,6 +24,16 @@ In a quiet full minute, a shuffled deck can select one of 24 brief diversions. E
 
 During the last minute, the cat removes one second mark at a time counter-clockwise, from 59 through 0. Short timers use only the available marks. The final stroke leads into the glass-break ending or the optional gentle reveal.
 
+## Mindfulness scene
+
+Mindfulness reuses the analog glass, minute painting, and fixed-length character solvers. `src/mindfulness.js` owns a 40-activity catalogue, a seeded shuffled deck, smooth breathing cycles, and a continuous sunrise palette. `src/characters/mindfulness.js` poses the skeleton, including seated and reclining positions. It does not play raster animation frames or display activity instructions.
+
+The sky is derived from remaining time divided by the original duration: stars fade, the sun rises, and indigo changes through lavender and rose into a pale golden morning. Added time can return the sky to an earlier point; restart begins at night. Pause freezes the sky and poses. Reduced motion retains the gradual countdown palette with a still cat, followed by the fixed closing illustration.
+
+Each minute offers two twenty-second windows, beginning at seconds 8 and 33 after the painting boundary. A seeded deck draws every activity once before repeating. Intervals too short to finish a complete activity skip it. The final minute keeps the same calm behavior until its last six seconds, when the cat erases the last minute’s line and paints the hand at zero. At the deadline it eases into namaste, with joined upright paws at the chest. This closing is excluded from the random deck and stays visible after completion. Mindfulness does not use claw scratches or the glass-break ending.
+
+The four breathing patterns have a three- or four-second inhalation and a four- or six-second exhalation, without holds. The cat's body and paws provide the breathing motion during quiet activities. Labels appear only in the development gallery.
+
 ## Digital scene
 
 Clock segments move through recessed sockets with perspective and depth. Ejected segments become bounded debris. Animals occasionally cross the floor to clear it; visits are spaced to avoid overlapping cleaners. Walking poses follow distance traveled.

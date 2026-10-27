@@ -4,6 +4,7 @@ import {boredMoment,boredWeight} from './boredom.js';
 import {drawClawAction,drawPainterAction,scratchTiming,scratchPath,scratchProgress} from './cat-actions.js';
 import {painted,drawPaintedAnimal,drawPaintTexture,paintedAspect,drawAnimation,drawGlassCat,visitorMotionTime} from './paint.js';
 import {drawSolid,drawSocket,drawHousing,project,segmentPolygon} from './depth.js';
+import {drawSunrise,sunrisePalette,sunriseProgress,mindfulnessMoment,activityWeight,activityDetails} from './mindfulness.js';
 const TAU=Math.PI*2;
 const ease=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t);};
 function stroke(c,pts,color,width=2){c.beginPath();c.moveTo(...pts[0]);for(const p of pts.slice(1))c.lineTo(...p);c.strokeStyle=color;c.lineWidth=width;c.lineCap='round';c.stroke();}
@@ -20,47 +21,53 @@ export class Scene {
  constructor(){this.reset();}
  reset(){this.boredSeed=Math.floor(Math.random()*0x7fffffff);this.minuteSpan=60;this.previousDigits=new Map();this.particles=[];this.debris=[];this.nextVisit=45+Math.random()*20;this.visitor=null;this.lastMinute=null;this.minuteChanged=0;this.oldMinute=null;this.completeAt=null;this.shadowCanvas=null;this.endPanel=null;this.digitalLayout=null;}
  draw(canvas,{remaining=300,initial=300,phase='green',mode='analog',time=0,reduced=false,completed=false,gentle=false,preview=false,paused=false}={}){
-  const {c,w,h}=prepareCanvas(canvas);if(!w||!h||!painted.glass)return;const theme=themes[phase];paper(c,w,h);c.save();
-  if(preview){c.translate(w/2,h/2);let s=Math.min(w/660,h/340);c.scale(s,s);c.translate(-500,-300);if(mode==='analog'){this.analog(c,{remaining,initial,theme,time,reduced,preview},500,275,135);}else this.digital(c,{remaining,theme,time,reduced,preview},500,255,.72);}
+  const {c,w,h}=prepareCanvas(canvas);if(!w||!h||!painted.glass)return;const mindful=mode==='mindfulness',progress=sunriseProgress(remaining,initial),theme=mindful?sunrisePalette(progress):themes[phase];
+  if(mindful){this.skyView={w,h,transform:c.getTransform()};drawSunrise(c,w,h,progress);}else paper(c,w,h);c.save();
+  if(preview){c.translate(w/2,h/2);let s=Math.min(w/660,h/340);c.scale(s,s);c.translate(-500,-300);if(mode!=='digital'){this.analog(c,{remaining,initial,theme,time,reduced,preview,mindful,progress},500,275,135);}else this.digital(c,{remaining,theme,time,reduced,preview},500,255,.72);}
   else{
-   fit(c,w,h,w<650?(mode==='analog'?560:760):1000);
-   if(completed){if(this.completeAt===null)this.completeAt=time;this.ending(c,{time:time-this.completeAt,reduced,gentle,mode,theme});}
-   else{this.completeAt=null;if(mode==='analog')this.analog(c,{remaining,initial,theme,time,reduced,preview},500,270,225);else this.digital(c,{remaining,theme,time,reduced,preview},500,245,1.1);}
+   fit(c,w,h,w<650?(mode!=='digital'?560:760):1000);
+   if(completed&&!mindful){if(this.completeAt===null)this.completeAt=time;this.ending(c,{time:time-this.completeAt,reduced,gentle,mode,theme});}
+   else{if(completed){if(this.completeAt===null)this.completeAt=time;}else this.completeAt=null;if(mode!=='digital')this.analog(c,{remaining,initial,theme,time,reduced,preview,mindful,progress,completed,closingAge:completed?time-this.completeAt:0},500,270,225);else this.digital(c,{remaining,theme,time,reduced,preview},500,245,1.1);}
    if(paused){c.fillStyle=theme.wash+'dc';c.fillRect(0,0,1000,600);text(c,'A little pause.',500,270,'italic 48px Georgia',theme.ink);text(c,formatTime(remaining)+' remaining',500,325,'24px Georgia',theme.ink);}
   }
   c.restore();
  }
- analog(c,{remaining,initial,theme,time,reduced,preview},cx,cy,r){
+ analog(c,{remaining,initial,theme,time,reduced,preview,mindful=false,progress=0,completed=false,closingAge=0},cx,cy,r){
   const minute=Math.ceil(remaining/60);
   if(this.lastMinute!==minute){this.oldMinute=this.lastMinute;this.lastMinute=minute;this.minuteChanged=time;this.minuteSpan=remaining%60||60;}
   // Draw the first hand immediately. The setup preview repeats that opening
   // action; running timers subsequently repaint only when the minute changes.
-  const opening=preview?time<16.4:this.oldMinute===null;
-  const age=preview?time%16.4:time-this.minuteChanged;
-  const changing=!reduced&&remaining>60&&(preview||opening||this.oldMinute!==minute)&&age<(opening?4.4:6);
-  const angle=(minute%60)/60*TAU-Math.PI/2,oldAngle=((this.oldMinute??minute)%60)/60*TAU-Math.PI/2;
+  const zeroing=mindful&&!preview&&!completed&&remaining<=6;
+  const opening=!zeroing&&(preview?time<(mindful?60:16.4):this.oldMinute===null);
+  const age=zeroing?6-remaining:preview?time%(mindful?60:16.4):time-this.minuteChanged;
+  const closing=mindful&&!preview&&completed;
+  const changing=!reduced&&!closing&&(zeroing||((remaining>60||mindful)&&(preview||opening||this.oldMinute!==minute)&&age<(opening?4.4:6)));
+  const angle=((zeroing||closing)?0:(minute%60))/60*TAU-Math.PI/2,oldAngle=(zeroing?1:((this.oldMinute??minute)%60))/60*TAU-Math.PI/2;
   const hourAngle=(remaining/3600%12)/12*TAU-Math.PI/2;
-  const final=remaining<=60;
+  const final=remaining<=60&&!mindful;
   const erase=changing&&!opening&&age<1.9;
   const amount=changing?(erase?1-ease((age-.5)/1.35):ease((age-(opening?.6:2.0))/2.4)):1;
   const engagement=changing?ease(age/(opening?.6:.5))*(1-ease((age-(opening?3.2:4.6))/1.2)):0;
   const workAngle=erase?oldAngle:angle,workLength=r*.78*amount;
   const target={x:Math.cos(workAngle)*workLength,y:Math.sin(workAngle)*workLength};
-  const moment=!preview&&!reduced&&!final&&!changing?boredMoment({seed:this.boredSeed,minute,age,span:this.minuteSpan}):null;
-  const curiosity=boredWeight(moment);
-  this.analogAction={opening,changing,erase,amount,engagement,age,moment};
+  const moment=closing?{type:'namaste',local:reduced?7:Math.min(7,closingAge),duration:1e9,mindful:true}:!reduced&&!final&&!changing&&!zeroing&&(mindful||!preview)?(mindful?mindfulnessMoment({seed:this.boredSeed,time,age,span:this.minuteSpan-(minute===1?5:0)}):boredMoment({seed:this.boredSeed,minute,age,span:this.minuteSpan})):null;
+  const curiosity=mindful?activityWeight(moment):boredWeight(moment);
+  this.analogAction={opening,changing,erase,amount,engagement,age,moment,zeroing};
   c.save();c.translate(cx,cy);
   // Physical rim, subtle cast shadow, and a static raster glass surface (no boiling noise).
   c.shadowColor='#1b332b20';c.shadowBlur=16;c.shadowOffsetY=8;circle(c,0,0,r+11);c.fillStyle='#4a5b3b';c.fill();c.shadowColor='transparent';
-  circle(c,0,0,r+5);c.fillStyle='#e3d5ac';c.fill();circle(c,0,0,r);c.fillStyle=theme.glass;c.fill();
-  c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.86;c.drawImage(painted.glass,-r,-r,r*2,r*2);c.globalAlpha=.36;c.globalCompositeOperation='multiply';c.fillStyle=theme.glass;c.fillRect(-r,-r,r*2,r*2);c.restore();
+  circle(c,0,0,r+5);c.fillStyle=mindful?'#e9cdb9':'#e3d5ac';c.fill();circle(c,0,0,r);c.fillStyle=theme.glass;c.fill();
+  c.save();circle(c,0,0,r);c.clip();
+  if(mindful){c.save();c.setTransform(this.skyView.transform);drawSunrise(c,this.skyView.w,this.skyView.h,progress);c.restore();}
+  c.globalAlpha=mindful?.16:.86;c.drawImage(painted.glass,-r,-r,r*2,r*2);c.globalAlpha=mindful?.12:.36;c.globalCompositeOperation='multiply';c.fillStyle=theme.glass;c.fillRect(-r,-r,r*2,r*2);c.restore();
   if(!this.shadowCanvas){this.shadowCanvas=document.createElement('canvas');this.shadowCanvas.width=900;this.shadowCanvas.height=900;}
   const sc=this.shadowCanvas.getContext('2d');sc.setTransform(1,0,0,1,0,0);sc.clearRect(0,0,900,900);sc.translate(450,450);
   let claw=null;
   if(final){claw=drawClawAction(sc,remaining,initial,r,{reduced});this.lastClaw=claw.last;this.lastContact=claw;}
-  else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced,engagement});
-  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:Math.max(0,Math.min(48,age-(opening?4.4:6))),{rest:true,moment});
-  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=final?.54:changing?.38+engagement*.20:.38+curiosity*.07;c.filter=`blur(${final?1.2:changing?3.0-engagement*1.7:3.0-curiosity*.6}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
+  else if(changing)this.lastPainter=drawPainterAction(sc,target,r,age,{erase,reduced,engagement,mindful});
+  else drawGlassCat(sc,{x:0,y:0},r,reduced?0:Math.max(0,Math.min(48,age-(opening?4.4:6))),{rest:true,moment,mindful});
+  if(mindful){c.save();circle(c,0,0,r-2);c.clip();c.fillStyle=theme.sun+'46';c.beginPath();c.ellipse(0,r*(.83-(activityDetails[moment?.type]?.group==='floor'?.24*curiosity:0)),r*.78,r*.047,0,0,TAU);c.fill();c.restore();}
+  c.save();circle(c,0,0,r-1);c.clip();c.globalAlpha=mindful?.87:final?.54:changing?.38+engagement*.20:.38+curiosity*.07;c.filter=mindful?'blur(.45px) saturate(.85)':`blur(${final?1.2:changing?3.0-engagement*1.7:3.0-curiosity*.6}px) saturate(.48)`;c.drawImage(this.shadowCanvas,-450,-450);c.restore();
   // A glazing pass sits in front of the animal, so the painted cat is behind a real surface.
   c.save();circle(c,0,0,r);c.clip();c.globalAlpha=.14;c.globalCompositeOperation='screen';c.drawImage(painted.glass,-r,-r,r*2,r*2);c.restore();
   for(let i=0;i<60;i++){const a=i/60*TAU-Math.PI/2;const major=i%5===0;const jitter=Math.sin(i*13.1)*.7;const tick=final?scratchTiming(remaining,initial):null;const removed=tick?scratchProgress(i,tick):0;c.save();c.globalAlpha=1-(removed||0);stroke(c,[[Math.cos(a)*(r-9),Math.sin(a)*(r-9)],[Math.cos(a)*(r-(major?28:17))+jitter,Math.sin(a)*(r-(major?28:17))]],theme.ink,major?3.8:1.7);c.restore();}
@@ -85,8 +92,8 @@ export class Scene {
   }
 
   c.restore();
-  text(c,formatTime(remaining),cx,cy+r+(preview?28:47),`${preview?19:38}px Georgia`,theme.ink);
-  if(!preview)text(c,'THE PAINTER · MINUTES : SECONDS',cx,568,'9px Arial',theme.ink+'a0');
+  if(!mindful||!completed)text(c,formatTime(remaining),cx,cy+r+(preview?28:47),`${preview?19:38}px Georgia`,theme.ink);
+  if(!preview&&!mindful)text(c,'THE PAINTER · MINUTES : SECONDS',cx,568,'9px Arial',theme.ink+'a0');
  }
  digital(c,{remaining,theme,time,reduced,preview},cx,cy,scale){
   const str=formatTime(remaining).padStart(5,'0');let width=0;for(const ch of str)width+=ch===':'?36:106;width-=14;this.digitalLayout={width,cx,cy,scale,slots:[]};

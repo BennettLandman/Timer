@@ -8,8 +8,8 @@ export class Sound {
  }
  update(remaining,initial,phase,animationTime,running){
   if(!this.ctx)return;this.configure(this.settings);if(!running)return;const s=this.settings,t=this.ctx.currentTime;
-  const second=Math.ceil(remaining);if(this.lastTick!==second){this.lastTick=second;if(s.ticking&&!s.mute)this.tone(680,t,.045,.025+.1*(1-Math.min(1,remaining/initial)));}
-  if(s.music&&!s.mute&&animationTime-this.lastChord>=4){this.lastChord=animationTime;const root=phase==='green'?174.61:phase==='yellow'?196:220;for(const [i,factor] of [1,1.5,2.25].entries())this.tone(root*factor,t+i*.25,5,.055);}
+  const second=Math.ceil(remaining);if(this.lastTick!==second){this.lastTick=second;if(s.ticking&&!s.mute)this.tone(680,t,.045,.025+(phase==='mindfulness'?0:.1*(1-Math.min(1,remaining/initial))));}
+  if(s.music&&!s.mute&&animationTime-this.lastChord>=4){this.lastChord=animationTime;const root=(phase==='green'||phase==='mindfulness')?174.61:phase==='yellow'?196:220;for(const [i,factor] of [1,1.5,2.25].entries())this.tone(root*factor,t+i*.25,5,.055);}
  }
  ending(){if(!this.ctx||!this.settings.endSound||this.settings.mute)return;const t=this.ctx.currentTime;for(let i=0;i<7;i++)this.tone(590+i*163,t+i*.075,.65,.11/(1+i*.2),'triangle');}
  stop(){for(const node of this.nodes){try{node.stop();}catch{}}this.nodes.clear();this.lastTick=null;this.lastChord=-100;}

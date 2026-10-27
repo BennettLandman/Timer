@@ -1,5 +1,14 @@
 # Release notes
 
+## 2.3.0 · October 27, 2026
+
+- Add **Mindfulness**, a third clock mode with the analog painter and a continuous starry-night-to-sunrise sky behind the glass.
+- Add 40 silent, shuffled activities: four breathing patterns, twelve standing poses, ten seated poses, eight floor poses, and six training exercises inspired by *The Karate Kid* films.
+- Express breathing with body and paw movement, with no readable activity prompts.
+- Erase the last minute’s line and paint zero in the final six seconds, then settle into a fixed namaste closing, held after completion. Mindfulness always ends gently.
+- Preserve the original analog and digital modes, saved settings, and countdown controls. Respect reduced motion; pause freezes the sky and character.
+- Add a local activity gallery with seeking, a sunrise slider, and an accelerated countdown review. Add scheduling, pose, closing, and browser checks.
+
 ## 2.2.0 · October 26, 2026
 
 First public release of Timer, available on [GitHub Pages](https://bennettlandman.github.io/Timer/) and as a downloadable static website.

@@ -10,7 +10,7 @@ The production site contains `index.html` and `src/`. Relative paths support the
 
 ## Host your own copy
 
-Download `Timer-2.2.0.zip` from the [release page](https://github.com/BennettLandman/Timer/releases/latest), or build from source with Node.js 18 or newer:
+Download the static-site ZIP from the [release page](https://github.com/BennettLandman/Timer/releases/latest), or build from source with Node.js 18 or newer:
 
 ```sh
 npm run build
@@ -49,6 +49,6 @@ npm run build
 npm run package:release
 ```
 
-The files are written to `releases/Timer-2.2.0.zip` and `releases/Timer-2.2.0.sha256`. The package includes the production site, hosting guide, asset credits, source revision, and a per-file SHA-256 manifest. Packaging checks that every site file matches the source and verifies the completed ZIP.
+The files are written to `releases/Timer-<version>.zip` and `releases/Timer-<version>.sha256`. The package includes the production site, hosting guide, asset credits, source revision, and a per-file SHA-256 manifest. Packaging checks that every site file matches the source and verifies the completed ZIP.
 
 Settings are stored in browser local storage when available. The application has no analytics or application-side data collection.

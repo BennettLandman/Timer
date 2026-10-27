@@ -32,6 +32,7 @@ npm run test:browser
 npm run test:gaits
 npm run test:rig
 npm run test:performance
+npm run test:mindfulness
 ```
 
 For the complete release suite, including the gesture preview:
@@ -48,6 +49,7 @@ These pages are development tools served from the local repository. They are exc
 
 | Local path | Purpose |
 | --- | --- |
+| `/docs/mindfulness.html` | All 40 mindfulness activities, sunrise slider, fixed namaste closing, and accelerated countdown |
 | `/docs/rig-proof/little-breaks.html` | All 24 cat diversions and the 59 → 0 scratch countdown |
 | `/docs/rig-proof/motion.html` | Cat and fox motion, camera views, playback speed, and seeking |
 | `/docs/rig-proof/friendly-review.html` | Historical side-by-side character appearance study |
@@ -64,6 +66,7 @@ The previews import the shipping character modules. See the [motion-study notes]
 | `src/paint.js` | Asset loading and shared offscreen character renderer |
 | `src/characters/` | Geometry, skins, skeletal poses, materials, props, and bundled Three.js |
 | `src/cat-actions.js`, `src/boredom.js` | Glass contact and quiet-minute gestures |
+| `src/mindfulness.js`, `src/characters/mindfulness.js` | Silent activity scheduling, sunrise, breathing, yoga poses, and fixed closing |
 | `src/audio.js` | Synthesized end sound, ticking, and ambient tones |
 | `tests/` | Unit, browser, motion, and performance checks |
 | `scripts/` | Build, geometry generation, release checks, and packaging |

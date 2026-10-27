@@ -11,6 +11,7 @@ Paths in this table are relative to the repository root and the release website 
 | Cat and fox | `src/characters/cat.js`, `src/characters/fox.js` | Original character construction and anatomical rigs, rendered as continuous skinned surfaces. |
 | Other 23 species | `src/characters/cast.js` | Original procedural character forms, species-specific proportions, markings, and gaits. |
 | Character surfaces | `src/characters/assets/*-smooth.skin`, `*-skin.spec.json` | Generated from the project’s geometry specifications; closed indexed meshes with normalized joint weights. |
+| Mindfulness sky and activities | `src/mindfulness.js`, `src/characters/mindfulness.js` | Original procedural sunrise, stars, 40 silent time-based activities, and a fixed namaste closing. Training gestures evoke exercises from *The Karate Kid* films; no film footage, characters, logos, dialogue, or audio is included. |
 | Cat gestures and props | `src/boredom.js`, `src/characters/rig.js`, `src/characters/props.js` | 24 time-based routines and original 3D props, including a watch, biscuit, magnifier, book, teacup, and ukulele. |
 | Tabby pigment | `src/characters/assets/tabby-paint.png` | An image-generated paint swatch mapped onto the cat’s 3D surface. |
 | Shared painted materials | `src/characters/materials.js` | Procedural pigment, markings, and surface texture. |

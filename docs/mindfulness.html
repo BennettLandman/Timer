@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Timer · Mindfulness studio</title>
+<style>
+:root{font:14px Arial,sans-serif;color:#343447;background:#f5f2e9}*{box-sizing:border-box}body{max-width:1120px;margin:0 auto;padding:26px 22px}a{color:inherit}h1{font:42px Georgia,serif;margin:20px 0 10px}p{font:17px/1.5 Georgia,serif;color:#6a6574}canvas{width:100%;aspect-ratio:5/3;display:block;border-radius:22px;background:#101b38}nav,.playback{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:20px 0}label{display:grid;gap:8px;font-size:11px;letter-spacing:.8px}select,button{font:14px Georgia,serif;background:#fff8ef;border:1px solid #d6cbd4;color:#343447;padding:12px;border-radius:9px;cursor:pointer}select{max-width:100%}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #bc755a;outline-offset:3px}#activity{min-width:220px}#sky{width:190px}.small{font:12px/1.5 Arial,sans-serif}#error{color:#9b332b}@media(max-width:500px){h1{font-size:32px}body{padding:18px 12px}nav{gap:10px}#activity{min-width:195px}canvas{aspect-ratio:1/1.1}}
+</style></head><body>
+<a href="../">← Back to the timer</a><h1>A little room to breathe.</h1>
+<p>Review all 40 silent activities, the sunrise, and the fixed namaste closing.<br>These labels are studio controls only. The classroom timer has no activity prompts.</p>
+<nav aria-label="Mindfulness review controls"><label>Activity<select id="activity"></select></label><button id="previous">← Previous</button><button id="next">Next →</button><label>Sky · night to sunrise<input id="sky" type="range" min="0" max="1" value="0.55" step="0.001"></label></nav>
+<canvas id="clock" aria-label="Mindfulness preview with the cat behind sunrise glass"></canvas>
+<div class="playback"><button id="play">Pause</button><button id="replay">Replay</button><label>Seek through the activity<input id="seek" type="range" min="0" max="20" value="0" step="0.01"></label><button id="closing">Namaste closing</button><button id="timeline">Full countdown · 12× speed</button></div>
+<p class="small">The real timer paints between activities, keeps its sunrise still while paused, erases the last minute’s line, paints zero, and then closes with namaste. You can also try Mindfulness on the main setup screen.</p><p id="error" role="alert"></p>
+<script type="module">
+import {Scene} from '../src/scenes.js';
+import {loadPaintAssets} from '../src/paint.js';
+import {activityDetails,activityDeck} from '../src/mindfulness.js';
+const $=id=>document.getElementById(id),canvas=$('clock');let scene,elapsed=0,playing=true,last=null,type='bellyBreath',timeline=false;
+for(const group of ['breathing','standing','sitting','floor','practice']){const optgroup=document.createElement('optgroup');optgroup.label=group;for(const [value,detail] of Object.entries(activityDetails))if(detail.group===group)optgroup.append(new Option(detail.label,value));$('activity').append(optgroup);}
+$('activity').add(new Option('Namaste · fixed closing','namaste'));
+function choose(value){type=value;timeline=false;let seed=0;if(type!=='namaste')for(;seed<10000;seed++)if(activityDeck(seed)[0]===type)break;
+ scene=new Scene();scene.boredSeed=seed;elapsed=0;playing=true;last=null;$('play').textContent='Pause';$('activity').value=type;$('seek').max=type==='namaste'?13:20;draw();}
+function draw(){
+ if(timeline){const remaining=Math.max(0,180-elapsed);scene.draw(canvas,{mode:'mindfulness',remaining,initial:180,time:elapsed,completed:remaining===0});}
+ else if(type==='namaste'){if(elapsed>=6)scene.completeAt=6;scene.draw(canvas,{mode:'mindfulness',remaining:Math.max(0,6-elapsed),initial:180,time:elapsed,completed:elapsed>=6});}
+ else{const time=8+elapsed,remaining=300-time,progress=Math.min(.999,Number($('sky').value)),initial=remaining/(1-progress);if(scene.lastMinute===null)scene.draw(canvas,{mode:'mindfulness',remaining:300,initial,time:0});scene.draw(canvas,{mode:'mindfulness',remaining,initial,time});}
+ $('seek').value=elapsed;
+}
+try{await loadPaintAssets();choose(type);
+ $('activity').onchange=()=>choose($('activity').value);for(const [id,step]of [['previous',-1],['next',1]])$(id).onclick=()=>{const next=($('activity').selectedIndex+step+$('activity').options.length)%$('activity').options.length;choose($('activity').options[next].value);};
+ $('play').onclick=()=>{playing=!playing;$('play').textContent=playing?'Pause':'Play';last=null;};$('replay').onclick=()=>timeline?startTimeline():choose(type);$('sky').oninput=draw;
+ $('seek').oninput=()=>{elapsed=Number($('seek').value);playing=false;$('play').textContent='Play';draw();};$('closing').onclick=()=>choose('namaste');
+ function startTimeline(){scene=new Scene();elapsed=0;timeline=true;playing=true;last=null;$('play').textContent='Pause';$('seek').max=180;draw();}$('timeline').onclick=startTimeline;
+ window.mindfulnessReview={ready:true,choose,seek(t){elapsed=t;playing=false;$('play').textContent='Play';draw();},get action(){return scene.analogAction;},get seed(){return scene.boredSeed;}};
+ function frame(now){if(last!==null&&playing){elapsed+=Math.min(.1,(now-last)/1000)*(timeline?12:1);const end=timeline?182:type==='namaste'?13:20;if(elapsed>=end){if(!timeline&&type!=='namaste')elapsed=0;else{elapsed=end;playing=false;$('play').textContent='Play';}}draw();}last=now;requestAnimationFrame(frame);}requestAnimationFrame(frame);
+}catch(error){$('error').textContent='The studio could not load: '+error.message;console.error(error);}
+</script></body></html>

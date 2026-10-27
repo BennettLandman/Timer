@@ -47,6 +47,20 @@ export function actingArm(mesh,tip,pole){
  return {points,wristBend:bend,elbowFlex:Math.PI-solution.elbow.clone().sub(S).negate().angleTo(forearm)};
 }
 
+// Joined, upright paws for the fixed meditation closing. Solve at the wrist
+// rather than the claw tip, then turn the palm without changing bone lengths.
+export function prayerArm(mesh,wrist,pole,weight){
+ const {rest,bones}=mesh.userData,right=bones[0].name.startsWith('reach'),S=rest[0];
+ const upper=right?rest[0].distanceTo(rest[1])+rest[1].distanceTo(rest[2]):rest[0].distanceTo(rest[1]);
+ const lower=right?rest[2].distanceTo(rest[3]):rest[1].distanceTo(rest[2])+rest[2].distanceTo(rest[3]);
+ const solution=twoBone(S,wrist,pole,upper,lower),E=solution.elbow,W=solution.wrist;
+ const points=right?[S,S.clone().lerp(E,rest[0].distanceTo(rest[1])/upper),E,W]:[S,E,E.clone().lerp(W,rest[1].distanceTo(rest[2])/lower),W];
+ const rotation=new T.Quaternion();for(const bone of bones.slice(0,4))rotation.multiply(bone.quaternion);
+ rotation.slerp(new T.Quaternion().setFromAxisAngle(new T.Vector3(0,0,1),Math.PI),weight);
+ applyArm(mesh,points,rotation);
+ return {points,elbowFlex:Math.PI-S.clone().sub(E).angleTo(W.clone().sub(E))};
+}
+
 export function catPose(cat,time){
  for(const eye of cat.userData.eyes||[])eye.mesh.scale.y=eye.height;
  const joints=cat.userData.joints,limbs=cat.userData.limbs,t=((time%6)+6)%6,root=joints.pelvis;
@@ -108,7 +122,7 @@ export function catIdlePose(cat,time){
  cat.updateMatrixWorld(true);return {hand,head:cat.userData.joints.head.rotation.clone()};
 }
 
-function freeArmPose(cat,wrist){
+export function freeArmPose(cat,wrist){
  const mesh=cat.userData.limbs.rest,free=mesh.userData,upper=free.rest[1].distanceTo(free.rest[0]),lower=free.rest[2].distanceTo(free.rest[1])+free.rest[3].distanceTo(free.rest[2]);
  const solution=twoBone(free.rest[0],wrist,new T.Vector3(-1.1,1.5,.60),upper,lower);
  applyArm(mesh,[free.rest[0],solution.elbow,solution.elbow.clone().lerp(solution.wrist,free.rest[1].distanceTo(free.rest[2])/lower),solution.wrist],new T.Quaternion().setFromUnitVectors(free.rest[3].clone().sub(free.rest[1]).normalize(),solution.wrist.clone().sub(solution.elbow).normalize()));
