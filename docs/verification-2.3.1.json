@@ -1,0 +1,85 @@
+{
+  "version": "2.3.1",
+  "date": "2026-10-27",
+  "scope": "Homepage stale-renderer regression and versioned production assets. Full animation evidence remains in verification-2.3.0.json.",
+  "unitTests": 49,
+  "checks": [
+    "node --test tests/*.test.js",
+    "node scripts/build.js",
+    "node tests/homepage-preview.mjs",
+    "node tests/production.mjs",
+    "python3 scripts/package-release.py"
+  ],
+  "results": {
+    "homepage-preview": {
+      "url": "http://127.0.0.1:8080/dist/",
+      "samples": [
+        {
+          "width": 1440,
+          "mode": "digital",
+          "round": "false"
+        },
+        {
+          "width": 1440,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 1440,
+          "mode": "analog",
+          "round": "true"
+        },
+        {
+          "width": 1440,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "digital",
+          "round": "false"
+        },
+        {
+          "width": 390,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "analog",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "mindfulness",
+          "round": "true"
+        }
+      ],
+      "staleRendererHits": 0,
+      "versionedRequests": 150,
+      "reload": true,
+      "reducedMotion": true,
+      "errors": []
+    },
+    "production": {
+      "passed": true,
+      "checks": [
+        "subdirectory hosting",
+        "keyboard pause/resume",
+        "completion",
+        "no external requests",
+        "no runtime errors"
+      ]
+    },
+    "packaging": {
+      "passed": true,
+      "siteFiles": 78,
+      "checks": [
+        "runtime bytes match source",
+        "rewritten entry paths match build layout",
+        "ZIP integrity",
+        "all archived site SHA-256 hashes match build"
+      ]
+    }
+  }
+}

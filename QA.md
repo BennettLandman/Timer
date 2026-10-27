@@ -2,6 +2,12 @@
 
 Release checks ran on October 27, 2026, with installed desktop Chrome, hardware-accelerated WebGL on an Apple M4 Pro, and Playwright. The complete [machine-readable report](docs/verification-2.3.0.json) records the results. See the [developer guide](docs/DEVELOPMENT.md) to repeat the suite with a local server and Playwright.
 
+## 2.3.1 homepage preview correction
+
+The stale-renderer regression reproduces a mindfulness preview falling back to the digital clock at the old unversioned renderer URL. The production build now places the full runtime in a shared content-versioned directory. Targeted browser checks cover all three previews, repeated mode switching, reload, reduced motion, and 1440px/390px layouts while the legacy renderer remains available at its original URL. Release ZIP validation checks both source fidelity and the rewritten entry paths.
+
+All 49 unit checks, the targeted homepage and production browser checks, and release ZIP validation passed. The [2.3.1 verification record](docs/verification-2.3.1.json) records this scope. The full 2.3.0 animation verification remains linked above; this correction changes production asset addressing rather than the timer or character poses.
+
 ## Automated coverage
 
 - **48 unit checks:** deadline accuracy after background gaps; pause/resume/add/restart; warning thresholds and caps; input/duration bounds; digital projection depth; all 25 closed, connected continuous character surfaces; normalized skin weights; cat waist isolation and gradual elbow influences; deterministic diversion timing; varied action order; skipping short intervals, the 40-activity mindfulness deck, breathing continuity, and continuous sunrise colors.

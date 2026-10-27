@@ -6,7 +6,7 @@ The public timer is available at **[bennettlandman.github.io/Timer](https://benn
 
 [The deployment workflow](https://github.com/BennettLandman/Timer/blob/main/.github/workflows/pages.yml) publishes the site after every push to `main`. It runs the unit checks, builds with Node.js 24, and uploads only the production `dist/` directory. It can also be run manually from the repository’s Actions tab. The repository’s Pages publishing source is **GitHub Actions**.
 
-The production site contains `index.html` and `src/`. Relative paths support the `/Timer/` project address and other subdirectories. Development previews, tests, and reference artwork remain in the source repository and are excluded from the published site.
+The production site contains `index.html` and a content-versioned directory such as `src/<content-hash>/`. All runtime modules, styles, and artwork use that same directory. Its name changes when the application content changes, so a new page cannot reuse an older cached renderer. Relative paths support the `/Timer/` project address and other subdirectories. Development previews, tests, and reference artwork remain in the source repository and are excluded from the published site.
 
 ## Host your own copy
 
@@ -16,7 +16,7 @@ Download the static-site ZIP from the [release page](https://github.com/BennettL
 npm run build
 ```
 
-No package installation is required. Upload the **contents** of `dist/` to a static web host, or extract the release ZIP into its web directory. Keep `index.html` and the `src/` directory together.
+No package installation is required. Upload the **contents** of `dist/` to a static web host, or extract the release ZIP into its web directory. Keep `index.html` and the complete `src/` directory together. Deploy them as one build.
 
 Serve the site over HTTPS. JavaScript modules need a JavaScript content type, stylesheets need CSS, and `.skin` assets must be served as binary files, such as `application/octet-stream`. Do not redirect missing asset requests to an HTML fallback. No URL rewriting is required.
 
@@ -49,6 +49,6 @@ npm run build
 npm run package:release
 ```
 
-The files are written to `releases/Timer-<version>.zip` and `releases/Timer-<version>.sha256`. The package includes the production site, hosting guide, asset credits, source revision, and a per-file SHA-256 manifest. Packaging checks that every site file matches the source and verifies the completed ZIP.
+The files are written to `releases/Timer-<version>.zip` and `releases/Timer-<version>.sha256`. The package includes the production site, hosting guide, asset credits, source revision, and a per-file SHA-256 manifest. Packaging checks that the versioned runtime files match the source, verifies the rewritten entry paths in `index.html`, and validates the completed ZIP.
 
 Settings are stored in browser local storage when available. The application has no analytics or application-side data collection.

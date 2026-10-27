@@ -42,6 +42,6 @@ At completion, the clock housing keeps its position and dimensions while the red
 
 ## Distribution
 
-The production build contains only `index.html` and `src/`, including the local Three.js runtime and its license. GitHub Pages publishes this build after unit checks pass. Development previews and historical references remain outside the website build.
+The production build contains `index.html` and a content-versioned copy of `src/`, including the local Three.js runtime and its license. The entry stylesheet, entry module, relative module imports, and artwork all resolve inside the same `src/<content-hash>/` directory. New deployments therefore cannot load a renderer cached at the previous release’s URL. GitHub Pages publishes this build after unit checks pass. Development previews and historical references remain outside the website build.
 
 See the [developer guide](DEVELOPMENT.md), [hosting guide](../HOSTING.md), and [verification record](../QA.md) for commands and testing scope.

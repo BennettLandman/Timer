@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import re
 import subprocess
 import zipfile
 
@@ -9,12 +10,18 @@ root = Path(__file__).resolve().parents[1]
 version = json.loads((root / 'package.json').read_text())['version']
 revision = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True).strip()
 files = {p.relative_to(root / 'dist').as_posix(): p for p in (root / 'dist').rglob('*') if p.is_file()}
-expected = {'index.html': root / 'index.html'}
-expected.update({p.relative_to(root).as_posix(): p for p in (root / 'src').rglob('*') if p.is_file()})
+built_index = (root / 'dist/index.html').read_text()
+match = re.search(r'src/([a-f0-9]{12})/app\.js', built_index)
+if not match:
+    raise SystemExit('Build has no content-versioned assets. Run npm run build first.')
+asset_root = f'src/{match.group(1)}/'
+expected_index = (root / 'index.html').read_text().replace('href="src/', f'href="{asset_root}').replace('src="src/', f'src="{asset_root}')
+expected = {'index.html': expected_index.encode()}
+expected.update({asset_root + p.relative_to(root / 'src').as_posix(): p.read_bytes() for p in (root / 'src').rglob('*') if p.is_file()})
 if set(files) != set(expected):
     raise SystemExit('Build file list differs from source. Run npm run build first.')
 for name, source in expected.items():
-    if files[name].read_bytes() != source.read_bytes():
+    if files[name].read_bytes() != source:
         raise SystemExit(f'Build is stale: {name}. Run npm run build first.')
 
 out = root / 'releases'

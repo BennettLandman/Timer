@@ -1,5 +1,12 @@
 # Release notes
 
+## 2.3.1 · October 27, 2026
+
+- Fix returning visitors seeing the digital clock in the homepage mindfulness preview when an older renderer remained cached.
+- Publish all runtime files under a shared content-versioned directory so each page loads a matching renderer, controls, styles, and artwork.
+- Add a browser regression for stale renderer URLs, all three homepage previews, mode switching, reload, reduced motion, and desktop/mobile layouts.
+- Preserve source verification and checksum validation in downloadable site packaging.
+
 ## 2.3.0 · October 27, 2026
 
 - Add **Mindfulness**, a third clock mode with the analog painter and a continuous starry-night-to-sunrise sky behind the glass.

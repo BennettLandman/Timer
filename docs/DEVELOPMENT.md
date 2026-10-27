@@ -21,7 +21,7 @@ npm test
 npm run build
 ```
 
-The build copies `index.html` and `src/` into `dist/`. Serve that directory to preview the production site. Pushes to `main` run the unit checks and publish `dist/` to GitHub Pages. See the [hosting guide](../HOSTING.md) for deployment and release packaging.
+The build hashes the homepage and runtime files, copies `src/` into `dist/src/<content-hash>/`, and rewrites the stylesheet and entry-module paths in `dist/index.html`. Relative imports keep the complete runtime in that versioned directory, preventing stale browser modules from mixing across deployments. Serve that directory to preview the production site. Pushes to `main` run the unit checks and publish `dist/` to GitHub Pages. See the [hosting guide](../HOSTING.md) for deployment and release packaging.
 
 ## Browser checks
 
@@ -33,6 +33,7 @@ npm run test:gaits
 npm run test:rig
 npm run test:performance
 npm run test:mindfulness
+npm run test:homepage-preview
 ```
 
 For the complete release suite, including the gesture preview:
