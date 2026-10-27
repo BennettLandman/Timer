@@ -1,5 +1,11 @@
 # Release notes
 
+## 2.3.3 · October 27, 2026
+
+- Make the distant hills hide the sun and its halo so sunrise emerges from behind the ridge.
+- Preserve the soft layered hill colors with opaque fills instead of translucent overlays.
+- Add landscape and portrait pixel checks for sunlight visibility above and occlusion below the distant hills.
+
 ## 2.3.2 · October 27, 2026
 
 - Add shareable timer links with mode, duration in seconds, and optional automatic start after artwork loading.

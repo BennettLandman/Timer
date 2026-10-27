@@ -2,6 +2,10 @@
 
 Release checks ran on October 27, 2026, with installed desktop Chrome, hardware-accelerated WebGL on an Apple M4 Pro, and Playwright. The complete [machine-readable report](docs/verification-2.3.0.json) records the results. See the [developer guide](docs/DEVELOPMENT.md) to repeat the suite with a local server and Playwright.
 
+## 2.3.3 sunrise occlusion
+
+The sun and its halo are hidden by opaque, softly colored hills. A browser regression compares each sunrise with a reference that omits the sun and halo: all pixels safely below the distant ridge are identical, while sunlight remains visible above it. Six samples cover three sunrise stages in landscape and portrait canvases. All 52 unit checks also passed. See the [2.3.3 verification record](docs/verification-2.3.3.json).
+
 ## 2.3.2 timer links and QR code
 
 All 52 unit checks and the direct-link browser checks passed. The one-minute mindfulness link starts automatically after artwork loading, preserves a full minute, supports pause and restart, and reaches the namaste closing. A link without automatic start fills the setup; malformed presets leave its defaults unchanged. The 1128px QR PNG was decoded with the native macOS QR detector and matched the public link exactly. See the [2.3.2 verification record](docs/verification-2.3.2.json).

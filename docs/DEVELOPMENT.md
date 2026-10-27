@@ -35,6 +35,7 @@ npm run test:performance
 npm run test:mindfulness
 npm run test:homepage-preview
 npm run test:timer-links
+npm run test:sunrise
 ```
 
 For the complete release suite, including the gesture preview:

@@ -63,7 +63,9 @@ export function drawSunrise(c,w,h,progress){
  c.fillStyle=sky.top;c.beginPath();c.arc(w*.80,h*.16,Math.min(w,h)*.035,0,Math.PI*2);c.fill();
  const sx=w*.54,sy=h*(1.12-.51*soften((p-.16)/.84)),radius=Math.min(w,h)*.10;
  c.globalAlpha=soften(p/.4);const halo=c.createRadialGradient(sx,sy,0,sx,sy,radius*4);halo.addColorStop(0,sky.sun+'a0');halo.addColorStop(1,sky.sun+'00');c.fillStyle=halo;c.fillRect(0,0,w,h);c.fillStyle=sky.sun;c.beginPath();c.arc(sx,sy,radius,0,Math.PI*2);c.fill();
- // Translucent, low hills anchor the quiet horizon without hiding the dial.
- for(let layer=0;layer<3;layer++){c.globalAlpha=.16+layer*.055;c.fillStyle=sky.top;c.beginPath();c.moveTo(0,h);c.lineTo(0,h*(.88+layer*.04));for(let i=0;i<=20;i++){const x=i*w/20,y=h*(.88+layer*.035)+Math.sin(i*.4+layer*2)*h*.035;c.lineTo(x,y);}c.lineTo(w,h);c.closePath();c.fill();}
+ // Keep the hills softly colored but fully opaque: the disc and its halo
+ // belong behind the distant ridge, rather than showing through the land.
+ let hill=blend(sky.middle,sky.horizon,.8);
+ for(let layer=0;layer<3;layer++){hill=blend(hill,sky.top,.16+layer*.055);c.globalAlpha=1;c.fillStyle=hill;c.beginPath();c.moveTo(0,h);c.lineTo(0,h*(.88+layer*.04));for(let i=0;i<=20;i++){const x=i*w/20,y=h*(.88+layer*.035)+Math.sin(i*.4+layer*2)*h*.035;c.lineTo(x,y);}c.lineTo(w,h);c.closePath();c.fill();}
  c.restore();return sky;
 }
