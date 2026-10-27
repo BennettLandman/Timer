@@ -2,6 +2,7 @@ import {Timer,formatTime,validDuration} from './clock.js';
 import {Scene} from './scenes.js';
 import {themes} from './art.js';
 import {sunrisePalette,sunriseProgress} from './mindfulness.js';
+import {timerFromLink} from './links.js';
 const modeCaptions={analog:'A little painter, behind the glass.',digital:'A little help with the passing seconds.',mindfulness:'A quiet cat. A slowly waking sky.'};
 import {Sound} from './audio.js';
 import {loadPaintAssets,loadVisitorAssets} from './paint.js';
@@ -10,6 +11,7 @@ $('start').disabled=true;$('preview-caption').textContent='Opening the studio…
 const clock=new Timer(),scene=new Scene(),preview=new Scene(),sound=new Sound();
 const reducedQuery=matchMedia('(prefers-reduced-motion: reduce)');
 let mode='analog',animationTime=0,lastFrame=performance.now(),lastPhase='',lastText='',previewTime=0;
+const linkedTimer=timerFromLink(location.search);
 const defaults={endSound:false,ticking:false,music:false,mute:false,volume:.2,gentle:false,lessMotion:false};
 let settings={...defaults};try{const stored=JSON.parse(localStorage.getItem('timer.settings')||'{}');for(const k of Object.keys(defaults)){if(typeof stored[k]===typeof defaults[k])settings[k]=stored[k];}settings.volume=Math.max(0,Math.min(.5,settings.volume));}catch{}
 const settingIds={endSound:'end-sound',ticking:'ticking',music:'music',mute:'mute',volume:'volume',gentle:'gentle',lessMotion:'less-motion'};
@@ -22,7 +24,9 @@ function announce(message){$('announcement').textContent=message;}
 function updatePresets(){const total=validDuration($('minutes').value,$('seconds').value);document.querySelectorAll('[data-min]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.min)*60===total)));$('input-error').textContent='';}
 for(const b of document.querySelectorAll('[data-min]'))b.addEventListener('click',()=>{$('minutes').value=b.dataset.min;$('seconds').value=0;updatePresets();});
 for(const id of ['minutes','seconds'])$(id).addEventListener('input',updatePresets);
-for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(el=>el.setAttribute('aria-pressed',String(el===b)));preview.reset();previewTime=0;document.body.classList.toggle('mindfulness',mode==='mindfulness');$('preview-caption').textContent=modeCaptions[mode];});
+function selectMode(selected){mode=selected;document.querySelectorAll('[data-mode]').forEach(el=>el.setAttribute('aria-pressed',String(el.dataset.mode===mode)));preview.reset();previewTime=0;document.body.classList.toggle('mindfulness',mode==='mindfulness');$('preview-caption').textContent=modeCaptions[mode];}
+for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>selectMode(b.dataset.mode));
+if(linkedTimer){selectMode(linkedTimer.mode);$('minutes').value=Math.floor(linkedTimer.seconds/60);$('seconds').value=linkedTimer.seconds%60;updatePresets();}
 $('settings-open').addEventListener('click',()=>{$('settings').showModal();});
 function begin(seconds){clock.start(seconds);scene.reset();animationTime=0;lastPhase='';lastText='';sound.stop();$('setup').hidden=true;$('setup-footer').hidden=true;$('timer').hidden=false;document.body.classList.add('active');$('pause').textContent='Pause';$('pause').disabled=false;$('completion').hidden=true;$('timer').classList.remove('digital-complete');$('pause').focus();announce(`${mode==='mindfulness'?'Mindfulness. ':''}${formatTime(seconds)} timer started.`);}
 $('start').addEventListener('click',async()=>{const seconds=validDuration($('minutes').value,$('seconds').value);if(seconds===null){$('input-error').textContent='Choose a time from 1 second to 999 minutes, 59 seconds.';return;}begin(seconds);await sound.unlock();sound.configure(settings);});
@@ -54,4 +58,4 @@ function frame(now){const dt=Math.min(.1,Math.max(0,(now-lastFrame)/1000));lastF
  }
  requestAnimationFrame(frame);
 }
-loadPaintAssets().then(()=>{lastFrame=performance.now();requestAnimationFrame(frame);return loadVisitorAssets();}).then(()=>{$('start').disabled=false;$('preview-caption').textContent=modeCaptions[mode];}).catch(error=>{console.error(error);$('input-error').textContent='The studio could not load. Please reload in a browser with WebGL enabled.';});
+loadPaintAssets().then(()=>{lastFrame=performance.now();requestAnimationFrame(frame);return loadVisitorAssets();}).then(()=>{$('start').disabled=false;$('preview-caption').textContent=modeCaptions[mode];if(linkedTimer?.autostart)begin(linkedTimer.seconds);}).catch(error=>{console.error(error);$('input-error').textContent='The studio could not load. Please reload in a browser with WebGL enabled.';});

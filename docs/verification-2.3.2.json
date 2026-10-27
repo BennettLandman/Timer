@@ -1,0 +1,93 @@
+{
+  "version": "2.3.2",
+  "date": "2026-10-27",
+  "scope": "Direct timer links and one-minute mindfulness QR code. Animation and deployment-cache evidence remain in verification-2.3.0.json and verification-2.3.1.json.",
+  "unitTests": 52,
+  "checks": [
+    "node --test tests/*.test.js",
+    "node scripts/build.js",
+    "node tests/timer-links.mjs",
+    "native macOS QR decode",
+    "node tests/homepage-preview.mjs",
+    "SVG raster matches decoded PNG"
+  ],
+  "results": {
+    "timer-links": {
+      "url": "http://127.0.0.1:8080/dist/?mode=mindfulness&duration=60&start=1",
+      "checks": [
+        "manual preset link",
+        "automatic start without a button press",
+        "wait for artwork before starting",
+        "one-minute duration",
+        "mindfulness selection",
+        "mobile layout",
+        "pause",
+        "restart at one minute",
+        "completion and namaste",
+        "cancel returns to setup"
+      ],
+      "errors": []
+    },
+    "qr": {
+      "decoded": [
+        "https://bennettlandman.github.io/Timer/?mode=mindfulness&duration=60&start=1"
+      ],
+      "errorCorrection": "M",
+      "modules": 39,
+      "pixels": 1128,
+      "quietZoneModules": 4,
+      "url": "https://bennettlandman.github.io/Timer/?mode=mindfulness&duration=60&start=1",
+      "svgMatchesPng": true
+    },
+    "homepage-preview": {
+      "url": "http://127.0.0.1:8080/dist/",
+      "samples": [
+        {
+          "width": 1440,
+          "mode": "digital",
+          "round": "false"
+        },
+        {
+          "width": 1440,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 1440,
+          "mode": "analog",
+          "round": "true"
+        },
+        {
+          "width": 1440,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "digital",
+          "round": "false"
+        },
+        {
+          "width": 390,
+          "mode": "mindfulness",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "analog",
+          "round": "true"
+        },
+        {
+          "width": 390,
+          "mode": "mindfulness",
+          "round": "true"
+        }
+      ],
+      "staleRendererHits": 0,
+      "versionedRequests": 152,
+      "reload": true,
+      "reducedMotion": true,
+      "errors": []
+    }
+  }
+}

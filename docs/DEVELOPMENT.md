@@ -34,6 +34,7 @@ npm run test:rig
 npm run test:performance
 npm run test:mindfulness
 npm run test:homepage-preview
+npm run test:timer-links
 ```
 
 For the complete release suite, including the gesture preview:
@@ -77,3 +78,9 @@ The [architecture notes](ARCHITECTURE.md) describe timing and animation behavior
 ## Rebuilding character surfaces
 
 Finished character assets are committed and do not need regeneration for normal development or hosting. After changing construction geometry, run `node scripts/extract-cast.mjs` with the local server available, then `node scripts/build-smooth-skins.mjs <species...>`. Check the resulting surfaces and motion before committing the generated assets.
+
+## Shared timer links
+
+`?mode=mindfulness&duration=60&start=1` selects mindfulness and automatically starts a one-minute countdown after all timer artwork is ready. Modes are `analog`, `digital`, and `mindfulness`; duration is an integer number of seconds within the normal timer limit. Omitting `start=1` fills the setup without starting. Incomplete or invalid presets leave the default setup unchanged.
+
+`src/links.js` validates the URL. Loading a direct-start link does not unlock browser audio; sound still requires a user interaction. The one-minute mindfulness QR files are in `docs/qr/`. They contain the public timer URL directly, without a redirect or tracking service.

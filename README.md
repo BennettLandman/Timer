@@ -38,6 +38,8 @@ Mindfulness follows the full countdown from night through lavender twilight, ros
 
 Use **Full screen** for a classroom display. During a timer, **Space** pauses or resumes and **F** toggles full screen when focus is outside a button or input. Buttons also support normal keyboard controls.
 
+Share a [one-minute mindfulness timer](https://bennettlandman.github.io/Timer/?mode=mindfulness&duration=60&start=1) that starts automatically once its artwork has loaded. Download its QR code as a [PNG](docs/qr/mindfulness-1-minute.png) or a [printable SVG](docs/qr/mindfulness-1-minute.svg).
+
 ## Sound and motion
 
 Sound starts off. Open **Sound & settings** to enable the end sound, ticking, or soft ambient tones, adjust the volume, or mute everything.

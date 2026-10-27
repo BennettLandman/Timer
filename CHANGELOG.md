@@ -1,5 +1,11 @@
 # Release notes
 
+## 2.3.2 · October 27, 2026
+
+- Add shareable timer links with mode, duration in seconds, and optional automatic start after artwork loading.
+- Include a QR code that opens and starts a one-minute mindfulness timer directly.
+- Validate link presets and preserve the normal setup for incomplete or invalid links.
+
 ## 2.3.1 · October 27, 2026
 
 - Fix returning visitors seeing the digital clock in the homepage mindfulness preview when an older renderer remained cached.
